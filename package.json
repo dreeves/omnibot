@@ -1,13 +1,13 @@
 {
   "name": "lexiguess",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A dictionary guessing game implemented as a Slack bot",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "@slack/bolt": "^2.0.1"
+    "@slack/bolt": "^2.4.1"
   },
   "engines": {
     "node": "12"
