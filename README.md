@@ -1,7 +1,31 @@
-This is inspired by https://hryanjones.com/guess-my-word/ and built with [Bolt](https://slack.dev/bolt).
+TODO: merge in README from botley.glitch.me
+
+Discord app portal:
+https://discord.com/developers/applications/
+
+Handy tool for managing Discord slash commands:
+https://autocode.com/tools/discord/command-builder/
+
+
+
+specifying the URL in slack:
+https://api.slack.com/apps/A011Z3TQ7BK/event-subscriptions?
+
+https://untitledbot.dreev.repl.co/slack/events
+https://lexiguess.glitch.me/slack/events
+
+## To install in Slack
+
+* Add to slack: https://api.slack.com/apps/A011Z3TQ7BK
+* Then you copy the generated bot token 
+[from Slack](https://api.slack.com/apps/A011Z3TQ7BK/oauth ) into the `.env` file.
+* Then invite the Lexiguess bot to your games channel.
+
+## Background
+
+This is inspired by https://hryanjones.com/guess-my-word/
 
 The `examples` folder has some templates from Slack that might be handy.
-
 
 See Slack's [Getting Started Guide](https://api.slack.com/start/building/bolt) for their Bolt framework and the 
 [Bolt documentation](https://slack.dev/bolt).
@@ -29,4 +53,9 @@ CHANGELOG
 2020-04-14: Bugfix with when to complain about out-of-range words
 2020-04-14: Bugfix with dups
 2020-04-19: Various tweaks and fixes the last few days
+2021-04-20: Update the README
+2021-12-01: Refactor to use a state object/hash
+2021-12-04: Over 500 words in the list the bot chooses from
+2021-12-05: A bunch of words contributed by Madge Castle
+2021-12-19: Works in Slack and Discord and can serve web pages
 ```

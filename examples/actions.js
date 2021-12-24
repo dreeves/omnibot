@@ -72,3 +72,22 @@ app.action('button_abc', async ({ ack, body, context }) => {
 
   console.log('⚡️ Bolt app is running!');
 })()
+
+
+/*
+          { "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": "If we wanted this button to do anything we could set up "
+                +"a listener for it using the `actions()` method and pass its "
+                +"unique `action_id`. There's an example in the `examples` "
+                +"folder in Glitch.",
+            }
+          },
+          { "type": "actions",
+            "elements": [
+              { "type": "button",
+                "text": { "type": "plain_text",
+                          "text": "Click on me!",
+          } ] } }
+*/
