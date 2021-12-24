@@ -1,0 +1,46 @@
+{
+    "_metadata": {
+        "major_version": 1,
+        "minor_version": 1
+    },
+    "display_information": {
+        "name": "Lexiguess",
+        "description": "Dictionary guessing game",
+        "background_color": "#b07920"
+    },
+    "features": {
+        "app_home": {
+            "home_tab_enabled": true,
+            "messages_tab_enabled": true,
+            "messages_tab_read_only_enabled": false
+        },
+        "bot_user": {
+            "display_name": "lexiguess",
+            "always_online": true
+        }
+    },
+    "oauth_config": {
+        "scopes": {
+            "bot": [
+                "chat:write",
+                "im:read",
+                "channels:history",
+                "mpim:history"
+            ]
+        }
+    },
+    "settings": {
+        "event_subscriptions": {
+            "request_url": "https://untitledbot.dreev.repl.co/slack/events",
+            "user_events": [
+                "app_home_opened"
+            ],
+            "bot_events": [
+                "message.channels",
+                "message.mpim"
+            ]
+        },
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false
+    }
+}
