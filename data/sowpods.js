@@ -3,6 +3,7 @@
 exports.wordlist = [
   
 // variants of the words in dawords that the bot ought to know
+'odysseus',
 'lifehacks',
 'lifehacked',
 'lifehacker',
