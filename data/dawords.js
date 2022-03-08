@@ -10,6 +10,9 @@
 exports.posswords = [
 
 // unsorted so far
+'rubric',
+'salubrious',
+'ebullient',
 'tare',
 'sapient',
 'infinite',
@@ -606,7 +609,7 @@ exports.posswords = [
 'predilection',
 'bursty',
 'malapropism',
-'antediluvian',
+//'antediluvian',
 'idiolect',
 'pecuniary',
 'dilettante',
@@ -906,8 +909,8 @@ exports.posswords = [
 'blanket',
 'boat',
 'book',
-'bowl',
-'brown',
+//'bowl',
+//'brown',
 'bubbles',
 'butterfly',
 'car',
