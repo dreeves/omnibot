@@ -7,9 +7,9 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "@slack/bolt": "^3.9.0",
+    "@slack/bolt": "^3.10.0",
     "discord.js": "^13.6.0",
-    "express": "^4.17.2"
+    "express": "^4.17.3"
   },
   "engines": {
     "node": "16"
