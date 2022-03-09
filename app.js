@@ -5,6 +5,8 @@ CLOG("Omnibot / Lexiguess!")
 // -----------------------------------------------------------------------------
 // -------- Initialization, create and start server, log in to Discord ---------
 
+require('dotenv').config() // or import 'dotenv/config'
+
 const { lexup } = require('./lexiguess.js')
 
 const express = require('express')
