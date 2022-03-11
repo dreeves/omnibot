@@ -1,51 +1,37 @@
-TODO: merge in README from botley.glitch.me
+## Discord Setup
 
 Discord app portal:
-https://discord.com/developers/applications/
+https://discord.com/developers/applications/  
+No need to specify on the Discord side where the bot is hosted; the bot can log in to Discord as long as it has the right API keys.
+See the .env file for such secrets.
 
 Handy tool for managing Discord slash commands:
 https://autocode.com/tools/discord/command-builder/
+from https://autocode.com/guides/how-to-build-a-discord-bot/
 
+Another tutorial, for repl.it:
+https://www.freecodecamp.org/news/create-a-discord-bot-with-javascript-nodejs/
 
-
-specifying the URL in slack:
-https://api.slack.com/apps/A011Z3TQ7BK/event-subscriptions?
-
-https://untitledbot.dreev.repl.co/slack/events
-https://lexiguess.glitch.me/slack/events
-
-## To install in Slack
+## Slack Setup
 
 * Add to slack: https://api.slack.com/apps/A011Z3TQ7BK
 * Then you copy the generated bot token 
 [from Slack](https://api.slack.com/apps/A011Z3TQ7BK/oauth ) into the `.env` file.
 * Then invite the Lexiguess bot to your games channel.
-
-## Background
-
-This is inspired by https://hryanjones.com/guess-my-word/
+* Maybe also specify the URL `https://lexiguess.onrender.com/slack/events` at https://api.slack.com/apps/A011Z3TQ7BK/event-subscriptions?
 
 The `examples` folder has some templates from Slack that might be handy.
 
-See Slack's [Getting Started Guide](https://api.slack.com/start/building/bolt) for their Bolt framework and the 
+See Slack's 
+[Getting Started Guide](https://api.slack.com/start/building/bolt) 
+for their Bolt framework and the 
 [Bolt documentation](https://slack.dev/bolt).
 
-(I've spent 10.5 hours on this as of version 1.0.2)
+## Lexiguess Background
 
-Other bot ideas:
+Lexiguess was inspired by https://hryanjones.com/guess-my-word/
 
-1. wits and wagers (where anyone can contribute numerical facts)
-2. codenames where the bot is codemaster by finding synonyms (or synonyms of synonyms if needed) in common between words
-3. the coordination game aka the schelling game, which we can already play with just the /bid command
-4. boggle (but how to keep the board visible the whole time?)
-5. ankified word-of-the-day bot
-6. buddha nature where the bot makes up a purely lexical rule, describable with a regex? 
-
-and probably not bottable but there's a great game we play (and we played with the wolf-nixes when they were here) called contact (i don't know why "contact" and probably we should rename it).
-
-PS: having the bot think of the word may not work (humans can ask about words in obscure ways that the bot would have no hope of understanding) but the bot could guess words. like if the letters so far are "ca" it could guess "is it a small domesticated carnivorous mammal with soft fur, a short snout, and retractable claws?"
-
-CHANGELOG
+## CHANGELOG
 
 ```
 2020-04-12: Initial version
@@ -58,4 +44,57 @@ CHANGELOG
 2021-12-04: Over 500 words in the list the bot chooses from
 2021-12-05: A bunch of words contributed by Madge Castle
 2021-12-19: Works in Slack and Discord and can serve web pages
+2022-03-10: Added template.env, greater portability
 ```
+
+## Generalizing to an omnibot
+
+Top contenders for the name include botler, botley, beelz, shabot, urbot, omnibot, ...
+
+Goal: totally general bot where we separate the business logic from the slack/sms/whatever connectivity, let it also have a web interface so anyone can try it out instantly at a certain URL and it just does all the things...
+
+Namestorming: http://allourideas.org/bot
+
+beebot, botbrain, beebotty, diabot, diabotical, unibot, beezlebot, cosmobot, ubiquibot, globot, panbot, infinibot, pluribot, communibot, cobot, loquella, shabotshalom, botshalom, beelzebot, nobotty, spottybot, motleybot, botley, cybot, jreeves, botchy, botulism, botany, bottum, bottabing, decepticon, lexibot, biddybot, skynet,
+
+rejects:  
+beeotch, beeot, collocutio, locutio, yootlebot, tweedlebot, waddlebot, botbot, ubeequibot, poobot, transbot, brobot, probot, cybeeriad, cybernetica, lobotomy, lobot, gobot, autobot, botsoule, botsel, botch,
+
+## Other Bot Ideas
+
+1. guestbot (but this is more about a web UI proxy to slack)
+2. lexiguess of course 
+3. everything the current Beeminder Slack bot does including auctions and dice rolling and tocks and karma (also: eigenkarma!)
+4. the Beeminder SMS bot
+5. taskbot? forsterbot? or http://doc.bmndr.co/elo where you tell the bot your to-dos and it feeds them back to you in pairs asking which you'd prefer to do first
+6. http://yootl.es/nims?
+7. paybot ledger interface
+8. lovebot
+9. cobot
+10. a million command line tools that work beautifully via a bot
+11. wits&wagers (where anyone can contribute numerical facts?) and wavelength and wordle and other word games
+12. other word game ideas at http://doc.dreev.es/fun
+13. codenames where the bot is codemaster by finding synonyms (or synonyms of synonyms if needed) in common between words
+14. the coordination game aka the schelling game, which we can already play with just the /bid command
+15. boggle (but how to keep the board visible the whole time?)
+16. ankified word-of-the-day bot
+17. buddha nature where the bot makes up a purely lexical rule, describable with a regex? 
+18. the word game Contact. having the bot think of the word may not work (humans can ask about words in obscure ways that the bot would have no hope of understanding) but the bot could guess words. like if the letters so far are "ca" it could guess "is it a small domesticated carnivorous mammal with soft fur, a short snout, and retractable claws?"
+
+## Chat Platforms
+
+1. slack
+2. discord
+3. whatsapp
+4. gchat nee hangouts: https://github.com/simon-weber/gchatautorespond
+5. sms
+6. fbmessenger
+7. signal
+8. irc 
+9. telegram
+
+
+## SCRATCH AREA
+
+https://untitledbot.dreev.repl.co/slack/events  
+https://lexiguess.glitch.me/slack/events  
