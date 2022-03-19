@@ -1,4 +1,7 @@
 // Standard SOWPODS word list for international Scrabble, with additions.
+// Latest version of this, now called Collins Scrabble Words:
+// https://www.dropbox.com/s/if2oo2ay79pgwfn/Collins%20Scrabble%20Words%20%282019%29%20with%20definitions.txt?dl=0
+
 
 exports.wordlist = [
   

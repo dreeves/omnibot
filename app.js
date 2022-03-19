@@ -54,7 +54,7 @@ app.message(/^\s*([a-z]{2,})\s*$/i, async ({ context, say }) => { // DRY me
   if (reply !== null) await say(reply)  
 })
 
-// Someone clicks on the Home tab of our app; render the page
+// Someone clicks on the Home tab of our app in Slack; render the page
 app.event('app_home_opened', async ({event, context}) => {
   try {
     CLOG(`Home tab opened in Slack by user ${event.user}`)
