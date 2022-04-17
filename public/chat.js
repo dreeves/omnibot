@@ -1,28 +1,24 @@
-window.addEventListener('load', () => {
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
-    const socket = new WebSocket(`${protocol}:${window.location.hostname}:${window.location.port}`)
-    const messageForm = document.querySelector('#message-form')
-    const messageInput = document.querySelector('#message-input')
+import { Terminal } from "xterm";
+import { Readline } from "xterm-readline"
 
-    socket.addEventListener('open', () => {
-        messageInput.disabled = false
-        messageInput.focus()
+window.addEventListener("load", () => {
+    const term = new Terminal()
+    const rl = new Readline()
+
+    term.loadAddon(rl)
+    term.open(document.getElementById("terminal"))
+    term.focus()
+
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws"
+    const socket = new WebSocket(
+        `${protocol}:${window.location.hostname}:${window.location.port}`
+    )
+
+    socket.addEventListener("message", (e) => {
+        term.writeln(e.data)
     })
 
-    socket.addEventListener('message', e => {
-        const messageLine = document.createElement('li')
-        messageLine.classList.add('chat-message')
-        const messageLog = document.querySelector('#chat-log')
+    const prompt = () => rl.read('').then((text) => socket.send(text)).then(prompt)
 
-        messageLine.textContent = e.data
-        messageLog.append(messageLine)
-        messageLine.scrollIntoView({ behavior: 'smooth' })
-    })
-
-    messageForm
-        .addEventListener('submit', e => {
-            e.preventDefault()
-            socket.send(messageInput.value)
-            messageInput.value = ''
-        })
+    prompt()
 })

@@ -17,6 +17,7 @@ const receiver = new ExpressReceiver({
   signingSecret: process.env.SLACK_SIGNING_SECRET
 })
 receiver.router.use(express.static('public'))
+receiver.router.use('/lib', express.static('node_modules'))
 //receiver.router.use(express.json()) // if we wanted more than static pages
 const app = new App({ token: process.env.SLACK_BOT_TOKEN, receiver })
 ;(async () => { 
