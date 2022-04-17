@@ -10,7 +10,8 @@
     "@slack/bolt": "^3.10.0",
     "discord.js": "^13.6.0",
     "express": "^4.17.3",
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "random-word-slugs": "^0.1.6"
   },
   "engines": {
     "node": "16"

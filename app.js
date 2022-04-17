@@ -9,6 +9,8 @@ require('dotenv').config() // or import 'dotenv/config'
 
 const { lexup } = require('./lexiguess.js')
 
+const ws = require('ws')
+const { generateSlug } = require('random-word-slugs')
 const express = require('express')
 const { App, ExpressReceiver } = require("@slack/bolt")
 const receiver = new ExpressReceiver({ 
@@ -18,16 +20,22 @@ receiver.router.use(express.static('public'))
 //receiver.router.use(express.json()) // if we wanted more than static pages
 const app = new App({ token: process.env.SLACK_BOT_TOKEN, receiver })
 ;(async () => { 
-  await app.start(process.env.PORT || 3000)
+  const server = await app.start(process.env.PORT || 3000)
+  server.on('upgrade', (request, socket, head) => {
+    wsServer.handleUpgrade(request, socket, head, socket => {
+      wsServer.emit('connection', socket, request)
+    })
+  })
+
   CLOG('Lexiguess app is running; listening for events from Slack / the web')
 })()
 
 const Discord = require("discord.js")
 const discord = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] })
-discord.login(process.env.DISCORD_BOT_TOKEN)
-discord.once('ready', () => {
-  CLOG(`Lexiguess app is running; logged in to Discord as ${discord.user.tag}`)
-})
+// discord.login(process.env.DISCORD_BOT_TOKEN)
+// discord.once('ready', () => {
+//   CLOG(`Lexiguess app is running; logged in to Discord as ${discord.user.tag}`)
+// })
 CLOG('Packages loaded')
 
 // discord botspam channel id = 847897704632942632
@@ -88,3 +96,34 @@ Everything else should be self-explanatory.`,
   } catch (error) { console.error(error) }
 })
 
+
+// Web Client
+const clientNames = {}
+const wsServer = new ws.Server({ noServer: true })
+wsServer.on('connection', (socket, req) => {
+  const ip = req.socket.remoteAddress
+  if (!clientNames[ip]) {
+    clientNames[ip] = generateSlug(2)
+  }
+
+  const name = clientNames[ip]
+
+  socket.send('Guess the word!')
+  wsServer.clients.forEach(s => s.send(`${name} has joined the game.`))
+
+  socket.on('message', message => {
+    wsServer.clients.forEach(s => s.send(`${name} guesses: ${message}`))
+    const reply = lexup(name, message)
+    wsServer.clients.forEach(s => s.send(reply))
+  })
+
+  socket.on('close', () => {
+    wsServer.clients.forEach(s => s.send(`${name} has left the game.`))
+  })
+})
+
+process.on('SIGINT', () => {
+  CLOG('Shutting down!')
+  wsServer.clients.forEach(s => s.send('Server is shutting down! This is most likely a deliberate act by the admin.'))
+  process.exit()
+})
