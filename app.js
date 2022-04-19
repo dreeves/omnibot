@@ -33,10 +33,10 @@ const app = new App({ token: process.env.SLACK_BOT_TOKEN, receiver })
 
 const Discord = require("discord.js")
 const discord = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] })
-// discord.login(process.env.DISCORD_BOT_TOKEN)
-// discord.once('ready', () => {
-//   CLOG(`Lexiguess app is running; logged in to Discord as ${discord.user.tag}`)
-// })
+discord.login(process.env.DISCORD_BOT_TOKEN)
+discord.once('ready', () => {
+  CLOG(`Lexiguess app is running; logged in to Discord as ${discord.user.tag}`)
+})
 CLOG('Packages loaded')
 
 // discord botspam channel id = 847897704632942632
