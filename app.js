@@ -109,13 +109,15 @@ wsServer.on('connection', (socket, req) => {
 
   const name = clientNames[ip]
 
-  socket.send('Guess the word!')
+  socket.send('Lexiguess!')
   wsServer.clients.forEach(s => s.send(`${name} has joined the game.`))
 
   socket.on('message', message => {
-    wsServer.clients.forEach(s => s.send(`${name} guesses: ${message}`))
-    const reply = lexup(name, message)
-    wsServer.clients.forEach(s => s.send(reply))
+    wsServer.clients.forEach(s => s.send(`${name}: ${message}`))
+    if (!/^[a-z]{2,}$/i.test(message)) return null // DRY up this regex
+    const reply = lexup('webclient', message)
+    if (reply !== null) wsServer.clients.forEach(s => 
+      s.send(`LEX: ${reply}`))
   })
 
   socket.on('close', () => {
