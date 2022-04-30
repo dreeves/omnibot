@@ -128,5 +128,6 @@ wsServer.on('connection', (socket, req) => {
 process.on('SIGINT', () => {
   CLOG('Shutting down!')
   wsServer.clients.forEach(s => s.send('Server is shutting down! This is most likely a deliberate act by the admin.'))
+  discord.logout()
   process.exit()
 })
