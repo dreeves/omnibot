@@ -80,6 +80,7 @@ beeotch, beeot, collocutio, locutio, yootlebot, tweedlebot, waddlebot, botbot, u
 16. ankified word-of-the-day bot
 17. buddha nature where the bot makes up a purely lexical rule, describable with a regex? 
 18. the word game Contact. having the bot think of the word may not work (humans can ask about words in obscure ways that the bot would have no hope of understanding) but the bot could guess words. like if the letters so far are "ca" it could guess "is it a small domesticated carnivorous mammal with soft fur, a short snout, and retractable claws?"
+19. add an anki card when you learn a new thing #TIL
 
 ## Chat Platforms
 
