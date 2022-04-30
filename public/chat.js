@@ -1,5 +1,6 @@
 import { Terminal } from "xterm";
 import { Readline } from "xterm-readline"
+import emoji from 'node-emoji'
 
 window.addEventListener("load", () => {
     const term = new Terminal()
@@ -15,7 +16,7 @@ window.addEventListener("load", () => {
     )
 
     socket.addEventListener("message", (e) => {
-        term.writeln(e.data)
+        term.writeln(emoji.emojify(e.data))
     })
 
     const prompt = () => rl.read('').then((text) => socket.send(text)).then(prompt)
