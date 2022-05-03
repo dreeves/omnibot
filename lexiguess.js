@@ -58,15 +58,16 @@ for (const w of wordlist) {
 const introblurb = `\
 Hi! I'm the Lexiguess bot. \
 I just woke up and remember exactly nothing about anything we may have talked \
-about in the past. :blush: \
+about in the past. :blush:  \
 But I've thought of a (new) word if you want to try guessing it. \
 It'll be so fun! \
 I picked it from a bunch of words @dreev gave me. \
 I'm assuming you typed "*#{tug}*" as your guess, so, here we go! \
-Wheeee! :checkered_flag:\n\n`
+Wheeee! :checkered_flag: \n\n`
 
 const againblurb = `\
-Hello, McFly, you already guessed "#{tug}". (Ok, I'm shutting up about any repeats now :shushing_face:)`
+Hello, McFly, you already guessed "#{tug}". \
+(Ok, I'm shutting up about any repeats now :shushing_face:)`
       
 const snarkblurb = `\
 I am profoundly ashamed to admit I don’t know the word "#{tug}"! \
