@@ -1,6 +1,6 @@
 {
   "name": "lexiguess",
-  "version": "2022.03.08",
+  "version": "2022.08.26",
   "description": "A dictionary guessing game implemented as a Slack/Discord bot",
   "main": "app.js",
   "scripts": {

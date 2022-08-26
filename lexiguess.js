@@ -279,7 +279,7 @@ function lexout(s) {
     .replace(/#{hiword}/g,     s.hiword)
     .replace(/#{daword}/g,     s.daword)
     .replace(/#{splurtries}/g, splur(s.tries, "guess", "guesses"))
-    + ` [${s.id}]`
+    + ` \`[DEBUG1: ${s.id}]\``
 }
 
 // Take a platform/server/channel-identifying string and a string said by the
