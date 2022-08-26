@@ -23,7 +23,7 @@ againflag : whether the bot's said it ignores already-guessed words
 antidup   : exact string user previously typed, for dup detection
 
 Functions for manipulating Lexiguess game state:
- * lexifresh() returns a fresh game state
+ * lexifresh(id) returns a fresh game state with given id
  * lexin(state, x) returns the new game state from the user saying x
  * lexout(state) returns the bot response for the current game state
  * lexup(cid, x) updates the game state for the given channel based on message x
@@ -150,11 +150,12 @@ function randpre() {
     .substring(0, 2+floor(rand()*10))
 }
 
-function lexifresh() {
+function lexifresh(id) {
   const daword = posswords[floor(rand() * posswords.length)]
   CLOG(`\
 We've thought of our word: trim_prefix(rot13("${randpre() + rot13(daword)}")))`)
   return {
+    id        : id,
     doneflag  : false,
     tug       : null,
     gab       : null,
@@ -186,7 +187,7 @@ function mex(state, blurb) {
 // From game state s, return the new game state from the user saying x
 function lexin(s, x) {
   if (s.doneflag) {
-    s = lexifresh()
+    s = lexifresh(s.id + '_again')
   }
   if (x === s.antidup) {           // exact same thing twice in a row: ignore it
     CLOG(`DUP "${s.tug}"`)         // (happens sometimes due to network flakage;
@@ -277,14 +278,15 @@ function lexout(s) {
     .replace(/#{loword}/g,     s.loword)              // interpolation.
     .replace(/#{hiword}/g,     s.hiword)
     .replace(/#{daword}/g,     s.daword)
-    .replace(/#{splurtries}/g, splur(s.tries, "guess", "guesses"))  
+    .replace(/#{splurtries}/g, splur(s.tries, "guess", "guesses"))
+    + ` [${s.id}]`
 }
 
 // Take a platform/server/channel-identifying string and a string said by the
 // user and update the corresponding game state in the gamestates hash; return
 // the string for the bot to reply with.
 function lexup(cid, x) {
-  if (!gamestates[cid]) { gamestates[cid] = lexin(lexifresh(),     x) } 
+  if (!gamestates[cid]) { gamestates[cid] = lexin(lexifresh(cid),  x) } 
   else                  { gamestates[cid] = lexin(gamestates[cid], x) }
   return lexout(gamestates[cid])
 }
