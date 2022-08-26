@@ -45,6 +45,10 @@ CLOG('Packages loaded')
 // ------------------------------ Event Handlers -------------------------------
 
 discord.on("messageCreate", msg => {
+  if (msg.author.bot) {
+    return
+  }
+
   const cid = msg.channel.name // string identifier for this server/channel
   const usaid = msg.content
   if (!/^[a-z]{2,}$/i.test(usaid)) return null // DRY up this regex
