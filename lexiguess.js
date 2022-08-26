@@ -272,14 +272,15 @@ Previously said we wouldn't admonish user about repeats: ${s.againflag}`}
 
 // Return the bot reply for the given game state
 function lexout(s) {
-  return s.gab === null ? null : s.gab
+  const debuggery = ` \`[DEBUG2: ${s.id}]\``
+  return s.gab === null ? '[explicit null?]' + debuggery : s.gab
     .replace(/#{tug}/g,        s.tug)                 // Macro-expand the reply
     .replace(/#{tries}/g,      s.tries)               // using Ruby-style string
     .replace(/#{loword}/g,     s.loword)              // interpolation.
     .replace(/#{hiword}/g,     s.hiword)
     .replace(/#{daword}/g,     s.daword)
     .replace(/#{splurtries}/g, splur(s.tries, "guess", "guesses"))
-    + ` \`[DEBUG1: ${s.id}]\``
+    + debuggery
 }
 
 // Take a platform/server/channel-identifying string and a string said by the
