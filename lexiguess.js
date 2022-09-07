@@ -2,6 +2,8 @@ const rand  = Math.random
 const floor = Math.floor
 const CLOG = console.log
 
+const {version} = require('./package.json')
+
 // Maps platform/server/channel names to game states
 let gamestates = {}
 
@@ -272,7 +274,7 @@ Previously said we wouldn't admonish user about repeats: ${s.againflag}`}
 
 // Return the bot reply for the given game state
 function lexout(s) {
-  const debuggery = ` \`[DEBUG2: ${s.id}]\``
+  const debuggery = ` \`[DEBUG version ${version}: ${s.id}]\``
   return s.gab === null ? '[explicit null?]' + debuggery : s.gab
     .replace(/#{tug}/g,        s.tug)                 // Macro-expand the reply
     .replace(/#{tries}/g,      s.tries)               // using Ruby-style string
