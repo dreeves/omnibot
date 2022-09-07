@@ -44,18 +44,18 @@ CLOG('Packages loaded')
 // -----------------------------------------------------------------------------
 // ------------------------------ Event Handlers -------------------------------
 
-discord.on("messageCreate", msg => {
+discord.on("messageCreate", async msg => {
   if (msg.author.bot) {
     return
   }
 
   const cid = msg.channel.name // string identifier for this server/channel
   const usaid = msg.content
-  if (!/^[a-z]{2,}$/i.test(usaid)) return null // DRY up this regex
-  if (!/^(?:botspam|games|lexi.*|spellingbee)$/.test(cid)) return null
+  if (!/^[a-z]{2,}$/i.test(usaid)) return // DRY up this regex
+  if (!/^(?:botspam|games|lexi.*|spellingbee)$/.test(cid)) return
   const reply = lexup(cid, usaid)
   //CLOG(`${cid}: ${usaid} -> ${reply}`)
-  if (reply !== null) msg.reply(reply) // alt.: msg.channel.send(reply)
+  if (reply !== null) await msg.reply(reply) // alt.: msg.channel.send(reply)
 })
 
 // Someone says a single strictly alphabetic word in a channel our bot is in
