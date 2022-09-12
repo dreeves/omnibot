@@ -4,7 +4,7 @@
   "description": "A dictionary guessing game implemented as a Slack/Discord bot",
   "main": "app.js",
   "scripts": {
-    "build": "npm install && cd ./public && npx snowpack build"
+    "build": "cd ./public && npx snowpack build",
     "start": "node app.js"
   },
   "dependencies": {
