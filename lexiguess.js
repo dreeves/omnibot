@@ -278,7 +278,7 @@ Previously said we wouldn't admonish user about repeats: ${s.againflag}`}
 
 // Return the bot reply for the given game state
 function lexout(s) {
-  const debuggery = ` \`[DEBUG version ${version}: ${s.id}, process id: ${process.pid}, debug nonce: ${nonce}]\``
+  const debuggery = ` \`[DEBUG version ${version}: ${s.id}, process id: ${process.pid}, debug nonce: ${nonce}, IS_PULL_REQUEST: ${process.env.IS_PULL_REQUEST}]\``
   return s.gab === null ? '[explicit null?]' + debuggery : s.gab
     .replace(/#{tug}/g,        s.tug)                 // Macro-expand the reply
     .replace(/#{tries}/g,      s.tries)               // using Ruby-style string
