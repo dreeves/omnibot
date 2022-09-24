@@ -32,7 +32,13 @@ const app = new App({ token: process.env.SLACK_BOT_TOKEN, receiver })
 })()
 
 const Discord = require("discord.js")
-const discord = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] })
+const discord = new Discord.Client({
+  intents: [
+    Discord.GatewayIntentBits.Guilds,
+    Discord.GatewayIntentBits.GuildMessages,
+    Discord.GatewayIntentBits.MessageContent,
+  ]
+})
 discord.login(process.env.DISCORD_BOT_TOKEN)
 discord.once('ready', () => {
   CLOG(`Lexiguess app is running; logged in to Discord as ${discord.user.tag}`)
@@ -55,7 +61,7 @@ discord.on("messageCreate", async msg => {
   if (!/^(?:botspam|games|lexi.*|spellingbee)$/.test(cid)) return
   const reply = lexup(cid, usaid)
   //CLOG(`${cid}: ${usaid} -> ${reply}`)
-  if (reply !== null) await msg.reply(reply) // alt.: msg.channel.send(reply)
+  if (reply !== null) await msg.reply(reply)
 })
 
 // Someone says a single strictly alphabetic word in a channel our bot is in
