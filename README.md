@@ -45,6 +45,7 @@ Lexiguess was inspired by https://hryanjones.com/guess-my-word/
 2021-12-05: A bunch of words contributed by Madge Castle
 2021-12-19: Works in Slack and Discord and can serve web pages
 2022-03-10: Added template.env, greater portability
+2022-09-27: Bumping the discord.js version fixed the duplicate replies bug
 ```
 
 ## Generalizing to an omnibot
