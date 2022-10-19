@@ -12,6 +12,14 @@ from https://autocode.com/guides/how-to-build-a-discord-bot/
 Another tutorial, for repl.it:
 https://www.freecodecamp.org/news/create-a-discord-bot-with-javascript-nodejs/
 
+### Registering Bot Commands
+
+Whenever a new command is defined or an existing command is *redefined*, the commands need to be registered with Discord. Run `node run register` to do this.
+
+Discord rate limits command registrations.
+
+Note that you do *not* need to re-register commands if you've only changed the contents of the command's execute function.
+
 ## Slack Setup
 
 * Add to slack: https://api.slack.com/apps/A011Z3TQ7BK
