@@ -186,14 +186,33 @@ body {
   margin: 0;
 }
 
-#terminal {
+#chat-interface {
+  display: flex;
+  flex-direction: column;
+  color: white;
   width: 100vw;
   height: 100vh;
-  padding: 10px;
 }
 
-#terminal .terminal {
-  top: 50vh;
-  left: 50vw;
-  transform: translate(-50%, -50%);
+#chat-history {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  list-style: none;
+  margin: 0;
+  padding: 20px;
+}
+
+#chat-history > li {
+  flex-grow: 0;
+}
+
+#chat-input {
+  flex-grow: 0;
+  width: 100%;
+  outline: none;
+  border: none;
+  background: #242424;
+  color: white;
 }

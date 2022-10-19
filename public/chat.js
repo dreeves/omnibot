@@ -1,22 +1,14 @@
-import { Terminal } from "xterm";
-import { Readline } from "xterm-readline";
 import emoji from "node-emoji";
-import { FitAddon } from "xterm-addon-fit";
 
 window.addEventListener("load", () => {
-  const term = new Terminal();
-  const rl = new Readline();
-  const fit = new FitAddon();
+  let history = []
+  const chatHistory = document.getElementById('chat-history')
+  const chatInput = document.getElementById('chat-input')
 
-  term.loadAddon(rl);
-  term.loadAddon(fit);
-  term.open(document.getElementById("terminal"));
-  term.focus();
-  fit.fit();
-
-  new ResizeObserver(fit.fit.bind(fit)).observe(
-    document.getElementById("terminal")
-  );
+  function pushChat (message) {
+    history.push(message)
+    chatHistory.innerHTML = history.map((line) => `<li>${line}</li>`).join('\n')
+  }
 
   const protocol = window.location.protocol === "https:" ? "wss" : "ws";
   const socket = new WebSocket(
@@ -24,14 +16,13 @@ window.addEventListener("load", () => {
   );
 
   socket.addEventListener("message", (e) => {
-    term.writeln(emoji.emojify(e.data));
+    pushChat(emoji.emojify(e.data));
   });
 
-  const prompt = () =>
-    rl
-      .read("")
-      .then((text) => socket.send(text))
-      .then(prompt);
-
-  prompt();
+  chatInput.addEventListener('keypress', (event) => {
+    if (event.key === "Enter") {
+      socket.send(chatInput.value)
+      chatInput.value = ''
+    }
+  })
 });
