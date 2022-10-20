@@ -186,14 +186,14 @@ body {
   margin: 0;
 }
 
-#terminal {
-  width: 100vw;
-  height: 100vh;
-  padding: 10px;
+html, body, #terminal {
+  height: 100%;
+}
+
+.xterm {
+  padding: 20px;
 }
 
 #terminal .terminal {
-  top: 50vh;
-  left: 50vw;
-  transform: translate(-50%, -50%);
+
 }
