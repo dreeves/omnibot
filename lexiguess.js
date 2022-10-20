@@ -294,8 +294,8 @@ function lexout(s) {
 // user and update the corresponding game state in the gamestates hash; return
 // the string for the bot to reply with.
 function lexup(cid, x) {
-  if (!gamestates[cid]) { gamestates[cid] = lexin(lexifresh(cid),  x) } 
-  else                  { gamestates[cid] = lexin(gamestates[cid], x) }
+  gamestates[cid] = gamestates[cid] ? lexin(gamestates[cid], x)
+                                    : lexin(lexifresh(cid),  x)
   return lexout(gamestates[cid])
 }
 
