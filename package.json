@@ -16,10 +16,7 @@
     "dotenv": "^16.0.2",
     "express": "^4.18.1",
     "node-emoji": "^1.11.0",
-    "random-word-slugs": "^0.1.6",
-    "xterm": "^4.19.0",
-    "xterm-addon-fit": "^0.5.0",
-    "xterm-readline": "^1.0.7"
+    "random-word-slugs": "^0.1.6"
   },
   "engines": {
     "node": "16"

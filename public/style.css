@@ -186,6 +186,39 @@ body {
   margin: 0;
 }
 
+#chat-interface {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  width: 100vw;
+  height: 100vh;
+}
+
+#chat-history {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  list-style: none;
+  margin: 0;
+  padding: 20px;
+}
+
+#chat-history > li {
+  flex-grow: 0;
+}
+
+#chat-input {
+  flex-grow: 0;
+  width: 100%;
+  outline: none;
+  border: none;
+  background: #242424;
+  color: white;
+}
+
+/* stuff from when we were using xterm.js that we probably don't need anymore?
+
 html, body, #terminal {
   height: 100%;
 }
@@ -195,5 +228,6 @@ html, body, #terminal {
 }
 
 #terminal .terminal {
-
 }
+
+*/
