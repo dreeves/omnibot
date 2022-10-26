@@ -216,3 +216,18 @@ body {
   background: #242424;
   color: white;
 }
+
+/* stuff from when we were using xterm.js that we probably don't need anymore?
+
+html, body, #terminal {
+  height: 100%;
+}
+
+.xterm {
+  padding: 20px;
+}
+
+#terminal .terminal {
+}
+
+*/
