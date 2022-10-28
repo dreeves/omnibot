@@ -1,4 +1,5 @@
 const { REST, Routes } = require('discord.js')
+const convertCommands = require('./convert-commands.js')
 const clientId = process.env.DISCORD_CLIENT_ID
 const token = process.env.DISCORD_BOT_TOKEN
 
@@ -10,7 +11,8 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 
 // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
 for (const file of commandFiles) {
-	const command = require(`./commands/${file}`)
+	const botCommand = require(`./commands/${file}`)
+	const command = convertCommands.toDiscord(botCommand)
 	commands.push(command.data.toJSON())
 }
 
