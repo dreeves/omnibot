@@ -60,7 +60,10 @@ for (const file of commandFiles) {
   }
 }
 
-discord.login(process.env.DISCORD_BOT_TOKEN)
+if (!process.env.IS_PULL_REQUEST) {
+  discord.login(process.env.DISCORD_BOT_TOKEN)
+}
+
 discord.once('ready', () => {
   CLOG(`Lexiguess app is running; logged in to Discord as ${discord.user.tag}`)
 })
