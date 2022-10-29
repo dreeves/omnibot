@@ -60,7 +60,7 @@ for (const file of commandFiles) {
   }
 }
 
-if (!process.env.IS_PULL_REQUEST) {
+if (process.env.IS_PULL_REQUEST !== "true") {
   discord.login(process.env.DISCORD_BOT_TOKEN)
 }
 
