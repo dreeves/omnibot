@@ -1,3 +1,35 @@
+## Building and Running
+
+### Locally
+
+1. Install the npm packages.
+```
+npm install
+```
+
+2. Build the web client.
+```
+npm run build
+```
+
+3. If you've made changes to the bot command definitions, *excluding
+   changes to the body of the execute function*, you will need to
+   register those changes with Discord.
+```
+npm run register
+```
+
+4. Run the server.
+```
+npm run start
+```
+
+### Render.com
+
+1. Navigate to **Settings**, then to **Build & Deploy**.
+2. Set **Build Command** to `npm install && npm run build`.
+3. Set **Start Command** to `npm run start`.
+
 ## Discord Setup
 
 Discord app portal:
