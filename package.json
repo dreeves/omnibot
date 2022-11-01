@@ -16,7 +16,8 @@
     "dotenv": "^16.0.2",
     "express": "^4.18.1",
     "node-emoji": "^1.11.0",
-    "random-word-slugs": "^0.1.6"
+    "random-word-slugs": "^0.1.6",
+    "remarkable": "^2.0.1"
   },
   "engines": {
     "node": "16"
