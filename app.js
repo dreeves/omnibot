@@ -21,6 +21,9 @@ const receiver = new ExpressReceiver({
 })
 receiver.router.use(express.static('public'))
 receiver.router.use('/lib', express.static('node_modules'))
+receiver.router.get('/health', (req, res) => {
+  res.status(200).send('Server is running!')
+})
 //receiver.router.use(express.json()) // if we wanted more than static pages
 const app = new App({ token: process.env.SLACK_BOT_TOKEN, receiver })
 ;(async () => { 
