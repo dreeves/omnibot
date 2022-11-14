@@ -52,18 +52,12 @@ discord.commands = new Discord.Collection()
 
 const commandsPath = path.join(__dirname, 'commands')
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
+const botCommands = commandFiles.map(file => require(path.join(commandsPath, file)))
 
-for (const file of commandFiles) {
-  const filePath = path.join(commandsPath, file)
-  const botCommand = require(filePath)
+botCommands.forEach(botCommand => {
   const command = convertCommands.toDiscord(botCommand)
-  // Set a new item in the Collection with the key as the command name and the value as the exported module
-  if ('data' in command && 'execute' in command) {
-	discord.commands.set(command.data.name, command)
-  } else {
-	CLOG(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
-  }
-}
+  discord.commands.set(command.data.name, command)
+})
 
 if (process.env.IS_PULL_REQUEST !== "true") {
   discord.login(process.env.DISCORD_BOT_TOKEN)
@@ -169,11 +163,27 @@ wsServer.on('connection', (socket, req) => {
   wsServer.clients.forEach(s => s.send(`${name} has joined the game.`))
 
   socket.on('message', message => {
+    let reply
+    
     wsServer.clients.forEach(s => s.send(`${name}: ${message}`))
-    if (!/^[a-z]{2,}$/i.test(message)) return null // DRY up this regex
-    const reply = lexup('webclient', message)
-    if (reply !== null) wsServer.clients.forEach(s => 
-      s.send(`LEX: ${reply}`))
+
+    const match = message.match(/^\/([a-z]+)( (.*))?/i)
+    if (match) {
+      const cmdName = match[1]
+      const cmdInput = match[2] || ''
+      const botCmd = botCommands.find(cmd => cmd.name === cmdName)
+      
+      if (botCmd) {
+        reply = botCmd.execute({ input: cmdInput })
+      } else {
+        socket.send(`No command named ${cmdName}`)
+      }
+    } else if (/^[a-z]{2,}$/i.test(message)) {
+      reply = lexup('webclient', message)
+    }
+
+    if (reply) wsServer.clients.forEach(s => 
+      s.send(`LEX: ${reply}`)) 
   })
 
   socket.on('close', () => {
