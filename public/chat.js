@@ -1,4 +1,6 @@
 import emoji from "node-emoji";
+import { Remarkable } from "remarkable"
+const md = new Remarkable()
 
 window.addEventListener("load", () => {
   let history = []
@@ -16,7 +18,7 @@ window.addEventListener("load", () => {
   );
 
   socket.addEventListener("message", (e) => {
-    pushChat(emoji.emojify(e.data));
+    pushChat(md.render(emoji.emojify(e.data)));
   });
 
   chatInput.addEventListener('keypress', (event) => {
