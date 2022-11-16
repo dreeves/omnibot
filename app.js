@@ -37,6 +37,7 @@ const app = new App({ token: process.env.SLACK_BOT_TOKEN, receiver })
   CLOG('Lexiguess app is running; listening for events from Slack / the web')
 })()
 
+const convertCommands = require('./convert-commands.js')
 const Discord = require("discord.js")
 const discord = new Discord.Client({
   intents: [
@@ -54,7 +55,8 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file)
-  const command = require(filePath)
+  const botCommand = require(filePath)
+  const command = convertCommands.toDiscord(botCommand)
   // Set a new item in the Collection with the key as the command name and the value as the exported module
   if ('data' in command && 'execute' in command) {
 	discord.commands.set(command.data.name, command)
