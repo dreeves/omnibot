@@ -186,6 +186,11 @@ body {
   margin: 0;
 }
 
+p {
+  margin: 0;
+  line-height: 1.5em;
+}
+
 #chat-interface {
   display: flex;
   flex-direction: column;
