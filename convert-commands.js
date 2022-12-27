@@ -15,8 +15,10 @@ module.exports = {
 	    })
 
 	    command.execute = async (interaction) => {
-		    const options = botCommand.options.map((botOption) => {
-			    return { [botOption.name]: interaction.options.getString(botOption.name)}
+		    const options = {}
+
+            botCommand.options.forEach((botOption) => {
+			    return options[botOption.name] = interaction.options.getString(botOption.name)
 		    })
 		    const botResponse = botCommand.execute(options)
 		    await interaction.reply(botResponse)
