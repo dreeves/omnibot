@@ -71,8 +71,16 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 const botCommands = commandFiles.map(file => require(path.join(commandsPath, file)))
 
 botCommands.forEach(botCommand => {
+
+  // Discord
   const command = convertCommands.toDiscord(botCommand)
   discord.commands.set(command.data.name, command)
+
+  // Slack
+  app.command(`/${botCommand.name}`, async ({ command, ack, respond }) => {
+	await ack()
+	await respond(botCommand.execute({input: command.text}))
+  })
 })
 
 if (process.env.IS_PULL_REQUEST !== "true") {
