@@ -194,7 +194,11 @@ wsServer.on('connection', (socket, req) => {
       const botCmd = botCommands.find(cmd => cmd.name === cmdName)
       
       if (botCmd) {
-        let localReply = botCmd.execute({ input: cmdInput.trim() })
+        let localReply = botCmd.execute({
+          cid: 'web',
+          sender: name,
+          input: cmdInput.trim()
+        })
         socket.send(`LEX: ${localReply}`)
       } else {
         socket.send(`No command named ${cmdName}`)
