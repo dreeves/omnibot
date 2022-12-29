@@ -15,7 +15,10 @@ module.exports = {
 	    })
 
 	    command.execute = async (interaction) => {
-		    const options = {}
+		    const options = {
+                cid: `discord_${interaction.channelId}`,
+                sender: interaction.user.username,
+            }
 
             botCommand.options.forEach((botOption) => {
 			    return options[botOption.name] = interaction.options.getString(botOption.name)
