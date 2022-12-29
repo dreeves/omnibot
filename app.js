@@ -187,10 +187,6 @@ wsServer.on('connection', (socket, req) => {
   wsServer.clients.forEach(s => s.send(`${name} has joined the game.`))
 
   socket.on('message', message => {
-    let reply
-    
-    wsServer.clients.forEach(s => s.send(`${name}: ${message}`))
-
     const match = message.match(/^\/([a-z]+)( (.*))?/i)
     if (match) {
       const cmdName = match[1]
@@ -198,16 +194,17 @@ wsServer.on('connection', (socket, req) => {
       const botCmd = botCommands.find(cmd => cmd.name === cmdName)
       
       if (botCmd) {
-        reply = botCmd.execute({ input: cmdInput.trim() })
+        let localReply = botCmd.execute({ input: cmdInput.trim() })
+        socket.send(`LEX: ${localReply}`)
       } else {
         socket.send(`No command named ${cmdName}`)
       }
     } else if (/^[a-z]{2,}$/i.test(message)) {
-      reply = lexup('webclient', message)
+      wsServer.clients.forEach(s => s.send(`${name}: ${message}`))
+      let reply = lexup('webclient', message)
+      if (reply) wsServer.clients.forEach(s =>
+        s.send(`LEX: ${reply}`))
     }
-
-    if (reply) wsServer.clients.forEach(s => 
-      s.send(`LEX: ${reply}`)) 
   })
 
   socket.on('close', () => {
