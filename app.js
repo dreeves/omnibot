@@ -25,9 +25,25 @@ receiver.router.get('/health', (req, res) => {
   res.status(200).send('Server is running!')
 })
 //receiver.router.use(express.json()) // if we wanted more than static pages
-const app = new App({ token: process.env.SLACK_BOT_TOKEN, receiver })
-;(async () => { 
-  const server = await app.start(process.env.PORT || 3000)
+const appOptions = (process.env.DEBUG ? {
+  socketMode: true,
+  appToken: process.env.SLACK_APP_TOKEN,
+} : {
+  receiver
+})
+const app = new App({
+  token: process.env.SLACK_BOT_TOKEN,
+  ...appOptions,
+})
+;(async () => {
+  let server
+  if (process.env.DEBUG) {
+    await app.start()
+    server = await receiver.start(process.env.PORT || 3000)
+  } else {
+    server = await app.start(process.env.PORT || 3000)
+  }
+
   server.on('upgrade', (request, socket, head) => {
     wsServer.handleUpgrade(request, socket, head, socket => {
       wsServer.emit('connection', socket, request)
@@ -55,8 +71,16 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 const botCommands = commandFiles.map(file => require(path.join(commandsPath, file)))
 
 botCommands.forEach(botCommand => {
+
+  // Discord
   const command = convertCommands.toDiscord(botCommand)
   discord.commands.set(command.data.name, command)
+
+  // Slack
+  app.command(`/${botCommand.name}`, async ({ command, ack, respond }) => {
+	await ack()
+	await respond(botCommand.execute({input: command.text}))
+  })
 })
 
 if (process.env.IS_PULL_REQUEST !== "true") {
