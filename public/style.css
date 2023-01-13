@@ -184,6 +184,7 @@ h2 {
 
 body {
   margin: 0;
+  color: white;
 }
 
 p {
@@ -220,6 +221,36 @@ p {
   border: none;
   background: #242424;
   color: white;
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#name-dialog,
+#chat-interface,
+#waiting,
+#name-error {
+  display: none;
+}
+
+body.waiting #waiting {
+  display: block;
+}
+
+body.naming #name-dialog {
+  display: block;
+}
+
+body.chatting #chat-interface {
+  display: flex;
+}
+
+body.name-rejected #name-error {
+  display: block;
 }
 
 /* stuff from when we were using xterm.js that we probably don't need anymore?

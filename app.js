@@ -175,18 +175,39 @@ Everything else should be self-explanatory.`,
 // Web Client
 const clientNames = {}
 const wsServer = new ws.Server({ noServer: true })
+
+const send = (socket, event, data) => {
+  return socket.send(
+    JSON.stringify({
+      event,
+      data
+    })
+  )
+}
+
 wsServer.on('connection', (socket, req) => {
   const ip = req.socket.remoteAddress
-  if (!clientNames[ip]) {
-    clientNames[ip] = generateSlug(2)
-  }
 
-  const name = clientNames[ip]
-
-  socket.send('Lexiguess!')
-  wsServer.clients.forEach(s => s.send(`${name} has joined the game.`))
+  send(socket, 'chat', 'Lexiguess!')
+  send(socket, 'name', !!clientNames[ip])
 
   socket.on('message', message => {
+    if (!clientNames[ip]) {
+      const used = Object.values(clientNames)
+            .includes(message)
+      if (/^[a-zA-Z0-9 ]+$/.test(message) && !used) {
+        clientNames[ip] = message
+        send(socket, 'name', true)
+        wsServer.clients.forEach(s => send(s, 'chat', `${clientNames[ip]} has joined the game.`))
+      } else {
+        send(socket, 'name', false)
+      }
+
+      return
+    }
+
+    const name = clientNames[ip]
+
     const match = message.match(/^\/([a-z]+)( (.*))?/i)
     if (match) {
       const cmdName = match[1]
@@ -199,25 +220,26 @@ wsServer.on('connection', (socket, req) => {
           sender: name,
           input: cmdInput.trim()
         })
-        socket.send(`LEX: ${localReply}`)
+        send(socket, 'chat', `LEX: ${localReply}`)
       } else {
-        socket.send(`No command named ${cmdName}`)
+        send(socket, 'chat', `No command named ${cmdName}`)
       }
     } else if (/^[a-z]{2,}$/i.test(message)) {
-      wsServer.clients.forEach(s => s.send(`${name}: ${message}`))
+      wsServer.clients.forEach(s => send(s, 'chat', `${name}: ${message}`))
       let reply = lexup('webclient', message)
       if (reply) wsServer.clients.forEach(s =>
-        s.send(`LEX: ${reply}`))
+        send(s, 'chat', `LEX: ${reply}`))
     }
   })
 
   socket.on('close', () => {
-    wsServer.clients.forEach(s => s.send(`${name} has left the game.`))
+    const name = clientNames[ip]
+    wsServer.clients.forEach(s => send(s, 'chat', `${name} has left the game.`))
   })
 })
 
 process.on('exit', () => {
   CLOG('Shutting down!')
-  wsServer.clients.forEach(s => s.send('Server is shutting down! This is most likely a deliberate act by the admin.'))
+  wsServer.clients.forEach(s => send(s, 'chat', 'Server is shutting down! This is most likely a deliberate act by the admin.'))
   discord.destroy()
 })

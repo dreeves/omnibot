@@ -20,7 +20,19 @@
     <link rel="stylesheet" href="/lib/xterm/css/xterm.css" />
     <link rel="stylesheet" href="/style.css" />
   </head>
-  <body>
+  <body class="waiting">
+    <div id="waiting" class="modal">Waiting for server...</div>
+
+    <div id="name-dialog" class="modal">
+      <label>What should we call you?</label>
+      <input id="name-input" type="text" />
+
+      <div id="name-error">
+        Name rejected by server. Either that name is taken, or you have entered
+        prohibited characters. Only letters, numbers, and spaces are allowed.
+      </div>
+    </div>
+
     <div id="chat-interface">
       <ul id="chat-history"></ul>
       <input id="chat-input" type="text" autofocus />
