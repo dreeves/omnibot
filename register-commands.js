@@ -1,47 +1,54 @@
-const { REST, Routes } = require('discord.js')
-const convertCommands = require('./convert-commands.js')
-const clientId = process.env.DISCORD_CLIENT_ID
-const token = process.env.DISCORD_BOT_TOKEN
+const { REST, Routes } = require("discord.js");
+const convertCommands = require("./convert-commands.js");
+const clientId = process.env.DISCORD_CLIENT_ID;
+const token = process.env.DISCORD_BOT_TOKEN;
 
-const fs = require('node:fs')
+const fs = require("node:fs");
 
-const discordCommands = []
+const discordCommands = [];
 // Grab all the command files from the commands directory you created earlier
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+const commandFiles = fs
+	  .readdirSync("./commands")
+	  .filter((file) => file.endsWith(".js"));
 
 // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
 for (const file of commandFiles) {
-	const botCommand = require(`./commands/${file}`)
+	const botCommand = require(`./commands/${file}`);
 
 	// Discord
-	const discordCommand = convertCommands.toDiscord(botCommand)
-	discordCommands.push(discordCommand.data.toJSON())
+	const discordCommand = convertCommands.toDiscord(botCommand);
+	discordCommands.push(discordCommand.data.toJSON());
 
 	// Slack
-	console.log(`Add a new command to the slack app with the following details:`)
-	console.log(`name: ${botCommand.name}`)
-	console.log(`description: ${botCommand.description}`)
-	const usageHint = botCommand.options.map(({description}) => `[${description}]`).join(' ')
-	console.log(`usage hint: ${usageHint}`)
+	console.log(`Add a new command to the slack app with the following details:`);
+	console.log(`name: ${botCommand.name}`);
+	console.log(`description: ${botCommand.description}`);
+	const usageHint = botCommand.options
+		  .map(({ description }) => `[${description}]`)
+		  .join(" ");
+	console.log(`usage hint: ${usageHint}`);
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST({ version: '10' }).setToken(token)
+const rest = new REST({ version: "10" }).setToken(token);
 
 // and deploy your commands!
-;(async () => {
+(async () => {
 	try {
-		console.log(`Started refreshing ${discordCommands.length} application (/) commands.`)
-
-		// The put method is used to fully refresh all commands in the guild with the current set
-		const data = await rest.put(
-			Routes.applicationCommands(clientId),
-			{ body: discordCommands },
+		console.log(
+			`Started refreshing ${discordCommands.length} application (/) commands.`
 		);
 
-		console.log(`Successfully reloaded ${data.length} application (/) commands.`)
+		// The put method is used to fully refresh all commands in the guild with the current set
+		const data = await rest.put(Routes.applicationCommands(clientId), {
+			body: discordCommands,
+		});
+
+		console.log(
+			`Successfully reloaded ${data.length} application (/) commands.`
+		);
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
-		console.error(error)
+		console.error(error);
 	}
-})()
+})();
