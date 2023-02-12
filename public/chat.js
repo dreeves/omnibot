@@ -36,9 +36,13 @@ window.addEventListener("load", () => {
         if (prevNamed !== null) {
           body.classList.add("name-rejected");
         }
+
+        nameInput.focus();
       } else if (named === true) {
         body.classList.remove("naming");
         body.classList.add("chatting");
+
+        chatInput.focus();
       }
     } else if (message.event === "chat") {
       pushChat(emoji.emojify(message.data));
