@@ -223,6 +223,8 @@ wsServer.on("connection", (socket, req) => {
 
     const name = clientNames[ip];
 
+    send(socket, "chat", `${name}: ${message}`);
+
     const match = message.match(/^\/([a-z]+)( (.*))?/i);
     if (match) {
       const cmdName = match[1];
@@ -240,7 +242,11 @@ wsServer.on("connection", (socket, req) => {
         send(socket, "chat", `No command named ${cmdName}`);
       }
     } else if (/^[a-z]{2,}$/i.test(message)) {
-      wsServer.clients.forEach((s) => send(s, "chat", `${name}: ${message}`));
+      wsServer.clients.forEach((s) => {
+        if (s !== socket) {
+          send(s, "chat", `${name}: ${message}`);
+        }
+      });
       let reply = lexup("webclient", message);
       if (reply)
         wsServer.clients.forEach((s) => send(s, "chat", `LEX: ${reply}`));
