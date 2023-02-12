@@ -252,6 +252,7 @@ wsServer.on("connection", (socket, req) => {
     wsServer.clients.forEach((s) =>
       send(s, "chat", `${name} has left the game.`)
     );
+    delete clientNames[ip];
   });
 });
 
