@@ -7,6 +7,6 @@ describe("Put the cursor in the text box on page load for the web interface", fu
   });
 
   it("Focuses the name input on load", function (browser) {
-    browser.element("#chat-input").expect.to.be.active;
+    browser.expect.element("#chat-input").to.be.active;
   });
 });
