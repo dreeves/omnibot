@@ -45,8 +45,9 @@ module.exports = {
   description: "Replies with its input.",
   options,
   execute: ({ cid, sender, input }) => {
+    const users = {};
     states = update(states, cid, sender, input);
     let bidders = [...states[cid].bidders];
-    return `roger that "${input}" sent by @${sender}. here is a list of all users who have sent the /bid command or been @-mentioned in a /bid command: {${bidders}}`;
+    return `roger that "${input}" sent by @${sender} . here is a list of all users who have sent the /bid command or been mentioned in a /bid command: {${bidders}}`;
   },
 };
