@@ -40,13 +40,64 @@ const update = (states, cid, sender, input) => {
   return states;
 };
 
+// TODO `users` is weird C-style passing of editable data.
+const parseMentions = (client, users, token) => {
+  if (!token) {
+    return;
+  }
+
+  if (token.startsWith("<@") && token.endsWith(">")) {
+    token = token.slice(2, -1);
+
+    if (token.startsWith("!")) {
+      token = token.slice(1);
+    }
+
+    const user = client.users.cache.get(token);
+    users[user.username] = token;
+
+    return `@${user.username}`;
+  }
+
+  return token;
+};
+
+const revertMentions = (users, token) => {
+  if (!token) {
+    return;
+  }
+
+  if (token.startsWith("@")) {
+    token = token.slice(1);
+
+    const userId = users[token];
+    return `<@${userId}>`;
+  }
+
+  return token;
+};
+
 module.exports = {
   name: "bid",
   description: "Replies with its input.",
   options,
-  execute: ({ cid, sender, input }) => {
-    states = update(states, cid, sender, input);
+  execute: (client, { cid, sender, input }) => {
+    const users = {};
+    states = update(
+      states,
+      cid,
+      sender,
+      input
+        .split(" ")
+        .map((token) => parseMentions(client, users, token))
+        .join(" ")
+    );
     let bidders = [...states[cid].bidders];
-    return `roger that "${input}" sent by @${sender}. here is a list of all users who have sent the /bid command or been @-mentioned in a /bid command: {${bidders}}`;
+    return `roger that "${input}" sent by @${sender} . here is a list of all users who have sent the /bid command or been mentioned in a /bid command: { ${bidders.join(
+      " "
+    )} }`
+      .split(" ")
+      .map((token) => revertMentions(users, token))
+      .join(" ");
   },
 };
