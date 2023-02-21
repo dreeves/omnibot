@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
   toDiscord: (botCommand) => {
-    const users = {};
     const command = {};
 
     command.data = new SlashCommandBuilder()
@@ -16,11 +15,14 @@ module.exports = {
     });
 
     command.execute = async (interaction) => {
+      const users = {};
       const client = interaction.client;
       const options = {
         cid: `discord_${interaction.channelId}`,
         sender: interaction.user.username,
       };
+
+      users[interaction.user.username] = interaction.user.id;
 
       botCommand.options.forEach((botOption) => {
         return (options[botOption.name] = interaction.options
