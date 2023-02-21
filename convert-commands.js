@@ -36,7 +36,7 @@ module.exports = {
       });
       const botResponse = botCommand
         .execute(options)
-        .replace(/@([a-z]+)/g, (match, p1) => {
+        .replace(/@([a-z]+)/gi, (match, p1) => {
           const userId = users[p1];
 
           return `<@${userId}>`;
