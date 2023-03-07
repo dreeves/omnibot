@@ -46,4 +46,29 @@ module.exports = {
 
     return command;
   },
+
+  toSlack: (botCommand) => {
+    return async ({ client, command, ack, respond }) => {
+      const users = {};
+      await ack();
+
+      const { members: userlist } = await client.users.list();
+      await respond(
+        botCommand
+          .execute({
+            input: command.text.replace(/<@([a-zA-Z0-9]+).*>/g, (match, p1) => {
+              const user = userlist.find((u) => u["id"] === p1);
+              users[user.username] = p1;
+
+              return `@${user.username}`;
+            }),
+          })
+          .replace(/@([a-zA-Z]+)/gi, (match, p1) => {
+            const userId = users[p1];
+
+            return `<@${userId}>`;
+          })
+      );
+    };
+  },
 };

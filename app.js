@@ -78,14 +78,12 @@ const botCommands = commandFiles.map((file) =>
 
 botCommands.forEach((botCommand) => {
   // Discord
-  const command = convertCommands.toDiscord(botCommand);
-  discord.commands.set(command.data.name, command);
+  const discordCommand = convertCommands.toDiscord(botCommand);
+  discord.commands.set(discordCommand.data.name, discordCommand);
 
   // Slack
-  app.command(`/${botCommand.name}`, async ({ command, ack, respond }) => {
-    await ack();
-    await respond(botCommand.execute({ input: command.text }));
-  });
+  const slackCommand = convertCommands.toSlack(botCommand);
+  app.command(`/${botCommand.name}`, slackCommand);
 });
 
 if (process.env.IS_PULL_REQUEST !== "true") {
