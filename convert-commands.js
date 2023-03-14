@@ -55,6 +55,8 @@ module.exports = {
       users[command.user_name] = command.user_id;
 
       const { members: userlist } = await client.users.list();
+
+      console.log(command.text);
       await respond(
         botCommand
           .execute({
