@@ -52,10 +52,13 @@ module.exports = {
       const users = {};
       await ack();
 
+      users[command.user_name] = command.user_id;
+
       const { members: userlist } = await client.users.list();
       await respond(
         botCommand
           .execute({
+            sender: command.user_name,
             input: command.text.replace(/<@([a-zA-Z0-9]+).*>/g, (match, p1) => {
               const user = userlist.find((u) => u["id"] === p1);
               users[user.name] = p1;
