@@ -1,5 +1,28 @@
 ## Building and Running
 
+### Enable Socket Mode for Slack
+
+Slack bots need to serve an endpoint to receive Slack events. This
+would make development painful, so there's "socket mode" which doesn't
+have the endpoint requirement. Socket mode is recommended only for
+development by the documentation for reasons not given.
+
+Lexiguess currently looks for the environment variable DEBUG when it
+starts up. If this variable is set to anything (and environment
+variables are strings, so I do mean anything: even false, 0, etc.),
+Lexiguess uses socket mode.
+
+In order to use socket mode, however, socket mode must be toggled on
+in the app's configuration.
+
+In order to use socket mode locally, you have to both set DEBUG in
+your environment and make sure socket mode is turned on in the app's
+configuration. This will likely cause live instances of Lexiguess to
+fail on Slack. When you're finished testing locally, you'll need to
+make sure to turn socket mode off again.
+
+https://api.slack.com/apis/connections/socket
+
 ### Locally
 
 1. Install the npm packages.
