@@ -58,9 +58,9 @@ module.exports = {
           .execute({
             input: command.text.replace(/<@([a-zA-Z0-9]+).*>/g, (match, p1) => {
               const user = userlist.find((u) => u["id"] === p1);
-              users[user.username] = p1;
+              users[user.name] = p1;
 
-              return `@${user.username}`;
+              return `@${user.name}`;
             }),
           })
           .replace(/@([a-zA-Z]+)/gi, (match, p1) => {
