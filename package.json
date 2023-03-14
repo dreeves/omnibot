@@ -4,7 +4,7 @@
   "description": "A dictionary guessing game implemented as a Slack/Discord bot",
   "main": "app.js",
   "scripts": {
-    "build": "cd ./public && npx snowpack build",
+    "build": "cd ./public && npx snowpack build && npm run register",
     "start": "node app.js",
     "register": "node register-commands.js",
     "test": "mocha quals"
