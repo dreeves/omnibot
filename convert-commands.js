@@ -63,6 +63,9 @@ module.exports = {
               const user = userlist.find((u) => u["id"] === p1);
               users[user.name] = p1;
 
+              console.log(user.name);
+              console.log(p1);
+
               return `@${user.name}`;
             }),
           })
