@@ -3,6 +3,7 @@ const { SlashCommandBuilder } = require("discord.js");
 module.exports = {
   toDiscord: (botCommand) => {
     const command = {};
+    const users = {};
 
     command.data = new SlashCommandBuilder()
       .setName(botCommand.name)
@@ -15,7 +16,6 @@ module.exports = {
     });
 
     command.execute = async (interaction) => {
-      const users = {};
       const client = interaction.client;
       const options = {
         cid: `discord_${interaction.channelId}`,
@@ -48,8 +48,8 @@ module.exports = {
   },
 
   toSlack: (botCommand) => {
+    const users = {};
     return async ({ client, command, ack, respond }) => {
-      const users = {};
       await ack();
 
       users[command.user_name] = command.user_id;
@@ -59,17 +59,20 @@ module.exports = {
         botCommand
           .execute({
             sender: command.user_name,
-            input: command.text.replace(/<@([a-zA-Z0-9]+).*>/g, (match, p1) => {
-              const user = userlist.find((u) => u["id"] === p1);
-              users[user.name] = p1;
+            input: command.text.replace(
+              /<@([a-zA-Z0-9]+).*?>/g,
+              (match, p1) => {
+                const user = userlist.find((u) => u["id"] === p1);
+                users[user.name] = p1;
 
-              return `@${user.name}`;
-            }),
+                return `@${user.name}`;
+              }
+            ),
           })
           .replace(/@([a-zA-Z]+)/gi, (match, p1) => {
             const userId = users[p1];
 
-            return `<@${userId}>`;
+            return userId ? `<@${userId}>` : `@${p1}`;
           })
       );
     };
