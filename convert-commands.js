@@ -3,6 +3,7 @@ const { SlashCommandBuilder } = require("discord.js");
 module.exports = {
   toDiscord: (botCommand) => {
     const command = {};
+    const users = {};
 
     command.data = new SlashCommandBuilder()
       .setName(botCommand.name)
@@ -15,7 +16,6 @@ module.exports = {
     });
 
     command.execute = async (interaction) => {
-      const users = {};
       const client = interaction.client;
       const options = {
         cid: `discord_${interaction.channelId}`,
@@ -48,8 +48,8 @@ module.exports = {
   },
 
   toSlack: (botCommand) => {
+    const users = {};
     return async ({ client, command, ack, respond }) => {
-      const users = {};
       await ack();
 
       users[command.user_name] = command.user_id;
