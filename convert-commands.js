@@ -72,7 +72,7 @@ module.exports = {
           .replace(/@([a-zA-Z]+)/gi, (match, p1) => {
             const userId = users[p1];
 
-            return `<@${userId}>`;
+            return userId ? `<@${userId}>` : `@${p1}`;
           })
       );
     };
