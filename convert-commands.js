@@ -3,7 +3,6 @@ const { SlashCommandBuilder } = require("discord.js");
 module.exports = {
   toDiscord: (botCommand) => {
     const command = {};
-    const users = {};
 
     command.data = new SlashCommandBuilder()
       .setName(botCommand.name)
@@ -22,25 +21,13 @@ module.exports = {
         sender: interaction.user.username,
       };
 
-      users[interaction.user.username] = interaction.user.id;
-
       botCommand.options.forEach((botOption) => {
-        return (options[botOption.name] = interaction.options
-          .getString(botOption.name)
-          .replace(/<@(\d+)>/g, (match, p1) => {
-            const user = client.users.cache.get(p1);
-            users[user.username] = p1;
-
-            return `@${user.username}`;
-          }));
+        return (options[botOption.name] = interaction.options.getString(
+          botOption.name
+        ));
       });
-      const botResponse = botCommand
-        .execute(options)
-        .replace(/@([a-zA-Z]+)/gi, (match, p1) => {
-          const userId = users[p1];
+      const botResponse = botCommand.execute(options);
 
-          return `<@${userId}>`;
-        });
       await interaction.reply(botResponse);
     };
 
@@ -48,32 +35,13 @@ module.exports = {
   },
 
   toSlack: (botCommand) => {
-    const users = {};
     return async ({ client, command, ack, respond }) => {
       await ack();
-
-      users[command.user_name] = command.user_id;
-
-      const { members: userlist } = await client.users.list();
       await respond(
-        botCommand
-          .execute({
-            sender: command.user_name,
-            input: command.text.replace(
-              /<@([a-zA-Z0-9]+).*?>/g,
-              (match, p1) => {
-                const user = userlist.find((u) => u["id"] === p1);
-                users[user.name] = p1;
-
-                return `@${user.name}`;
-              }
-            ),
-          })
-          .replace(/@([a-zA-Z]+)/gi, (match, p1) => {
-            const userId = users[p1];
-
-            return userId ? `<@${userId}>` : `@${p1}`;
-          })
+        botCommand.execute({
+          sender: command.user_name,
+          input: command.text,
+        })
       );
     };
   },
