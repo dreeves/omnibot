@@ -21,20 +21,20 @@ let states = {};
 
 /**
  * @param {States} states
- * @param {string} cid
+ * @param {string} clientId
  * @param {string} sender
  * @param {string} input
  */
-const update = (states, cid, sender, input) => {
-  if (!states[cid]) {
-    states[cid] = {
+const update = (states, clientId, sender, input) => {
+  if (!states[clientId]) {
+    states[clientId] = {
       bidders: new Set(),
     };
   }
 
-  states[cid].bidders.add(`@${sender}`);
-  for (let [name] of input.matchAll(/@[a-zA-Z0-9]+/g)) {
-    states[cid].bidders.add(name);
+  states[clientId].bidders.add(`@${sender}`);
+  for (let [name] of input.matchAll(/<@.*?>/g)) {
+    states[clientId].bidders.add(name);
   }
 
   return states;
@@ -44,10 +44,10 @@ module.exports = {
   name: "bid",
   description: "Replies with its input.",
   options,
-  execute: ({ cid, sender, input }) => {
+  execute: ({ cid: clientId, sender, input }) => {
     const users = {};
-    states = update(states, cid, sender, input);
-    let bidders = [...states[cid].bidders];
+    states = update(states, clientId, sender, input);
+    let bidders = [...states[clientId].bidders];
     return `roger that "${input}" sent by @${sender} . here is a list of all users who have sent the /bid command or been mentioned in a /bid command: {${bidders}}`;
   },
 };
