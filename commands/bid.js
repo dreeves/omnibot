@@ -187,7 +187,7 @@ var help = function () {
 };
 
 var handleSlash = function (chan, user, text) {
-  var urtext = "*/bid " + text + "*\n";
+  var urtext = "/bid " + text + "\n";
   var others = bidParse(text);
   const obj = datastore["beebot.auctions." + chan];
   const bids = datastore["beebot.auctions." + chan + ".bids"];
@@ -201,18 +201,18 @@ var handleSlash = function (chan, user, text) {
       return `${bidStatus(bids)}`;
     } else if (text === "status") {
       return (
-        "Currently active auction initiated by @" +
-          obj.initiator +
-          " via:\n`" +
-          obj.urtext +
-          "`\n${bidStatus(bids)}"
+        "Currently active auction initiated by " +
+        obj.initiator +
+        " via:\n`" +
+        obj.urtext +
+        `\n${bidStatus(bids)}`
       );
     } else if (text === "abort") {
       const response =
-            "*Aborted.* :panda_face: Partial results:\n$SUMMARY" +
-            "\n\n_" +
-            bidPay() +
-            "_";
+        "*Aborted.* :panda_face: Partial results:\n$SUMMARY" +
+        "\n\n_" +
+        bidPay() +
+        "_";
 
       bidReset(chan);
       return response;
