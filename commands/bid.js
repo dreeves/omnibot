@@ -58,12 +58,12 @@ const datastore = {};
 
 // Returns a hash of usernames (without the @'s) who are @-mentioned in txt
 var bidParse = function (txt) {
-  var pattern = /\B@[a-z0-9_-]+/gi; // regex for @-mentions, HT StackOverflow
+  var pattern = /<@[a-z0-9_-]+>/gi; // regex for @-mentions, HT StackOverflow
   var users = {};
   if (txt.match(pattern)) {
     // RegExp.exec() might avoid doing match in 2 places
     txt.match(pattern).forEach(function (u) {
-      users[u.replace("@", "")] = "";
+      users[u] = "";
     });
   }
   return users;
