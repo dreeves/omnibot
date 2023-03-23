@@ -99,9 +99,7 @@ var bidStatus = function (bids) {
 
 // Returns whether any of the bids are missing
 var bidMissing = function (bids) {
-  console.log(bids);
   return Object.keys(bids).some(function (x) {
-    console.log(bids[x]);
     return bids[x] === "";
   });
 };
