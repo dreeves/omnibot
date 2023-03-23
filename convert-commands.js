@@ -18,7 +18,7 @@ module.exports = {
       const client = interaction.client;
       const options = {
         cid: `discord_${interaction.channelId}`,
-        sender: interaction.user.username,
+        sender: `<@${interaction.user.id}>`,
       };
 
       botCommand.options.forEach((botOption) => {
@@ -39,7 +39,7 @@ module.exports = {
       await ack();
       await respond(
         botCommand.execute({
-          sender: command.user_name,
+          sender: `<@${command.user_id}>`,
           input: command.text,
         })
       );
