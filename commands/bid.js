@@ -93,14 +93,16 @@ var bidStatus = function (bids) {
         return !bids[x];
       })
       .join(", ") +
-      "}"
+    "}"
   );
 };
 
 // Returns whether any of the bids are missing
 var bidMissing = function (bids) {
+  console.log(bids);
   return Object.keys(bids).some(function (x) {
-    return !bids[x];
+    console.log(bids[x]);
+    return bids[x] === "";
   });
 };
 
@@ -112,25 +114,22 @@ var bidMissing = function (bids) {
 // then use that to format the output when ready to output it. Instead we need
 // to pass a callback function to hgetall and let that function do whatever it's
 // going to do with the bid hash -- in our case botils.shout it in the channel.)
-var bidAsyncShout = function (res, chan, template) {
+var bidAsyncShout = function (chan, template) {
   const obj = datastore["beebot.auctions." + chan + ".bids"];
-  botils.shout(
-    res,
-    template
-      .replace("$SUMMARY", bidSummary(obj))
-      .replace("$STATUS", bidStatus(obj))
-  );
+  return template
+    .replace("$SUMMARY", bidSummary(obj))
+    .replace("$STATUS", bidStatus(obj));
 };
 
 // Initialize the auction and shot that it's started
-var bidStart = function (res, chan, user, text, others) {
+var bidStart = function (chan, user, text, others) {
   others[user] = ""; // "others" now includes initiating user too
   datastore["beebot.auctions." + chan + ".bids"] = others;
   var auction = {};
   auction.urtext = "/bid " + text.trim();
   auction.initiator = user;
   datastore["beebot.auctions." + chan] = auction;
-  bidAsyncShout(res, chan, "Auction started! $STATUS");
+  return `Auction started! ${bidStatus(others)}`;
 };
 
 // Deletes all the bids
@@ -143,8 +142,8 @@ var bidReset = function (chan) {
 // command doesn't actually parse out numbers or deal with payments in any way.
 var bidPay = function () {
   var y,
-      n,
-      r = botils.randint(10); // randint(10)==1 is the same as bern(.1)
+    n,
+    r = randint(10); // randint(10)==1 is the same as bern(.1)
   y =
     "/roll 10 → 1 ∴ PAY 10X! :money_with_wings: :moneybag: :money_mouth_face:";
   n = "/roll 10 → " + r + " not 1 ∴ no payments! :sweat_smile:";
@@ -152,120 +151,101 @@ var bidPay = function () {
 };
 
 // Add text as user's bid, botils.shout the results if user is the last one to bid
-var bidProc = function (res, chan, user, text, rurl) {
-  datastore["beebot.auctions." + chan + ".bids"] = {
-    [user]: text,
-  };
-
+var bidProc = function (chan, user, text) {
   const obj = datastore["beebot.auctions." + chan + ".bids"];
+  obj[user] = text;
 
-  botils.whisp(res, "Got your bid: " + text);
+  let response = "";
   if (bidMissing(obj)) {
-    botils.shoutDelayed(rurl, "New bid from " + user + "! " + bidStatus(obj));
+    response += "New bid from " + user + "! " + bidStatus(obj);
   } else {
     bidReset(chan);
-    botils.shoutDelayed(
-      rurl,
+
+    response +=
       "Got final bid from " +
-        user +
-        "! :tada: Results:\n" +
-        bidSummary(obj) +
-        "\n\n_" +
-        bidPay() +
-        "_"
-    );
+      user +
+      "! :tada: Results:\n" +
+      bidSummary(obj) +
+      "\n\n_" +
+      bidPay() +
+      "_";
   }
+  return response;
 };
 
 // whisper the documentation
-var help = function (res) {
-  botils.whisp(
-    res,
+var help = function () {
+  return (
     "How to use /bid\n" +
-      "`/bid stuff with @-mentions` start new auction with the mentioned people\n" +
-      "`/bid stuff` submit your bid (fine to resubmit till last person bids)\n" +
-      "`/bid` (with no args) check who has bid and who we're waiting on\n" +
-      "`/bid status` show how current auction was initiated and who has bid\n" +
-      "`/bid abort` abort the current auction, showing partial results\n" +
-      "`/bid help` show this (see expost.padm.us/sealedbids for gory details)"
+    "`/bid stuff with @-mentions` start new auction with the mentioned people\n" +
+    "`/bid stuff` submit your bid (fine to resubmit till last person bids)\n" +
+    "`/bid` (with no args) check who has bid and who we're waiting on\n" +
+    "`/bid status` show how current auction was initiated and who has bid\n" +
+    "`/bid abort` abort the current auction, showing partial results\n" +
+    "`/bid help` show this (see expost.padm.us/sealedbids for gory details)"
   );
 };
 
 var handleSlash = function (chan, user, text) {
-  if (req.body.token != process.env.SLACK_TOKEN) {
-    botils.whisp(res, "This request didn't come from Slack!");
-    return;
-  }
   var urtext = "*/bid " + text + "*\n";
   var others = bidParse(text);
   const obj = datastore["beebot.auctions." + chan];
+  const bids = datastore["beebot.auctions." + chan + ".bids"];
 
   if (obj) {
     //--------------------------------- active auction in this channel
-    if (!botils.isEmpty(others)) {
-      botils.whisp(
-        res,
-        urtext + "No @-mentions allowed in bids! Try `/bid help`"
-      );
+    if (!isEmpty(others)) {
+      return urtext + "No @-mentions allowed in bids! Try `/bid help`";
     } else if (text === "") {
       // no args
-      bidAsyncShout(res, chan, "$STATUS");
+      return `${bidStatus(bids)}`;
     } else if (text === "status") {
-      bidAsyncShout(
-        res,
-        chan,
+      return (
         "Currently active auction initiated by @" +
           obj.initiator +
           " via:\n`" +
           obj.urtext +
-          "`\n$STATUS"
+          "`\n${bidStatus(bids)}"
       );
     } else if (text === "abort") {
-      bidAsyncShout(
-        res,
-        chan,
-        "*Aborted.* :panda_face: Partial results:\n$SUMMARY" +
-          "\n\n_" +
-          bidPay() +
-          "_"
-      );
+      const response =
+            "*Aborted.* :panda_face: Partial results:\n$SUMMARY" +
+            "\n\n_" +
+            bidPay() +
+            "_";
+
       bidReset(chan);
+      return response;
     } else if (text === "help") {
-      help(res);
+      return help();
     } else if (text === "debug") {
-      botils.whisp(
-        res,
-        urtext + "botils.whispered reply. obj = " + JSON.stringify(obj)
+      return (
+        urtext + "whispered reply. datastore = " + JSON.stringify(datastore)
       );
-      botils.shoutDelayed(
-        rurl,
-        "We can also reply publicly w/out echoing the cmd!"
-      );
+      // Not true right now
+      // shoutDelayed(rurl, "We can also reply publicly w/out echoing the cmd!");
     } else {
       // if the text is anything else then it's a normal bid
       // could check if user has an old bid so we can say "Updated your bid"
-      bidProc(res, chan, user, text, rurl);
+      return bidProc(chan, user, text);
     }
   } else {
     //------------------------------- no active auction in this channel
-    if (!botils.isEmpty(others)) {
-      bidStart(res, chan, user, text, others);
+    if (!isEmpty(others)) {
+      return bidStart(chan, user, text, others);
     } else if (text === "") {
-      botils.whisp(res, urtext + "No current auction");
+      return "No current auction";
     } else if (text === "status") {
-      botils.shout(res, "No current auction");
+      return "No current auction";
     } else if (text === "abort") {
-      botils.whisp(res, urtext + "No current auction");
+      return "No current auction";
     } else if (text === "help") {
-      help(res);
+      return help();
     } else if (text === "debug") {
-      botils.whisp(res, urtext + "No current auction");
+      return urtext + "No current auction";
     } else {
       // if the text is anything else then it would be a normal bid
-      botils.whisp(
-        res,
-        "/bid " + text + "\nNo current auction! Try `/bid help`"
-      );
+      return "/bid " + text + "\nNo current auction! Try `/bid help`";
     }
   }
 };
@@ -274,5 +254,7 @@ module.exports = {
   name: "bid",
   description: "Replies with its input.",
   options,
-  execute: ({ cid: clientId, sender, input }) => {},
+  execute: ({ cid: clientId, sender, input }) => {
+    return handleSlash(clientId, sender, input);
+  },
 };
