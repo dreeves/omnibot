@@ -72,7 +72,7 @@ var bidParse = function (txt) {
 // Returns a string representation of the hash (user->bid) of everyone's bids
 var bidSummary = function (bids) {
   var row = function (u) {
-    return bids[u] ? "\t@" + u + ": " + bids[u] : "\t~@" + u + "~";
+    return bids[u] ? "\t" + u + ": " + bids[u] : "\t~" + u + "~";
   };
   return Object.keys(bids).map(row).join("\n");
 };
@@ -202,17 +202,17 @@ var handleSlash = function (chan, user, text) {
     } else if (text === "status") {
       return (
         "Currently active auction initiated by " +
-        obj.initiator +
-        " via:\n`" +
-        obj.urtext +
-        `\n${bidStatus(bids)}`
+          obj.initiator +
+          " via:\n`" +
+          obj.urtext +
+          `\n${bidStatus(bids)}`
       );
     } else if (text === "abort") {
       const response =
-        "*Aborted.* :panda_face: Partial results:\n$SUMMARY" +
-        "\n\n_" +
-        bidPay() +
-        "_";
+            "*Aborted.* :panda_face: Partial results:\n$SUMMARY" +
+            "\n\n_" +
+            bidPay() +
+            "_";
 
       bidReset(chan);
       return response;
@@ -255,6 +255,6 @@ module.exports = {
   description: "Replies with its input.",
   options,
   execute: ({ cid: clientId, sender, input }) => {
-    return handleSlash(clientId, sender, input);
+    return handleSlash(clientId, sender, input || "");
   },
 };
