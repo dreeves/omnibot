@@ -1,3 +1,5 @@
+require("dotenv").config(); // or import 'dotenv/config'
+
 const { REST, Routes } = require("discord.js");
 const convertCommands = require("./convert-commands.js");
 const clientId = process.env.DISCORD_CLIENT_ID;
