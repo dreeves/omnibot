@@ -86,19 +86,6 @@ botCommands.forEach((botCommand) => {
   app.command(`/${botCommand.name}`, slackCommand);
 });
 
-discord.on(Discord.Events.MessageCreate, (msg) => {
-  discord.application.commands.fetch().then((commands) => {
-    if (commands.some(({ name }) => msg.content.startsWith(`/${name}`))) {
-      msg.delete();
-      msg.channel.send(
-        `Hey, ${Discord.userMention(
-          msg.author.id
-        )}. I just deleted your message, because it looked like you meant to run a command instead.`
-      );
-    }
-  });
-});
-
 if (process.env.IS_PULL_REQUEST !== "true") {
   discord.login(process.env.DISCORD_BOT_TOKEN);
 }
