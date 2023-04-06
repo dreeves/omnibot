@@ -73,7 +73,7 @@ for (const file of commandFiles) {
             eventType: Discord.AutoModerationRuleEventType.MessageSend,
             triggerType: Discord.AutoModerationRuleTriggerType.Keyword,
             triggerMetadata: {
-              regexPatterns: [`^/${command.name} `],
+              regexPatterns: [`^/${command.name} .*`],
             },
             enabled: true,
             actions: [
