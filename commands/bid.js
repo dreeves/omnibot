@@ -12,6 +12,11 @@ var bern = function (p) {
   return Math.random() < p;
 };
 
+// In Slack there are/were 3 ways to send messages to the channel:
+// 1. whisp: reply to the user who typed the slash command so only they see it
+// 2. holla: echo the slash command publicly & reply (holla back) publicly
+// 3. blurt: say something publicly & asynchronously, no echoing slash command
+
 // Respond with string txt to everyone in the channel, echoing the slash command
 var shout = function (res, txt) {
   res.send({ response_type: "in_channel", text: txt });
@@ -177,7 +182,8 @@ var help = function () {
     "How to use /bid\n" +
     "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
     "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
-    "`/bid` (with no args) — check who has bid and who we're waiting on\n" +
+    // currently thinking /bid with no args should just be disallowed
+    //"`/bid` (with no args) — check who has bid and who we're waiting on\n" +
     "`/bid status` — show how current auction was initiated and who has bid\n" +
     "`/bid abort` — abort the current auction, showing partial results\n" +
     "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)"
@@ -250,7 +256,7 @@ var handleSlash = function (chan, user, text) {
 
 module.exports = {
   name: "bid",
-  description: "Replies with its input.",
+  description: "Collect and later reveal sealed bids.",
   options,
   execute: ({ cid: clientId, sender, input }) => {
     return handleSlash(clientId, sender, input || "");
