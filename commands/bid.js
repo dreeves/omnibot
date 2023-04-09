@@ -175,12 +175,12 @@ var bidProc = function (chan, user, text) {
 var help = function () {
   return (
     "How to use /bid\n" +
-    "`/bid stuff with @-mentions` start new auction with the mentioned people\n" +
-    "`/bid stuff` submit your bid (fine to resubmit till last person bids)\n" +
-    "`/bid` (with no args) check who has bid and who we're waiting on\n" +
-    "`/bid status` show how current auction was initiated and who has bid\n" +
-    "`/bid abort` abort the current auction, showing partial results\n" +
-    "`/bid help` show this (see expost.padm.us/sealedbids for gory details)"
+    "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
+    "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
+    "`/bid` (with no args) — check who has bid and who we're waiting on\n" +
+    "`/bid status` — show how current auction was initiated and who has bid\n" +
+    "`/bid abort` — abort the current auction, showing partial results\n" +
+    "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)"
   );
 };
 
