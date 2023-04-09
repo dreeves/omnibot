@@ -1,6 +1,7 @@
 const options = [
   {
     name: "input",
+    required: true,
     description: "Text to repeat back",
   },
 ];

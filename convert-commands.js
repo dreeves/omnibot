@@ -10,7 +10,10 @@ module.exports = {
 
     botCommand.options.forEach((botOption) => {
       command.data.addStringOption((option) =>
-        option.setName(botOption.name).setDescription(botOption.description)
+        option
+          .setName(botOption.name)
+          .setDescription(botOption.description)
+          .setRequired(botOption.required || false)
       );
     });
 
