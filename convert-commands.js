@@ -38,12 +38,13 @@ module.exports = {
   },
 
   toSlack: (botCommand) => {
-    return async ({ client, command, ack, respond }) => {
+    return async ({ client, command, ack, say }) => {
       await ack();
-      await respond(
+      await say(
         botCommand.execute({
+          cid: command.channel_id,
           sender: `<@${command.user_id}>`,
-          input: command.text,
+          input: command.text.replace(/<@(.*)\|.*>/, "<@$1>"),
         })
       );
     };
