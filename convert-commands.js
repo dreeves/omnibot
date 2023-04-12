@@ -38,9 +38,9 @@ module.exports = {
   },
 
   toSlack: (botCommand) => {
-    return async ({ client, command, ack, say }) => {
+    return async ({ client, command, ack, respond }) => {
       await ack();
-      await say(
+      await respond(
         botCommand.execute({
           cid: command.channel_id,
           sender: `<@${command.user_id}>`,
