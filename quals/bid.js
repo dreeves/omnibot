@@ -15,7 +15,7 @@ describe("running an auction on slack", function () {
         user_id: "UEECHOH1OOX",
       },
       ack: async () => {},
-      say: async (result) => {
+      respond: async (result) => {
         result.should.equal(
           "Auction started! Got bids from {}, waiting on {<@UIEBO6EECEC>, <@UEECHOH1OOX>}"
         );
@@ -31,7 +31,7 @@ describe("running an auction on slack", function () {
         user_id: "UIEBO6EECEC",
       },
       ack: async () => {},
-      say: async (result) => {
+      respond: async (result) => {
         result.should.equal(
           "New bid from <@UIEBO6EECEC>! Got bids from {<@UIEBO6EECEC>}, waiting on {<@UEECHOH1OOX>}"
         );
@@ -47,7 +47,7 @@ describe("running an auction on slack", function () {
         user_id: "UEECHOH1OOX",
       },
       ack: async () => {},
-      say: async (result) => {
+      respond: async (result) => {
         result.should.match(
           new RegExp(
             "Got final bid from <@UEECHOH1OOX>! :tada: Results:\n" +

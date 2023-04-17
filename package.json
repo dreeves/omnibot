@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "build": "cd ./public && npx snowpack build && npm run register",
-    "start": "node app.js",
+    "start": "npm run build && node app.js",
     "register": "node register-commands.js",
     "test": "mocha quals"
   },

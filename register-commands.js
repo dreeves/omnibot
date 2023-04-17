@@ -14,7 +14,6 @@ const discord = new Discord.Client({
   ],
   rest: { version: "10" },
 });
-discord.login(token);
 
 const fs = require("node:fs");
 
@@ -48,6 +47,7 @@ for (const file of commandFiles) {
 // and deploy your commands!
 (async () => {
   try {
+    await discord.login(token);
     console.log(
       `Started refreshing ${discordCommands.length} application (/) commands.`
     );
@@ -96,6 +96,7 @@ for (const file of commandFiles) {
   } catch (error) {
     // And of course, make sure you catch and log any errors!
     console.error(error);
+    console.log(`ERROR! Your login token was ${token}`);
   }
 
   discord.destroy();
