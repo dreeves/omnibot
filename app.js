@@ -37,23 +37,6 @@ const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   ...appOptions,
 });
-(async () => {
-  let server;
-  if (process.env.DEBUG) {
-    await app.start();
-    server = await receiver.start(process.env.PORT || 3000);
-  } else {
-    server = await app.start(process.env.PORT || 3000);
-  }
-
-  server.on("upgrade", (request, socket, head) => {
-    wsServer.handleUpgrade(request, socket, head, (socket) => {
-      wsServer.emit("connection", socket, request);
-    });
-  });
-
-  CLOG("Lexiguess app is running; listening for events from Slack / the web");
-})();
 
 const convertCommands = require("./convert-commands.js");
 const Discord = require("discord.js");
@@ -86,9 +69,34 @@ botCommands.forEach((botCommand) => {
   app.command(`/${botCommand.name}`, slackCommand);
 });
 
-if (process.env.IS_PULL_REQUEST !== "true") {
-  discord.login(process.env.DISCORD_BOT_TOKEN);
-}
+(async () => {
+  if (process.env.IS_PULL_REQUEST !== "true") {
+    try {
+      await discord.login(process.env.DISCORD_BOT_TOKEN);
+    } catch (error) {
+      console.log(error);
+      console.log(
+        `ERROR! Your login token was ${process.env.DISCORD_BOT_TOKEN}`
+      );
+    }
+  }
+
+  let server;
+  if (process.env.DEBUG) {
+    await app.start();
+    server = await receiver.start(process.env.PORT || 3000);
+  } else {
+    server = await app.start(process.env.PORT || 3000);
+  }
+
+  server.on("upgrade", (request, socket, head) => {
+    wsServer.handleUpgrade(request, socket, head, (socket) => {
+      wsServer.emit("connection", socket, request);
+    });
+  });
+
+  CLOG("Lexiguess app is running; listening for events from Slack / the web");
+})();
 
 discord.once("ready", () => {
   CLOG(`Lexiguess app is running; logged in to Discord as ${discord.user.tag}`);
