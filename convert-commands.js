@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const axios = require("axios");
 
 module.exports = {
   toDiscord: (botCommand) => {
@@ -38,15 +39,16 @@ module.exports = {
   },
 
   toSlack: (botCommand) => {
-    return async ({ client, command, ack, respond }) => {
+    return async ({ command, ack }) => {
       await ack();
-      await respond(
-        botCommand.execute({
+      await axios.post(command.response_url, {
+        response_type: "in_channel",
+        text: botCommand.execute({
           cid: command.channel_id,
           sender: `<@${command.user_id}>`,
           input: command.text.replace(/<@(.*)\|.*>/, "<@$1>"),
-        })
-      );
+        }),
+      });
     };
   },
 };
