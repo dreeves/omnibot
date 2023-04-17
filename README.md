@@ -30,19 +30,14 @@ https://api.slack.com/apis/connections/socket
 npm install
 ```
 
-2. Build the web client.
-```
-npm run build
-```
-
-3. If you've made changes to the bot command definitions, *excluding
+2. If you've made changes to the bot command definitions, *excluding
    changes to the body of the execute function*, you will need to
    register those changes with Discord.
 ```
 npm run register
 ```
 
-4. Run the server.
+3. Build and run the server.
 ```
 npm run start
 ```
