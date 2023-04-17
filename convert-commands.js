@@ -42,8 +42,9 @@ module.exports = {
       await ack();
       await respond(
         botCommand.execute({
+          cid: command.channel_id,
           sender: `<@${command.user_id}>`,
-          input: command.text,
+          input: command.text.replace(/<@(.*)\|.*>/, "<@$1>"),
         })
       );
     };

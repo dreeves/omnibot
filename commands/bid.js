@@ -214,7 +214,10 @@ var handleSlash = function (chan, user, text) {
       );
     } else if (text === "abort") {
       const response =
-            "*Aborted.* :panda_face: Partial results:\n$SUMMARY" +
+            "*Aborted.* :panda_face: Partial results:\n$SUMMARY".replace(
+              "$SUMMARY",
+              bidSummary(obj)
+            ) +
             "\n\n_" +
             bidPay() +
             "_";
