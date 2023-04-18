@@ -23,6 +23,10 @@ module.exports = {
       const options = {
         cid: `discord_${interaction.channelId}`,
         sender: `<@${interaction.user.id}>`,
+        holla: async (text) => interaction.reply(text),
+        whisp: async (text) =>
+        interaction.reply({ content: text, ephemeral: true }),
+        blurt: async (text) => interaction.reply(text),
       };
 
       botCommand.options.forEach((botOption) => {
@@ -30,9 +34,7 @@ module.exports = {
           botOption.name
         ));
       });
-      const botResponse = botCommand.execute(options);
-
-      await interaction.reply(botResponse);
+      botCommand.execute(options);
     };
 
     return command;
