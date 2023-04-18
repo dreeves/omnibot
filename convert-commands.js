@@ -39,15 +39,17 @@ module.exports = {
   },
 
   toSlack: (botCommand) => {
-    return async ({ command, ack }) => {
-      await ack();
-      await axios.post(command.response_url, {
-        response_type: "in_channel",
-        text: botCommand.execute({
-          cid: command.channel_id,
-          sender: `<@${command.user_id}>`,
-          input: command.text.replace(/<@(.*)\|.*>/, "<@$1>"),
-        }),
+    return async ({ command, ack, respond }) => {
+      botCommand.execute({
+        cid: command.channel_id,
+        sender: `<@${command.user_id}>`,
+        input: command.text.replace(/<@(.*)\|.*>/, "<@$1>"),
+        holla: async (text) => ack({ response_type: "in_channel", text }),
+        whisp: async (text) => ack({ response_type: "ephemeral", text }),
+        blurt: async (text) => {
+          await ack();
+          respond({ response_type: "in_channel", text });
+        },
       });
     };
   },
