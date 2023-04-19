@@ -4,8 +4,8 @@
         "minor_version": 1
     },
     "display_information": {
-        "name": "Lexiguess",
-        "description": "Dictionary guessing game",
+        "name": "Omnibot",
+        "description": "Dictionary guessing game and other tricks",
         "background_color": "#b07920"
     },
     "features": {
@@ -15,7 +15,7 @@
             "messages_tab_read_only_enabled": false
         },
         "bot_user": {
-            "display_name": "lexiguess",
+            "display_name": "omnibot",
             "always_online": true
         }
     },
@@ -31,7 +31,7 @@
     },
     "settings": {
         "event_subscriptions": {
-            "request_url": "https://untitledbot.dreev.repl.co/slack/events",
+            "request_url": "https://omnibot.yootl.es/slack/events",
             "user_events": [
                 "app_home_opened"
             ],

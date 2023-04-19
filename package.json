@@ -1,6 +1,6 @@
 {
-  "name": "lexiguess",
-  "version": "2022.10.17-11-16",
+  "name": "omnibot",
+  "version": "2023.04.18-a",
   "description": "A dictionary guessing game implemented as a Slack/Discord bot",
   "main": "app.js",
   "scripts": {
@@ -25,12 +25,12 @@
     "node": "16"
   },
   "repository": {
-    "url": "https://github.com/dreeves/lexiguess"
+    "url": "https://github.com/dreeves/omnibot"
   },
   "license": "MIT",
   "keywords": [
     "node",
-    "glitch"
+    "chat bots"
   ],
   "devDependencies": {
     "chai": "^4.3.7",

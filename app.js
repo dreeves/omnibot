@@ -1,6 +1,6 @@
 "use strict";
 const CLOG = console.log;
-CLOG("Omnibot / Lexiguess!");
+CLOG("Omnibot!");
 
 // -----------------------------------------------------------------------------
 // -------- Initialization, create and start server, log in to Discord ---------
@@ -95,11 +95,11 @@ botCommands.forEach((botCommand) => {
     });
   });
 
-  CLOG("Lexiguess app is running; listening for events from Slack / the web");
+  CLOG("Omnibot is running; listening for events from Slack / the web");
 })();
 
 discord.once("ready", () => {
-  CLOG(`Lexiguess app is running; logged in to Discord as ${discord.user.tag}`);
+  CLOG(`Omnibot is running; logged in to Discord as ${discord.user.tag}`);
 });
 discord.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
@@ -169,7 +169,7 @@ app.event("app_home_opened", async ({ event, context }) => {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: "Welcome to Lexiguess :books:",
+              text: "Welcome to Omnibot :books:",
             },
           },
           { type: "divider" },
@@ -178,10 +178,13 @@ app.event("app_home_opened", async ({ event, context }) => {
             text: {
               type: "mrkdwn",
               text: `\
-Instructions: The bot totally ignores anything that isn't a single word \
+Instructions for Lexiguess (the main thing Omnibot does so far): \
+The bot totally ignores anything that isn't a single word \
 (at least 2 letters, no punctuation). \
 That's really all you need to know. \
-Everything else should be self-explanatory.`,
+Everything else should be self-explanatory.\
+
+There's also a /bid command for sealed-bid auctions.`,
             },
           },
         ],
@@ -208,7 +211,7 @@ const send = (socket, event, data) => {
 wsServer.on("connection", (socket, req) => {
   const ip = req.socket.remoteAddress;
 
-  send(socket, "chat", "Lexiguess!");
+  send(socket, "chat", "Omnibot!");
   send(socket, "name", !!clientNames[ip]);
 
   socket.on("message", (message) => {

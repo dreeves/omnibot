@@ -2,24 +2,24 @@
 
 ### Enable Socket Mode for Slack
 
-Slack bots need to serve an endpoint to receive Slack events. This
-would make development painful, so there's "socket mode" which doesn't
-have the endpoint requirement. Socket mode is recommended only for
-development by the documentation for reasons not given.
+Slack bots need to serve an endpoint to receive Slack events. 
+This would make development painful, so there's "socket mode" which doesn't have
+the endpoint requirement. 
+Socket mode is recommended only for development by the documentation for reasons
+not given.
 
-Lexiguess currently looks for the environment variable DEBUG when it
-starts up. If this variable is set to anything (and environment
-variables are strings, so I do mean anything: even false, 0, etc.),
-Lexiguess uses socket mode.
+Omnibot currently looks for the environment variable DEBUG when it starts up. 
+If this variable is set to anything (and environment variables are strings, so I
+do mean anything: even false, 0, etc.), Omnibot uses socket mode.
 
-In order to use socket mode, however, socket mode must be toggled on
-in the app's configuration.
+In order to use socket mode, however, socket mode must be toggled on in the 
+app's configuration.
 
-In order to use socket mode locally, you have to both set DEBUG in
-your environment and make sure socket mode is turned on in the app's
-configuration. This will likely cause live instances of Lexiguess to
-fail on Slack. When you're finished testing locally, you'll need to
-make sure to turn socket mode off again.
+In order to use socket mode locally, you have to both set DEBUG in your 
+environment and make sure socket mode is turned on in the app's configuration. 
+This will likely cause live instances of Omnibot to fail on Slack. 
+When you're finished testing locally, you'll need to make sure to turn socket 
+mode off again.
 
 https://api.slack.com/apis/connections/socket
 
@@ -30,9 +30,9 @@ https://api.slack.com/apis/connections/socket
 npm install
 ```
 
-2. If you've made changes to the bot command definitions, *excluding
-   changes to the body of the execute function*, you will need to
-   register those changes with Discord.
+2. If you've made changes to the bot command definitions, *excluding changes to
+   the body of the execute function*, you will need to register those changes 
+   with Discord.
 ```
 npm run register
 ```
@@ -52,7 +52,8 @@ npm run start
 
 Discord app portal:
 https://discord.com/developers/applications/  
-No need to specify on the Discord side where the bot is hosted; the bot can log in to Discord as long as it has the right API keys.
+No need to specify on the Discord side where the bot is hosted; the bot can log
+in to Discord as long as it has the right API keys.
 See the .env file for such secrets.
 
 Handy tool for managing Discord slash commands:
@@ -75,8 +76,8 @@ Note that you do *not* need to re-register commands if you've only changed the c
 * Add to slack: https://api.slack.com/apps/A011Z3TQ7BK
 * Then you copy the generated bot token 
 [from Slack](https://api.slack.com/apps/A011Z3TQ7BK/oauth ) into the `.env` file.
-* Then invite the Lexiguess bot to your games channel.
-* Maybe also specify the URL `https://lexiguess.onrender.com/slack/events` at https://api.slack.com/apps/A011Z3TQ7BK/event-subscriptions?
+* Then invite Omnibot to your games channel.
+* Maybe also specify the URL `https://omnibot.yootl.es/slack/events` at https://api.slack.com/apps/A011Z3TQ7BK/event-subscriptions?
 
 The `examples` folder has some templates from Slack that might be handy.
 
