@@ -191,7 +191,7 @@ var help = function () {
   );
 };
 
-var handleSlash = function (chan, user, text) {
+var handleSlash = function (chan, user, text, holla, whisp, blurt) {
   var urtext = "/bid " + text + "\n";
   var others = bidParse(text);
   const obj = datastore["beebot.auctions." + chan];
@@ -200,12 +200,12 @@ var handleSlash = function (chan, user, text) {
   if (obj) {
     //--------------------------------- active auction in this channel
     if (!isEmpty(others)) {
-      return urtext + "No @-mentions allowed in bids! Try `/bid help`";
+      whisp("No @-mentions allowed in bids! Try `/bid help`");
     } else if (text === "") {
       // no args
-      return `${bidStatus(bids)}`;
+      holla(`${bidStatus(bids)}`);
     } else if (text === "status") {
-      return (
+      holla(
         "Currently active auction initiated by " +
           obj.initiator +
           " via:\n`" +
@@ -214,20 +214,20 @@ var handleSlash = function (chan, user, text) {
       );
     } else if (text === "abort") {
       const response =
-            "*Aborted.* :panda_face: Partial results:\n$SUMMARY".replace(
-              "$SUMMARY",
-              bidSummary(obj)
-            ) +
-            "\n\n_" +
-            bidPay() +
-            "_";
+        "*Aborted.* :panda_face: Partial results:\n$SUMMARY".replace(
+          "$SUMMARY",
+          bidSummary(obj)
+        ) +
+        "\n\n_" +
+        bidPay() +
+        "_";
 
       bidReset(chan);
-      return response;
+      holla(response);
     } else if (text === "help") {
-      return help();
+      whisp(help());
     } else if (text === "debug") {
-      return (
+      whisp(
         urtext + "whispered reply. datastore = " + JSON.stringify(datastore)
       );
       // Not true right now
@@ -235,25 +235,25 @@ var handleSlash = function (chan, user, text) {
     } else {
       // if the text is anything else then it's a normal bid
       // could check if user has an old bid so we can say "Updated your bid"
-      return bidProc(chan, user, text);
+      blurt(bidProc(chan, user, text));
     }
   } else {
     //------------------------------- no active auction in this channel
     if (!isEmpty(others)) {
-      return bidStart(chan, user, text, others);
+      holla(bidStart(chan, user, text, others));
     } else if (text === "") {
-      return "No current auction";
+      whisp("No current auction");
     } else if (text === "status") {
-      return "No current auction";
+      holla("No current auction");
     } else if (text === "abort") {
-      return "No current auction";
+      whisp("No current auction");
     } else if (text === "help") {
-      return help();
+      whisp(help());
     } else if (text === "debug") {
-      return urtext + "No current auction";
+      whisp(urtext + "No current auction");
     } else {
       // if the text is anything else then it would be a normal bid
-      return "/bid " + text + "\nNo current auction! Try `/bid help`";
+      whisp("/bid " + text + "\nNo current auction! Try `/bid help`");
     }
   }
 };
@@ -262,7 +262,7 @@ module.exports = {
   name: "bid",
   description: "Collect and later reveal sealed bids.",
   options,
-  execute: ({ cid: clientId, sender, input }) => {
-    return handleSlash(clientId, sender, input || "");
+  execute: ({ cid: clientId, sender, input, holla, whisp, blurt }) => {
+    return handleSlash(clientId, sender, input || "", holla, whisp, blurt);
   },
 };
