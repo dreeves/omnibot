@@ -78,7 +78,7 @@ var bidParse = function (txt) {
 // Returns a string representation of the hash (user->bid) of everyone's bids
 var bidSummary = function (bids) {
   var row = function (u) {
-    return bids[u] ? "\t" + u + ": " + bids[u] : "\t~" + u + "~";
+    return bids[u] ? "\t" + u + ": " + bids[u] : "\t~~" + u + "~~";
   };
   return Object.keys(bids).map(row).join("\n");
 };
@@ -170,9 +170,9 @@ var bidProc = function (chan, user, text) {
       user +
       "! :tada: Results:\n" +
       bidSummary(obj) +
-      "\n\n_" +
+      "\n\n*" +
       bidPay() +
-      "_";
+      "*";
   }
   return response;
 };
@@ -217,9 +217,9 @@ var abort = function (auction, channel, bids) {
         "$SUMMARY",
         bidSummary(bids)
       ) +
-      "\n\n_" +
+      "\n\n*" +
       bidPay() +
-      "_";
+      "*";
 
     bidReset(channel);
     return { output, voxmode: "holla" };
