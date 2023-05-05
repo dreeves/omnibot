@@ -20,30 +20,28 @@ module.exports = {
 
     command.execute = async (interaction) => {
       const client = interaction.client;
+      const { channel } = interaction;
       const options = {
         cid: `discord_${interaction.channelId}`,
         sender: `<@${interaction.user.id}>`,
+        input: interaction.options.getString("input"),
       };
-
-      botCommand.options.forEach((botOption) => {
-        return (options[botOption.name] = interaction.options.getString(
-          botOption.name
-        ));
-      });
 
       const { output, voxmode } = botCommand.execute(options);
       switch (voxmode) {
-      case "whisp":
-        interaction.reply({ content: output, ephemeral: true });
+        case "whisp":
+          interaction.reply({ content: output, ephemeral: true });
           break;
         case "holla":
-        interaction.reply(output);
-        break;
-      case "blurt":
-        interaction.reply(output);
-        break;
-      default:
-        throw `Unrecognized voxmode "${voxmode}"`;
+          interaction.reply(`/${botCommand.name} ${options.input}`);
+          channel.send(output);
+          break;
+        case "blurt":
+          interaction.reply({content: options.input, ephemeral: true});
+          channel.send(output);
+          break;
+        default:
+          throw `Unrecognized voxmode "${voxmode}"`;
       }
     };
 
@@ -59,18 +57,18 @@ module.exports = {
       });
 
       switch (voxmode) {
-      case "whisp":
-        ack({ response_type: "ephemeral", text: output });
-        break;
-      case "holla":
-        ack({ response_type: "in_channel", text: output });
-        break;
-      case "blurt":
-        await ack();
-        respond({ response_type: "in_channel", text: output });
-        break;
-      default:
-        throw `Unrecognized voxmode  "${voxmode}"`;
+        case "whisp":
+          ack({ response_type: "ephemeral", text: output });
+          break;
+        case "holla":
+          ack({ response_type: "in_channel", text: output });
+          break;
+        case "blurt":
+          await ack();
+          respond({ response_type: "in_channel", text: output });
+          break;
+        default:
+          throw `Unrecognized voxmode  "${voxmode}"`;
       }
     };
   },
