@@ -23,10 +23,6 @@ module.exports = {
       const options = {
         cid: `discord_${interaction.channelId}`,
         sender: `<@${interaction.user.id}>`,
-        holla: async (text) => interaction.reply(text),
-        whisp: async (text) =>
-        interaction.reply({ content: text, ephemeral: true }),
-        blurt: async (text) => interaction.reply(text),
       };
 
       botCommand.options.forEach((botOption) => {
@@ -34,7 +30,21 @@ module.exports = {
           botOption.name
         ));
       });
-      botCommand.execute(options);
+
+      const { output, voxmode } = botCommand.execute(options);
+      switch (voxmode) {
+      case "whisp":
+        interaction.reply({ content: output, ephemeral: true });
+          break;
+        case "holla":
+        interaction.reply(output);
+        break;
+      case "blurt":
+        interaction.reply(output);
+        break;
+      default:
+        throw `Unrecognized voxmode "${voxmode}"`;
+      }
     };
 
     return command;
@@ -42,17 +52,26 @@ module.exports = {
 
   toSlack: (botCommand) => {
     return async ({ command, ack, respond }) => {
-      botCommand.execute({
+      const { output, voxmode } = botCommand.execute({
         cid: command.channel_id,
         sender: `<@${command.user_id}>`,
         input: command.text.replace(/<@(.*)\|.*>/, "<@$1>"),
-        holla: async (text) => ack({ response_type: "in_channel", text }),
-        whisp: async (text) => ack({ response_type: "ephemeral", text }),
-        blurt: async (text) => {
-          await ack();
-          respond({ response_type: "in_channel", text });
-        },
       });
+
+      switch (voxmode) {
+      case "whisp":
+        ack({ response_type: "ephemeral", text: output });
+        break;
+      case "holla":
+        ack({ response_type: "in_channel", text: output });
+        break;
+      case "blurt":
+        await ack();
+        respond({ response_type: "in_channel", text: output });
+        break;
+      default:
+        throw `Unrecognized voxmode  "${voxmode}"`;
+      }
     };
   },
 };

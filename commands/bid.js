@@ -179,82 +179,123 @@ var bidProc = function (chan, user, text) {
 
 // whisper the documentation
 var help = function () {
-  return (
-    "How to use /bid\n" +
-    "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
-    "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
-    // currently thinking /bid with no args should just be disallowed
-    //"`/bid` (with no args) — check who has bid and who we're waiting on\n" +
-    "`/bid status` — show how current auction was initiated and who has bid\n" +
-    "`/bid abort` — abort the current auction, showing partial results\n" +
-    "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)"
-  );
+  return {
+    output:
+      "How to use /bid\n" +
+      "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
+      "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
+      // currently thinking /bid with no args should just be disallowed
+      //"`/bid` (with no args) — check who has bid and who we're waiting on\n" +
+      "`/bid status` — show how current auction was initiated and who has bid\n" +
+      "`/bid abort` — abort the current auction, showing partial results\n" +
+      "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
+    voxmode: "whisp",
+  };
 };
 
-var handleSlash = function (chan, user, text, holla, whisp, blurt) {
+var status = function (auction, bids) {
+  let output;
+
+  if (auction) {
+    output =
+      "Currently active auction initiated by " +
+      obj.initiator +
+      " via:\n`" +
+      obj.urtext +
+      `\n${bidStatus(bids)}`;
+  } else {
+    output = "No current auction";
+  }
+
+  return { output, voxmode: "holla" };
+};
+
+var abort = function (auction, channel, bids) {
+  if (auction) {
+    const output =
+      "*Aborted.* :panda_face: Partial results:\n$SUMMARY".replace(
+        "$SUMMARY",
+        bidSummary(bids)
+      ) +
+      "\n\n_" +
+      bidPay() +
+      "_";
+
+    bidReset(channel);
+    return { output, voxmode: "holla" };
+  } else {
+    return { output: "No current auction", voxmode: "whisp" };
+  }
+};
+
+var debug = function (auction, urtext) {
+  let output;
+  if (auction) {
+    output =
+      urtext + "whispered reply. datastore = " + JSON.stringify(datastore);
+  } else {
+    output = "No current auction";
+  }
+
+  return { output, voxmode: "whisp" };
+};
+
+var printBids = function (auction, bids) {
+  let output;
+  if (auction) {
+    output = `${bidStatus(bids)}`;
+  } else {
+    output = "No current auction";
+  }
+
+  return { output, voxmode: "holla" };
+};
+
+var maybeStart = function (auction, chan, user, text, others) {
+  if (auction) {
+    return {
+      output: "No @-mentions allowed in bids! Try `/bid help`",
+      voxmode: "whisp",
+    };
+  } else {
+    return { output: bidStart(chan, user, text, others), voxmode: "holla" };
+  }
+};
+
+var maybeProc = function (auction, channel, user, text) {
+  if (auction) {
+    return { output: bidProc(channel, user, text), voxmode: "blurt" };
+  } else {
+    return {
+      output: "/bid " + text + "\nNo current auction! Try `/bid help`",
+      voxmode: "whisp",
+    };
+  }
+};
+
+var handleSlash = function (chan, user, text) {
   var urtext = "/bid " + text + "\n";
   var others = bidParse(text);
-  const obj = datastore["beebot.auctions." + chan];
+  const auction = datastore["beebot.auctions." + chan];
   const bids = datastore["beebot.auctions." + chan + ".bids"];
 
-  if (obj) {
-    //--------------------------------- active auction in this channel
-    if (!isEmpty(others)) {
-      whisp("No @-mentions allowed in bids! Try `/bid help`");
-    } else if (text === "") {
-      // no args
-      holla(`${bidStatus(bids)}`);
-    } else if (text === "status") {
-      holla(
-        "Currently active auction initiated by " +
-          obj.initiator +
-          " via:\n`" +
-          obj.urtext +
-          `\n${bidStatus(bids)}`
-      );
-    } else if (text === "abort") {
-      const response =
-        "*Aborted.* :panda_face: Partial results:\n$SUMMARY".replace(
-          "$SUMMARY",
-          bidSummary(obj)
-        ) +
-        "\n\n_" +
-        bidPay() +
-        "_";
+  if (!isEmpty(others)) {
+    return maybeStart(auction, chan, user, text, others);
+  }
 
-      bidReset(chan);
-      holla(response);
-    } else if (text === "help") {
-      whisp(help());
-    } else if (text === "debug") {
-      whisp(
-        urtext + "whispered reply. datastore = " + JSON.stringify(datastore)
-      );
-      // Not true right now
-      // shoutDelayed(rurl, "We can also reply publicly w/out echoing the cmd!");
-    } else {
-      // if the text is anything else then it's a normal bid
-      // could check if user has an old bid so we can say "Updated your bid"
-      blurt(bidProc(chan, user, text));
-    }
-  } else {
-    //------------------------------- no active auction in this channel
-    if (!isEmpty(others)) {
-      holla(bidStart(chan, user, text, others));
-    } else if (text === "") {
-      whisp("No current auction");
-    } else if (text === "status") {
-      holla("No current auction");
-    } else if (text === "abort") {
-      whisp("No current auction");
-    } else if (text === "help") {
-      whisp(help());
-    } else if (text === "debug") {
-      whisp(urtext + "No current auction");
-    } else {
-      // if the text is anything else then it would be a normal bid
-      whisp("/bid " + text + "\nNo current auction! Try `/bid help`");
-    }
+  switch (text) {
+    case "help":
+      return help();
+    case "status":
+      return status(auction, bids);
+    case "abort":
+      return abort(auction, chan, bids);
+    case "debug":
+      return debug(auction, urtext);
+    case "":
+      return printBids(auction, bids);
+    default:
+      return maybeProc(auction, chan, user, text);
   }
 };
 
@@ -262,7 +303,7 @@ module.exports = {
   name: "bid",
   description: "Collect and later reveal sealed bids.",
   options,
-  execute: ({ cid: clientId, sender, input, holla, whisp, blurt }) => {
-    return handleSlash(clientId, sender, input || "", holla, whisp, blurt);
+  execute: ({ cid: clientId, sender, input }) => {
+    return handleSlash(clientId, sender, input || "");
   },
 };
