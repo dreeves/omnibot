@@ -1,7 +1,7 @@
 {
   "name": "omnibot",
-  "version": "2023.04.18-a",
-  "description": "A dictionary guessing game implemented as a Slack/Discord bot",
+  "version": "2023.05.06-a",
+  "description": "A Discord and Slack bot that plays games and mediates auctions",
   "main": "app.js",
   "scripts": {
     "build": "cd ./public && npx snowpack build && npm run register",
