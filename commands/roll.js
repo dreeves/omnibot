@@ -1,6 +1,6 @@
 const options = [
   {
-    name: "n",
+    name: "input", // TODO: make this "n"?
     //required: false,
     description: "Random integer from 1 to n",
   },
