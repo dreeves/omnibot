@@ -246,7 +246,7 @@ wsServer.on("connection", (socket, req) => {
           sender: name,
           input: cmdInput.trim(),
         });
-        send(socket, "chat", `LEX: ${localReply}`);
+        send(socket, "chat", `LEX: ${localReply.output}`);
       } else {
         send(socket, "chat", `No command named ${cmdName}`);
       }
