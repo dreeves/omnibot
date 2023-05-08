@@ -1,6 +1,6 @@
 const options = [
   {
-    name: "ntest",
+    name: "n",
     //required: false,
     description: "Random integer from 1 to n",
   },
@@ -20,16 +20,16 @@ module.exports = {
   name: "roll",
   description: "Return a random number.",
   options,
-  execute: ({ cid: clientId, sender, ntest }) => {
-    if (ntest === '' || ntest === 'help') {
+  execute: ({ cid: clientId, sender, input }) => {
+    if (input === '' || input === 'help') {
       return whisp("How to use /roll\n"
         + "`/roll N` — roll an N-sided die\n"
         + "`/roll help` — show this");
     }
-    const n = parseInt(ntest);
+    const n = parseInt(input);
     if (isNaN(n)) {
-      console.log("DEBUG051: " + JSON.stringify(ntest));
-      return whisp("Pssst, this is not an integer: " + ntest);
+      console.log("DEBUG051: " + JSON.stringify(input));
+      return whisp("Pssst, this is not an integer: " + input);
     } else if (n <= 0) {
       return holla("Rolling a " + n + "-sided die... "
         + (bern(0.1) ? ":poop:" : ":boom:")
