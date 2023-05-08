@@ -1,6 +1,6 @@
 const options = [
   {
-    name: "n",
+    name: "input",
     description: "Random integer from 1 to n",
   },
 ];
@@ -25,7 +25,7 @@ module.exports = {
         + "`/roll N` — roll an N-sided die\n"
         + "`/roll help` — show this");
     }
-    let n = parseInt(input);
+    const n = parseInt(input);
     if (isNaN(n)) {
       console.log("DEBUG051: " + JSON.stringify(input));
       return whisp("Pssst, this is not an integer: " + input);
