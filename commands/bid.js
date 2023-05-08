@@ -13,9 +13,6 @@ const options = [
   },
 ];
 
-// Bernoulli trial with probability p, not currently used
-//var bern = function (p) { return Math.random() < p };
-
 // Random integer from 1 to n inclusive
 function randint(n) { return Math.floor(Math.random() * n) + 1 }
 
@@ -23,71 +20,69 @@ function randint(n) { return Math.floor(Math.random() * n) + 1 }
 function isEmpty(obj) { return Object.keys(obj).length === 0 }
 
 // Returns a hash of usernames (without the @'s) who are @-mentioned in txt
-var bidParse = function (txt) {
-  var pattern = /<@[a-z0-9_-]+>/gi; // regex for @-mentions, HT StackOverflow
-  var users = {};
+function bidParse(txt) {
+  const pattern = /<@[a-z0-9_-]+>/gi; // regex for @-mentions, HT StackOverflow
+  let users = {};
   if (txt.match(pattern)) {
     // RegExp.exec() might avoid doing match in 2 places
-    txt.match(pattern).forEach(function (u) { users[u] = "" });
+    txt.match(pattern).forEach(function (u) { users[u] = ""; });
   }
   return users;
-};
+}
 
 // Returns a string representation of the hash (user->bid) of everyone's bids
-var bidSummary = function (bids) {
-  var row = function (u) {
-    return bids[u] ? "\t" + u + ": " + bids[u] : "\t~" + u + "~";
-  };
+function bidSummary(bids) {
+  // Ugh, Discord does strikeout ~~like this~~ and Slack ~like this~
+  const row = (u) => bids[u] ? `\t${u}: ${bids[u]}` : `\t~~${u}~~`;
   return Object.keys(bids).map(row).join("\n");
-};
+}
 
 // Takes hash of users->bids, constructs a string like
 // "Got bids from {...}, waiting on {...}"
-var bidStatus = function (bids) {
+function bidStatus(bids) {
   return (
     "Got bids from {" +
-    Object.keys(bids).filter(function (x) { return  bids[x] }).join(", ") +
+    Object.keys(bids).filter(function (x) { return bids[x]; }).join(", ") +
     "}, waiting on {" +
-    Object.keys(bids).filter(function (x) { return !bids[x] }).join(", ") + "}"
+    Object.keys(bids).filter(function (x) { return !bids[x]; }).join(", ") + "}"
   );
-};
+}
 
 // Returns whether any of the bids are missing
-var bidMissing = function (bids) {
+function bidMissing(bids) {
   return Object.keys(bids).some(function (x) {
     return bids[x] === "";
   });
-};
+}
 
 // Initialize the auction and shot that it's started
-var bidStart = function (chan, user, text, others) {
+function bidStart(chan, user, text, others) {
   others[user] = ""; // "others" now includes initiating user too
   datastore["beebot.auctions." + chan + ".bids"] = others;
-  var auction = {};
+  let auction = {};
   auction.urtext = "/bid " + text.trim();
   auction.initiator = user;
   datastore["beebot.auctions." + chan] = auction;
   return `Auction started! ${bidStatus(others)}`;
-};
+}
 
 // Deletes all the bids
-var bidReset = function (chan) {
+function bidReset(chan) {
   delete datastore["beebot.auctions." + chan];
   delete datastore["beebot.auctions." + chan + ".bids"];
-};
+}
 
 // Just returns a string about whether to 10X the payments. Note that the /bid
 // command doesn't actually parse out numbers or deal with payments in any way.
-var bidPay = function () {
+function bidPay() {
   const r = randint(10);
-  const y =
-    "/roll 10 → 1 ∴ PAY 10X! :money_with_wings: :moneybag: :money_mouth_face:";
+  const y = "/roll 10 → 1 ∴ PAY 10X! :money_with_wings: :moneybag: :money_mouth_face:";
   const n = "/roll 10 → " + r + " not 1 ∴ no payments! :sweat_smile:";
   return r === 1 ? y : n;
-};
+}
 
 // Add text as user's bid, blurt the results if user is the last one to bid
-var bidProc = function (chan, user, text) {
+function bidProc(chan, user, text) {
   const obj = datastore["beebot.auctions." + chan + ".bids"];
   obj[user] = text;
 
@@ -101,12 +96,12 @@ var bidProc = function (chan, user, text) {
       bidSummary(obj) + `\n\n_${bidPay()}_`;
   }
   return response;
-};
+}
 
 // whisper the documentation
-var help = function () {
+function help() {
   return {
-    output:
+    output: 
 "How to use /bid\n" +
 "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
 "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
@@ -117,9 +112,9 @@ var help = function () {
 "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
     voxmode: "whisp",
   };
-};
+}
 
-var status = function (auction, bids) {
+function status(auction, bids) {
   let output;
   if (auction) {
     output = `Currently active auction initiated by ${obj.initiator} via:\n` +
@@ -128,9 +123,9 @@ var status = function (auction, bids) {
     output = "No current auction";
   }
   return { output, voxmode: "holla" };
-};
+}
 
-var abort = function (auction, channel, bids) {
+function abort(auction, channel, bids) {
   if (auction) {
     const output = `*Aborted.* :panda_face: Partial results:\n` +
       `${bidSummary(bids)}\n\n_${bidPay()}_`;
@@ -139,18 +134,18 @@ var abort = function (auction, channel, bids) {
   } else {
     return { output: "No current auction", voxmode: "whisp" };
   }
-};
+}
 
-var debug = function (auction, urtext) {
+function debug(auction, urtext) {
   return {
-    output: auction ? 
-      `urtext = ${urtext} / datastore = ${JSON.stringify(datastore)}` : 
+    output: auction ?
+      `urtext = ${urtext} / datastore = ${JSON.stringify(datastore)}` :
       "No current auction",
     voxmode: "whisp",
   };
-};
+}
 
-var printBids = function (auction, bids) {
+function printBids(auction, bids) {
   let output;
   if (auction) {
     output = `${bidStatus(bids)}`;
@@ -158,9 +153,9 @@ var printBids = function (auction, bids) {
     output = "No current auction";
   }
   return { output, voxmode: "holla" };
-};
+}
 
-var maybeStart = function (auction, chan, user, text, others) {
+function maybeStart(auction, chan, user, text, others) {
   if (auction) {
     return {
       output: "No @-mentions allowed in bids! Try `/bid help`",
@@ -169,9 +164,9 @@ var maybeStart = function (auction, chan, user, text, others) {
   } else {
     return { output: bidStart(chan, user, text, others), voxmode: "holla" };
   }
-};
+}
 
-var maybeProc = function (auction, channel, user, text) {
+function maybeProc(auction, channel, user, text) {
   if (auction) {
     return { output: bidProc(channel, user, text), voxmode: "blurt" };
   } else {
@@ -180,11 +175,11 @@ var maybeProc = function (auction, channel, user, text) {
       voxmode: "whisp",
     };
   }
-};
+}
 
-var handleSlash = function (chan, user, text) {
-  var urtext = "/bid " + text + "\n";
-  var others = bidParse(text);
+function handleSlash(chan, user, text) {
+  const urtext = "/bid " + text + "\n";
+  const others = bidParse(text);
   const auction = datastore["beebot.auctions." + chan];
   const bids = datastore["beebot.auctions." + chan + ".bids"];
 
@@ -193,14 +188,14 @@ var handleSlash = function (chan, user, text) {
   }
 
   switch (text) {
-    case "help":   return help();
+    case "help": return help();
     case "status": return status(auction, bids);
-    case "abort":  return abort(auction, chan, bids);
-    case "debug":  return debug(auction, urtext);
-    case "":       return printBids(auction, bids);
-    default:       return maybeProc(auction, chan, user, text);
+    case "abort": return abort(auction, chan, bids);
+    case "debug": return debug(auction, urtext);
+    case "": return printBids(auction, bids);
+    default: return maybeProc(auction, chan, user, text);
   }
-};
+}
 
 module.exports = {
   name: "bid",
