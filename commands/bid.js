@@ -17,10 +17,10 @@ const options = [
 //var bern = function (p) { return Math.random() < p };
 
 // Random integer from 1 to n inclusive
-var randint = function (n) { return Math.floor(Math.random() * n) + 1 };
+function randint(n) { return Math.floor(Math.random() * n) + 1 }
 
 // StackOverflow says this is how you check if a hash is empty in ES5
-var isEmpty = function (obj) { return Object.keys(obj).length === 0 };
+function isEmpty(obj) { return Object.keys(obj).length === 0 }
 
 // Returns a hash of usernames (without the @'s) who are @-mentioned in txt
 var bidParse = function (txt) {
