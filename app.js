@@ -246,7 +246,11 @@ wsServer.on("connection", (socket, req) => {
           sender: name,
           input: cmdInput.trim(),
         });
-        send(socket, "chat", `LEX: ${localReply}`);
+        let replyLines = localReply.output.split('\n');
+        send(socket, "chat", `LEX: ${replyLines[0]}`);
+        replyLines.slice(1).forEach((line) => {
+          send(socket, "chat", line);
+        });
       } else {
         send(socket, "chat", `No command named ${cmdName}`);
       }
