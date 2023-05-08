@@ -33,7 +33,7 @@ function bidParse(txt) {
 // Returns a string representation of the hash (user->bid) of everyone's bids
 function bidSummary(bids) {
   // Ugh, Discord does strikeout ~~like this~~ and Slack ~like this~
-  const row = (u) => bids[u] ? `\t${u}: ${bids[u]}` : `\t~~${u}~~`;
+  const row = (u) => bids[u] ? `\t${u}: ${bids[u]}` : `\t~${u}~`;
   return Object.keys(bids).map(row).join("\n");
 }
 
@@ -76,8 +76,8 @@ function bidReset(chan) {
 // command doesn't actually parse out numbers or deal with payments in any way.
 function bidPay() {
   const r = randint(10);
-  const y = "/roll 10 → 1 ∴ PAY 10X! :money_with_wings: :moneybag: :money_mouth_face:";
-  const n = "/roll 10 → " + r + " not 1 ∴ no payments! :sweat_smile:";
+  const y = "_/roll 10 → 1 ∴ PAY 10X!_ :money_with_wings: :moneybag: :money_mouth_face:";
+  const n = "_/roll 10 → " + r + " not 1 ∴ no payments!_ :sweat_smile:";
   return r === 1 ? y : n;
 }
 
@@ -93,7 +93,7 @@ function bidProc(chan, user, text) {
     bidReset(chan);
 
     response += `Got final bid from ${user}! :tada: Results:\n` +
-      bidSummary(obj) + `\n\n_${bidPay()}_`;
+      bidSummary(obj) + `\n\n${bidPay()}`;
   }
   return response;
 }
@@ -128,7 +128,7 @@ function status(auction, bids) {
 function abort(auction, channel, bids) {
   if (auction) {
     const output = `*Aborted.* :panda_face: Partial results:\n` +
-      `${bidSummary(bids)}\n\n_${bidPay()}_`;
+      `${bidSummary(bids)}\n\n${bidPay()}`;
     bidReset(channel);
     return { output, voxmode: "holla" };
   } else {
