@@ -47,10 +47,11 @@ module.exports = {
     command.execute = async (interaction) => {
       const client = interaction.client;
       const { channel } = interaction;
+      const input = interaction.options.getString(botCommand.input.name);
       const options = {
         cid: `discord_${interaction.channelId}`,
         sender: `<@${interaction.user.id}>`,
-        input: interaction.options.getString(botCommand.input.name),
+        input: input.trim(),
       };
 
       const { output, voxmode } = botCommand.execute(options);
@@ -77,10 +78,11 @@ module.exports = {
 
   toSlack: (botCommand) => {
     return async ({ command, ack, respond }) => {
+      const input = command.text;
       const { output, voxmode } = botCommand.execute({
         cid: command.channel_id,
         sender: `<@${command.user_id}>`,
-        input: command.text.replace(/<@(.*)\|.*>/, "<@$1>"),
+        input: input.replace(/<@(.*)\|.*>/, "<@$1>").trim(),
       });
 
       const formattedOutput = platformat("slack", output);
