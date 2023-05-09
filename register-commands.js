@@ -35,9 +35,7 @@ for (const file of commandFiles) {
   console.log(`Add a new command to the slack app with the following details:`);
   console.log(`name: ${botCommand.name}`);
   console.log(`description: ${botCommand.description}`);
-  const usageHint = botCommand.options
-    .map(({ description }) => `[${description}]`)
-    .join(" ");
+  const usageHint = `[${botCommand.input.description}]`;
   console.log(`usage hint: ${usageHint}`);
 }
 
@@ -81,7 +79,7 @@ for (const file of commandFiles) {
                 type: Discord.AutoModerationActionType.BlockMessage,
                 metadata: {
                   customMessage:
-                  "Oops. Looks like you meant to send a bot command, not a message!",
+                    "Oops. Looks like you meant to send a bot command, not a message!",
                 },
               },
             ],

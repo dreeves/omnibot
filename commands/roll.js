@@ -1,11 +1,3 @@
-const options = [
-  {
-    name: "input", // TODO: make this "n"?
-    //required: false,
-    description: "Random integer from 1 to n",
-  },
-];
-
 // TODO: DRY this up with commands/bid.js
 // Random integer from 1 to n inclusive
 function randint(n) { return Math.floor(Math.random() * n) + 1 }
@@ -18,8 +10,11 @@ function holla(s) { return { output: s, voxmode: "holla" } }
 
 module.exports = {
   name: "roll",
-  description: "Return a random number.",
-  options,
+  description: "Return a random integer from 1 to n.",
+  input: {
+    name: "n",
+    description: "Maximum value of the random number.",
+  },
   execute: ({ cid: clientId, sender, input }) => {
     if (input === '' || input === 'help') {
       return whisp("How to use /roll\n"
