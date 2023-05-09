@@ -35,14 +35,14 @@ module.exports = {
       .setName(botCommand.name)
       .setDescription(botCommand.description);
 
-    botCommand.options.forEach((botOption) => {
+    if (botCommand.input) {
       command.data.addStringOption((option) =>
         option
-          .setName(botOption.name)
-          .setDescription(botOption.description)
-          .setRequired(botOption.required || false)
+          .setName(botCommand.input.name)
+          .setDescription(botCommand.input.description)
+          .setRequired(botCommand.input.required || false)
       );
-    });
+    }
 
     command.execute = async (interaction) => {
       const client = interaction.client;
@@ -50,7 +50,7 @@ module.exports = {
       const options = {
         cid: `discord_${interaction.channelId}`,
         sender: `<@${interaction.user.id}>`,
-        input: interaction.options.getString("input"),
+        input: interaction.options.getString(botCommand.input.name),
       };
 
       const { output, voxmode } = botCommand.execute(options);

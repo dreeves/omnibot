@@ -5,14 +5,6 @@
 
 const datastore = {};
 
-const options = [
-  {
-    name: "input",
-    required: true,
-    description: "Start an auction or place a sealed bid",
-  },
-];
-
 // Random integer from 1 to n inclusive
 function randint(n) { return Math.floor(Math.random() * n) + 1 }
 
@@ -200,7 +192,10 @@ function handleSlash(chan, user, text) {
 module.exports = {
   name: "bid",
   description: "Collect and later reveal sealed bids.",
-  options,
+  input: {
+    name: "input",
+    description: "Start an auction or place a sealed bid",
+  },
   execute: ({ cid: clientId, sender, input }) => {
     return handleSlash(clientId, sender, input || "");
   },
