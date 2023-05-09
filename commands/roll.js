@@ -18,17 +18,19 @@ module.exports = {
   execute: ({ cid: clientId, sender, input }) => {
     if (input === '' || input === 'help') {
       return whisp("How to use /roll\n"
-        + "`/roll N` — roll an N-sided die\n"
+        + "`/roll N` — roll an N-sided :game_die:\n"
         + "`/roll help` — show this");
     }
     const n = parseInt(input);
     if (isNaN(n)) {
-      console.log("DEBUG051: " + JSON.stringify(input));
+      //console.log("DEBUG051: " + JSON.stringify(input));
       return whisp("Pssst, this is not an integer: " + input);
     } else if (n <= 0) {
       return holla("Rolling a " + n + "-sided die... "
         + (bern(0.1) ? ":poop:" : ":boom:")
         + " (try again with a positive number of sides?)");
+    } else if (n === 1) {
+      return holla("Rolling a D1... it came up 1. Duh.");
     } else {
       return holla(`Rolling a D${n}... it came up ${randint(n)}.`);
     }
