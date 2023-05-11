@@ -29,6 +29,21 @@ describe("running an auction", function () {
     expect(voxmode).to.equal("blurt");
   });
 
+  it("prints the status of the auction", function () {
+    const { output, voxmode } = bid.execute({
+      channel: "001",
+      input: "status",
+      sender: "<@UIEBO6EECEC>",
+    });
+
+    expect(output).to.equal(
+      "Currently active auction initiated by <@UEECHOH1OOX> via:\n" +
+        "/bid with <@UIEBO6EECEC>\n" +
+        "Got bids from {<@UIEBO6EECEC>}, waiting on {<@UEECHOH1OOX>}"
+    );
+    expect(voxmode).to.equal("holla");
+  });
+
   it("prints the result when the auction is done", function () {
     const { output, voxmode } = bid.execute({
       channel: "001",
