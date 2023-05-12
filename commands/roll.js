@@ -13,7 +13,7 @@ module.exports = {
   description: "Return a random integer from 1 to n.",
   input: {
     name: "n",
-    required: true,  // experimenting with this
+    //required: true,  // experimenting with this
     description: "Maximum value of the random number.", // where is this shown?
   },
   execute: ({ cid: clientId, sender, input }) => {
