@@ -109,8 +109,8 @@ function help() {
 function status(auction, bids) {
   let output;
   if (auction) {
-    output = `Currently active auction initiated by ${obj.initiator} via:\n` +
-      `${obj.urtext}\n${bidStatus(bids)}`;
+    output = `Currently active auction initiated by ${auction.initiator} via:\n` +
+      `${auction.urtext}\n${bidStatus(bids)}`;
   } else {
     output = "No current auction";
   }
