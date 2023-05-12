@@ -51,7 +51,7 @@ module.exports = {
       const options = {
         cid: `discord_${interaction.channelId}`,
         sender: `<@${interaction.user.id}>`,
-        input: input.trim(),
+        input: input, // was trimming here
       };
 
       const { output, voxmode } = botCommand.execute(options);
@@ -82,7 +82,7 @@ module.exports = {
       const { output, voxmode } = botCommand.execute({
         cid: command.channel_id,
         sender: `<@${command.user_id}>`,
-        input: input.replace(/<@(.*)\|.*>/, "<@$1>").trim(),
+        input: input.replace(/<@(.*)\|.*>/, "<@$1>"), // was trimming here
       });
 
       const formattedOutput = platformat("slack", output);
