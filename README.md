@@ -65,19 +65,25 @@ https://www.freecodecamp.org/news/create-a-discord-bot-with-javascript-nodejs/
 
 ### Registering Bot Commands
 
-Whenever a new command is defined or an existing command is *redefined*, the commands need to be registered with Discord. Run `node run register` to do this.
+Whenever a new command is defined or an existing command is *redefined*, the 
+commands need to be registered with Discord. 
+Run `node run register` to do this.
 
-Discord rate limits command registrations.
+Discord rate-limits command registrations.
 
-Note that you do *not* need to re-register commands if you've only changed the contents of the command's execute function.
+Note that you do *not* need to re-register commands if you've only changed the 
+contents of the command's execute function.
 
 ## Slack Setup
 
-* Add to slack: https://api.slack.com/apps/A011Z3TQ7BK
-* Then you copy the generated bot token 
-[from Slack](https://api.slack.com/apps/A011Z3TQ7BK/oauth ) into the `.env` file.
-* Then invite Omnibot to your games channel.
-* Maybe also specify the URL `https://omnibot.yootl.es/slack/events` at https://api.slack.com/apps/A011Z3TQ7BK/event-subscriptions?
+1. Add to Slack: https://api.slack.com/apps/A011Z3TQ7BK
+2. Copy the generated bot token
+[from Slack](https://api.slack.com/apps/A011Z3TQ7BK/oauth )
+into the `.env` file
+3. Invite Omnibot to your #games channel
+4. Maybe also specify the URL 
+`https://omnibot.yootl.es/slack/events` at 
+https://api.slack.com/apps/A011Z3TQ7BK/event-subscriptions?
 
 The `examples` folder has some templates from Slack that might be handy.
 
@@ -105,6 +111,7 @@ Lexiguess was inspired by https://hryanjones.com/guess-my-word/
 2021-12-19: Works in Slack and Discord and can serve web pages
 2022-03-10: Added template.env, greater portability
 2022-09-27: Bumping the discord.js version fixed the duplicate replies bug
+2023-05-12: Oops we haven't updated the changelog in ages
 ```
 
 ## Generalizing to an omnibot

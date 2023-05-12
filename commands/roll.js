@@ -13,7 +13,8 @@ module.exports = {
   description: "Return a random integer from 1 to n.",
   input: {
     name: "n",
-    description: "Maximum value of the random number.",
+    required: true,  // experimenting with this
+    description: "Maximum value of the random number.", // where is this shown?
   },
   execute: ({ cid: clientId, sender, input }) => {
     if (input === '' || input === 'help') {
@@ -36,11 +37,3 @@ module.exports = {
     }
   },
 };
-
-/* original version of /roll that should be safe to get rid of now:
-  execute: (opts) => {
-    const size = opts["n"];
-    const result = Math.floor(Math.random() * size + 1);    
-    return `You rolled a D${size} and it came up ${result}.`;
-  },
-*/
