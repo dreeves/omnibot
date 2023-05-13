@@ -15,7 +15,7 @@ execute: ({ cid, sender, input }) => {
  return { voxmode: "whisp", output: `\
 This is Omnibot v${packageData.version} \
 called by ${sender} \
-in channel #${JSON.stringify(cid)}.\n\
+in channel ${cid}.\n\
 You called /${NOM} with arg1 = "\`${input}\`".\n\
 Debugging factoid: ` + (input === input.trim() ? 
 "If arg1 had leading or trailing whitespace, it got trimmed before Omnibot " +
