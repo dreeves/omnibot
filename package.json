@@ -38,6 +38,6 @@
     "mocha": "^10.2.0",
     "puppeteer": "^20.2.0",
     "selenium-webdriver": "^4.9.2",
-    "snowpack": "^3.8.8"
+    "snowpack": "^3.2.2"
   }
 }
