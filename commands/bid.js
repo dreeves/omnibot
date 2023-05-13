@@ -194,6 +194,7 @@ module.exports = {
   description: "Collect and later reveal sealed bids.",
   input: {
     name: "input",
+    //required: true,  // careful, this might break things?
     description: "Start an auction or place a sealed bid",
   },
   execute: ({ cid: clientId, sender, input }) => {
