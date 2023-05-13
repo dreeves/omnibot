@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require("discord.js");
-const axios = require("axios");
 
 const STRIKETHROUGH_REGEX = /~(?<text>[^\s\n]|[^\s\n]([^\n]*?)[^\s\n])~/gi;
 const ITALIC_REGEX =
@@ -45,11 +44,12 @@ module.exports = {
     }
 
     command.execute = async (interaction) => {
-      const client = interaction.client;
       const { channel } = interaction;
       const input = interaction.options.getString(botCommand.input.name);
       const options = {
-        cid: `discord_${interaction.channelId}`,
+        platform: "discord",
+        channel_id: channel.id,
+        channel_name: channel.name,
         sender: `<@${interaction.user.id}>`,
         input: input, // was trimming here
       };
@@ -80,7 +80,9 @@ module.exports = {
     return async ({ command, ack, respond }) => {
       const input = command.text;
       const { output, voxmode } = botCommand.execute({
-        cid: command.channel_id,
+        platform: "slack",
+        channel_id: command.channel_id,
+        channel_name: command.channel_name,
         sender: `<@${command.user_id}>`,
         input: input.replace(/<@(.*)\|.*>/, "<@$1>"), // was trimming here
       });

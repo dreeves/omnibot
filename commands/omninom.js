@@ -11,11 +11,11 @@ input: {
   required: true,
   description: "This is the usage hint: type something",
 },
-execute: ({ cid, sender, input }) => {
+execute: ({ channel_name, sender, input }) => {
  return { voxmode: "whisp", output: `\
 This is Omnibot v${packageData.version} \
 called by ${sender} \
-in channel ${cid}.\n\
+in channel ${channel_name}.\n\
 You called /${NOM} with arg1 = "\`${input}\`".\n\
 Debugging factoid: ` + (input === input.trim() ? 
 "If arg1 had leading or trailing whitespace, it got trimmed before Omnibot " +
