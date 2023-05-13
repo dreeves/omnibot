@@ -11,15 +11,16 @@ input: {
   required: true,
   description: "This is the usage hint: type something",
 },
-execute: ({ cid: clientId, sender, input }) => {
+execute: ({ channel, sender, input }) => {
  return { voxmode: "whisp", output: `\
 This is Omnibot v${packageData.version} \
-called by ${JSON.stringify(sender)} \
-in channel #${clientId}.\n\
+called by ${sender} \
+in channel #${JSON.stringify(channel)}.\n\
 You called /${NOM} with arg1 = "\`${input}\`".\n\
 Debugging factoid: ` + (input === input.trim() ? 
-"If arg1 had any leading or trailing space, it got trimmed before we saw it." :
-"Interestingly, arg1's whitespace was not trimmed before we saw it."),
+"If arg1 had leading or trailing whitespace, it got trimmed before Omnibot " +
+"saw it." :
+"Interestingly, arg1's whitespace was not trimmed before Omnibot saw it."),
  }
 },
 
