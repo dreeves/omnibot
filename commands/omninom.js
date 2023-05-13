@@ -1,6 +1,6 @@
 const NOM = "omninom";
 
-const packageData = require('./package.json');
+const packageData = require('package.json');
 
 module.exports = {
 
