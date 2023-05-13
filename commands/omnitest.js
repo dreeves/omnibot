@@ -8,7 +8,10 @@ input: {
   description: "Does this description get shown anywhere?",
 },
 execute: ({ cid: clientId, sender, input }) => {
-  return whisp("You called /omnitest with arg1 = \"`" + input + "`\".");
+ return {
+   output: "You called /omnitest with arg1 = \"`" + input + "`\".",
+   voxmode: "whisp",
+ }
 },
 
 }; // end module.exports
