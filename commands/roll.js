@@ -16,7 +16,7 @@ module.exports = {
     //required: true,  // experimenting with this
     description: "Maximum value of the random number.", // where is this shown?
   },
-  execute: ({ cid: clientId, sender, input }) => {
+  execute: ({ input }) => {
     if (input === '' || input === 'help') {
       return whisp("How to use /roll\n"
         + "`/roll N` — roll an N-sided :game_die:\n"

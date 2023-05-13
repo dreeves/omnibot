@@ -197,7 +197,7 @@ module.exports = {
     //required: true,  // careful, this might break things?
     description: "Start an auction or place a sealed bid",
   },
-  execute: ({ cid: clientId, sender, input }) => {
-    return handleSlash(clientId, sender, input || "");
+  execute: ({ channel_id, sender, input }) => {
+    return handleSlash(channel_id, sender, input || "");
   },
 };
