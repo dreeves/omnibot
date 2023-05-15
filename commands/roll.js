@@ -22,6 +22,8 @@ module.exports = {
         + "`/roll N` — roll an N-sided :game_die:\n"
         + "`/roll help` — show this");
     }
+    // TODO: actually check if input is an integer, via /^[+-]?\d+\.?$/
+    // if you just do parseInt then it turns, say, "1/2" into 1 :(
     const n = parseInt(input);
     if (isNaN(n)) {
       //console.log("DEBUG051: " + JSON.stringify(input));
