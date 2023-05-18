@@ -121,6 +121,14 @@ discord.on("interactionCreate", async (interaction) => {
     });
   }
 });
+
+discord.on("messageCreate", async (message) => {
+  if (message.content.match(/MAGICDELETEME/)) {
+    message
+      .reply("Looks like you used the magic word!")
+      .then(() => message.delete());
+  }
+});
 CLOG("Packages loaded");
 
 // discord botspam channel id = 847897704632942632
