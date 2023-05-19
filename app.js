@@ -108,7 +108,7 @@ discord.once("ready", () => {
       /^(?:botspam|games|lexi.*|spellingbee)$/.test(channel.name)
     )
     .forEach((channel) => {
-      CLOG(`would send to channel ${channel.name}`);
+      channel.send(`Launching new version: ${version}`);
     });
 
   app.client.conversations.list().then(({ channels }) =>
