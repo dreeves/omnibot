@@ -6,6 +6,7 @@ CLOG("Omnibot!");
 // -------- Initialization, create and start server, log in to Discord ---------
 
 require("dotenv").config(); // or import 'dotenv/config'
+const version = process.env.RENDER_GIT_COMMIT || "local development version";
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -96,10 +97,28 @@ botCommands.forEach((botCommand) => {
   });
 
   CLOG("Omnibot is running; listening for events from Slack / the web");
+  app.message();
 })();
 
 discord.once("ready", () => {
   CLOG(`Omnibot is running; logged in to Discord as ${discord.user.tag}`);
+  CLOG(`Version: ${version}`);
+  discord.channels.cache
+    .filter((channel) => channel.type === Discord.ChannelType.GuildText)
+    .forEach((channel) => {
+      channel.send(`Launching new version: ${version}`);
+    });
+
+  app.client.conversations.list().then(({ channels }) =>
+    channels
+      .filter((channel) => channel.is_member)
+      .forEach(({ id }) =>
+        app.client.chat.postMessage({
+          channel: id,
+          text: `Launching new version: ${version}`,
+        })
+      )
+  );
 });
 discord.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
