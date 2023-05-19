@@ -104,9 +104,11 @@ discord.once("ready", () => {
   CLOG(`Omnibot is running; logged in to Discord as ${discord.user.tag}`);
   CLOG(`Version: ${version}`);
   discord.channels.cache
-    .filter((channel) => channel.type === Discord.ChannelType.GuildText)
+    .filter((channel) =>
+      /^(?:botspam|games|lexi.*|spellingbee)$/.test(channel.name)
+    )
     .forEach((channel) => {
-      channel.send(`Launching new version: ${version}`);
+      CLOG(`would send to channel ${channel.name}`);
     });
 
   app.client.conversations.list().then(({ channels }) =>
