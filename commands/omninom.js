@@ -1,6 +1,6 @@
 const NOM = "omninom"; // name of this slash command
 
-const packageData = require('../package.json');
+const packageData = require('../package.json'); // to see the version number
 
 module.exports = {
 

@@ -1,9 +1,18 @@
 // VOXMODE: One of 3 ways to reply to a user's command:
 //  1. whisp: eat the command and reply so only the user sees it
 //  2. holla: echo the command publicly and reply (holla back) publicly
-//  3. blurt: say something publicly & asynchronously, no echoing any command
+//  3. blurt: eat the command but reply or say something publicly
+//  (There's no voxmode for echoing the command publicly but replying privately
+//   but if we ever have a use case for that, maybe we'll call it "kibitz".)
 
 const datastore = {};
+
+// Not using this yet.
+const pumpkinThresh = {
+  "dreev": 100,
+  "bee": 100,
+  "mary": 1,
+};
 
 // Random integer from 1 to n inclusive
 function randint(n) { return Math.floor(Math.random() * n) + 1 }
