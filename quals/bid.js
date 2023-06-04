@@ -56,7 +56,7 @@ describe("running an auction", function () {
         "Got final bid from <@UEECHOH1OOX>! :tada: Results:\n" +
           "\t<@UIEBO6EECEC>: I vote for tonight @8pm\n" +
           "\t<@UEECHOH1OOX>: I vote for tonight @7pm\n\n" +
-          "_/roll [0-9]+ → [0-9]+ not [0-9]+ ∴ no payments! :sweat_smile:_"
+          "_/roll [0-9]+ → [0-9]+ not [0-9]+ ∴ no payments!_ :sweat_smile:"
       )
     );
     expect(voxmode).to.equal("blurt");
