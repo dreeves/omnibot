@@ -78,4 +78,14 @@ wsServer.on("connection", (socket, req) => {
     });
 });
 
+process.on("exit", () => {
+    web.clients.forEach((s) =>
+        send(
+            s,
+            "chat",
+            "Server is shutting down! This is most likely a deliberate act by the admin."
+        )
+    );
+});
+
 module.exports = wsServer;

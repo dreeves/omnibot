@@ -53,4 +53,8 @@ discord.on("messageCreate", async (msg) => {
     if (reply !== null) await msg.reply(reply);
 });
 
+process.on("exit", () => {
+    discord.destroy();
+});
+
 module.exports = discord;

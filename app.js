@@ -45,15 +45,6 @@ if (slack.receiver.router) {
   CLOG("Omnibot is running; listening for events from Slack / the web");
 })();
 
-// Web Client
 process.on("exit", () => {
   CLOG("Shutting down!");
-  web.clients.forEach((s) =>
-    send(
-      s,
-      "chat",
-      "Server is shutting down! This is most likely a deliberate act by the admin."
-    )
-  );
-  discord.destroy();
 });
