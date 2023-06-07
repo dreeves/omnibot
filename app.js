@@ -15,59 +15,18 @@ const { lexup } = require("./lexiguess.js");
 const ws = require("ws");
 const { generateSlug } = require("random-word-slugs");
 const express = require("express");
-const { App, ExpressReceiver } = require("@slack/bolt");
-const receiver = new ExpressReceiver({
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
-});
-receiver.router.use(express.static("public"));
-receiver.router.use("/lib", express.static("node_modules"));
-receiver.router.get("/health", (req, res) => {
+const webApp = express();
+const { discord, slack } = require("./platforms");
+
+webApp.use(express.static("public"));
+webApp.use("/lib", express.static("node_modules"));
+webApp.get("/health", (req, res) => {
   res.status(200).send("Server is running!");
 });
-//receiver.router.use(express.json()) // if we wanted more than static pages
-const appOptions = process.env.DEBUG
-  ? {
-      socketMode: true,
-      appToken: process.env.SLACK_APP_TOKEN,
-    }
-  : {
-      receiver,
-    };
-const app = new App({
-  token: process.env.SLACK_BOT_TOKEN,
-  ...appOptions,
-});
 
-const convertCommands = require("./convert-commands.js");
-const Discord = require("discord.js");
-const discord = new Discord.Client({
-  intents: [
-    Discord.GatewayIntentBits.Guilds,
-    Discord.GatewayIntentBits.GuildMessages,
-    Discord.GatewayIntentBits.MessageContent,
-  ],
-});
-
-// Load our Discord commands
-discord.commands = new Discord.Collection();
-
-const commandsPath = path.join(__dirname, "commands");
-const commandFiles = fs
-  .readdirSync(commandsPath)
-  .filter((file) => file.endsWith(".js"));
-const botCommands = commandFiles.map((file) =>
-  require(path.join(commandsPath, file))
-);
-
-botCommands.forEach((botCommand) => {
-  // Discord
-  const discordCommand = convertCommands.toDiscord(botCommand);
-  discord.commands.set(discordCommand.data.name, discordCommand);
-
-  // Slack
-  const slackCommand = convertCommands.toSlack(botCommand);
-  app.command(`/${botCommand.name}`, slackCommand);
-});
+if (slack.receiver.router) {
+  webApp.use("/", receiver.router);
+}
 
 (async () => {
   if (process.env.IS_PULL_REQUEST !== "true") {
@@ -81,13 +40,8 @@ botCommands.forEach((botCommand) => {
     }
   }
 
-  let server;
-  if (process.env.DEBUG) {
-    await app.start();
-    server = await receiver.start(process.env.PORT || 3000);
-  } else {
-    server = await app.start(process.env.PORT || 3000);
-  }
+  await slack.start();
+  let server = webApp.listen(process.env.PORT || 3000);
 
   server.on("upgrade", (request, socket, head) => {
     wsServer.handleUpgrade(request, socket, head, (socket) => {
@@ -143,7 +97,7 @@ discord.on("messageCreate", async (msg) => {
 });
 
 // Someone says a single strictly alphabetic word in a channel our bot is in
-app.message(/^\s*([a-z]{2,})\s*$/i, async ({ context, say }) => {
+slack.message(/^\s*([a-z]{2,})\s*$/i, async ({ context, say }) => {
   // DRY me
   const cid = context.teamId; // string identifier for this server/channel
   const usaid = context.matches[0]; // the string the user typed
@@ -153,7 +107,7 @@ app.message(/^\s*([a-z]{2,})\s*$/i, async ({ context, say }) => {
 });
 
 // Someone clicks on the Home tab of our app in Slack; render the page
-app.event("app_home_opened", async ({ event, context }) => {
+slack.event("app_home_opened", async ({ event, context }) => {
   try {
     CLOG(`Home tab opened in Slack by user ${event.user}`);
     await app.client.views.publish({
