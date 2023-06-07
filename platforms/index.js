@@ -4,6 +4,7 @@ const path = require("node:path");
 const convertCommands = require("../convert-commands.js");
 const discord = require("./discord.js");
 const slack = require("./slack.js");
+const web = require("./web.js");
 
 const commandsPath = path.join(__dirname, "../commands");
 const commandFiles = fs
@@ -24,4 +25,5 @@ botCommands.forEach((botCommand) => {
 module.exports = {
     discord,
     slack,
+    web,
 };
