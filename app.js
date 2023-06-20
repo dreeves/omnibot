@@ -24,7 +24,7 @@ if (slack.receiver.router) {
 (async () => {
   if (process.env.IS_PULL_REQUEST !== "true") {
     try {
-      await discord.login(process.env.DISCORD_BOT_TOKEN);
+      await discord.init(process.env.DISCORD_BOT_TOKEN);
     } catch (error) {
       console.log(error);
       console.log(

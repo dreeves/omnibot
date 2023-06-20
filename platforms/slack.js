@@ -1,6 +1,6 @@
 const { App, ExpressReceiver } = require("@slack/bolt");
 
-const { lexup } = require("../lexiguess.js");
+const dispatch = require("../dispatch");
 
 const receiver = new ExpressReceiver({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -19,14 +19,62 @@ const app = new App({
     ...appOptions,
 });
 
-// Someone says a single strictly alphabetic word in a channel our bot is in
-app.message(/^\s*([a-z]{2,})\s*$/i, async ({ context, say }) => {
-    // DRY me
-    const cid = context.teamId; // string identifier for this server/channel
-    const usaid = context.matches[0]; // the string the user typed
-    const reply = lexup(cid, usaid);
+async function sendmesg(message) {
+    if (message.priv) {
+        await app.client.chat.postEphemeral({
+            thread_ts: message.mrid,
+            channel: message.chan,
+            text: message.mesg,
+            user: message.user,
+        });
+    } else {
+        await app.client.chat.postMessage({
+            thread_ts: message.mrid,
+            channel: message.chan,
+            text: message.mesg,
+        });
+    }
+}
 
-    if (reply !== null) await say(reply);
+app.command(/^\/.+/, async ({ command, ack }) => {
+    await ack();
+    dispatch(
+        {
+            plat: "slack",
+            serv: command.team_id,
+            chan: command.channel_name,
+            user: `<@${command.user_id}>`,
+            mesg: `${command.command} ${command.text}`,
+            msid: null,
+        },
+        async (message) => {
+            // HACK
+            if (message.mrid === null) {
+                await sendmesg({
+                    ...message,
+                    mesg: `${command.command} ${command.text}`,
+                });
+            }
+            await sendmesg(message);
+        }
+    );
+});
+
+app.message(/^.*$/i, async ({ message }) => {
+    const { channels } = await app.client.conversations.list();
+    const channel = channels.find((c) => c.id === message.channel).name;
+
+    dispatch(
+        {
+            plat: "slack",
+            serv: message.team,
+            chan: channel,
+            user: message.user,
+            mesg: message.text,
+            msid: message.ts,
+        },
+        sendmesg
+    );
 });
 
 // Someone clicks on the Home tab of our app in Slack; render the page

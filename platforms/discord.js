@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 
-const { lexup } = require("../lexiguess.js");
+const dispatch = require("../dispatch.js");
 
 const discord = new Discord.Client({
     intents: [
@@ -10,27 +10,64 @@ const discord = new Discord.Client({
     ],
 });
 
-discord.commands = new Discord.Collection();
+async function sendmesg({ serv, chan, mrid, user, mesg }) {
+    const guild = discord.guilds.cache.find((g) => g.id === serv);
+    const channel = guild.channels.cache.find((c) => c.name === chan);
+
+    if (mrid) {
+        await channel.messages
+            .fetch(mrid)
+            .then(async (message) => await message.reply(mesg));
+    } else {
+        await channel.send(mesg);
+    }
+}
+
+function maybePriv(interaction) {
+    const command = interaction.commandName;
+    const input = interaction.options.getString("input");
+
+    return async (message) => {
+        if (message.priv) {
+            await interaction.followUp({
+                content: message.mesg,
+                ephemeral: message.priv,
+            });
+        } else if (message.mrid === interaction.id) {
+            await interaction.followUp(`/${command} ${input || ""}`);
+            await interaction.followUp(message.mesg);
+        } else {
+            sendmesg(message);
+        }
+    };
+}
 
 discord.once("ready", () => {
     console.log(
         `Omnibot is running; logged in to Discord as ${discord.user.tag}`
     );
 });
+
 discord.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
-    const command = interaction.client.commands.get(interaction.commandName);
+    const command = interaction.commandName;
+    const input = interaction.options.getString("input");
 
-    if (!command) {
-        console.error(
-            `No command matching ${interaction.commandName} was found.`
-        );
-        return;
-    }
+    await interaction.deferReply({ ephemeral: true });
 
     try {
-        await command.execute(interaction);
+        dispatch(
+            {
+                plat: "discord",
+                serv: interaction.guildId,
+                chan: interaction.channel.name,
+                user: `<@${interaction.user.id}>`,
+                mesg: `/${command} ${input || ""}`,
+                msid: interaction.id,
+            },
+            maybePriv(interaction)
+        );
     } catch (error) {
         console.error(error);
         await interaction.reply({
@@ -45,16 +82,27 @@ discord.on("messageCreate", async (msg) => {
         return;
     }
 
-    const cid = msg.channel.name; // string identifier for this server/channel
-    const usaid = msg.content;
-    if (!/^[a-z]{2,}$/i.test(usaid)) return; // DRY up this regex
-    if (!/^(?:botspam|games|lexi.*|spellingbee)$/.test(cid)) return;
-    const reply = lexup(cid, usaid);
-    if (reply !== null) await msg.reply(reply);
+    dispatch(
+        {
+            plat: "discord",
+            serv: msg.guildId,
+            chan: msg.channel.name,
+            user: msg.author.id,
+            mesg: msg.content,
+            msid: msg.id,
+        },
+        sendmesg
+    );
 });
 
 process.on("exit", () => {
     discord.destroy();
 });
 
-module.exports = discord;
+function init(token) {
+    return discord.login(token);
+}
+
+module.exports = {
+    init,
+};

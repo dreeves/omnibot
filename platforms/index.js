@@ -15,11 +15,7 @@ const botCommands = commandFiles.map((file) =>
 );
 
 botCommands.forEach((botCommand) => {
-    const discordCommand = convertCommands.toDiscord(botCommand);
-    discord.commands.set(discordCommand.data.name, discordCommand);
-
     const slackCommand = convertCommands.toSlack(botCommand);
-    slack.command(`/${botCommand.name}`, slackCommand);
 });
 
 module.exports = {
