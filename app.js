@@ -18,7 +18,7 @@ webApp.get("/health", (req, res) => {
 });
 
 if (slack.receiver.router) {
-  webApp.use("/", receiver.router);
+  webApp.use("/", slack.receiver.router);
 }
 
 (async () => {
