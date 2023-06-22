@@ -9,24 +9,32 @@ const datastore = {};
 
 // Not using this yet.
 const pumpkinThresh = {
-  "dreev": 100,
-  "bee": 100,
-  "mary": 1,
+  dreev: 100,
+  bee: 100,
+  mary: 1,
 };
 
 // Random integer from 1 to n inclusive
-function randint(n) { return Math.floor(Math.random() * n) + 1 }
+function randint(n) {
+  return Math.floor(Math.random() * n) + 1;
+}
 
 // StackOverflow says this is how you check if a hash is empty in ES5
-function isEmpty(obj) { return Object.keys(obj).length === 0 }
+function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
 
 // Returns a hash of usernames (without the @'s) who are @-mentioned in txt
 function bidParse(txt) {
-  const pattern = /<@[a-z0-9_-]+>/gi; // regex for @-mentions, HT StackOverflow
+  console.log(txt);
+  const pattern = /<@[a-z0-9_-|]+>/gi; // regex for @-mentions, HT StackOverflow
   let users = {};
   if (txt.match(pattern)) {
     // RegExp.exec() might avoid doing match in 2 places
-    txt.match(pattern).forEach(function (u) { users[u] = ""; });
+    txt.match(pattern).forEach(function (u) {
+      console.log(u);
+      users[u] = "";
+    });
   }
   return users;
 }
@@ -34,7 +42,7 @@ function bidParse(txt) {
 // Returns a string representation of the hash (user->bid) of everyone's bids
 function bidSummary(bids) {
   // Ugh, Discord does strikeout ~~like this~~ and Slack ~like this~
-  const row = (u) => bids[u] ? `\t${u}: ${bids[u]}` : `\t~${u}~`;
+  const row = (u) => (bids[u] ? `\t${u}: ${bids[u]}` : `\t~${u}~`);
   return Object.keys(bids).map(row).join("\n");
 }
 
@@ -43,9 +51,18 @@ function bidSummary(bids) {
 function bidStatus(bids) {
   return (
     "Got bids from {" +
-    Object.keys(bids).filter(function (x) { return bids[x]; }).join(", ") +
+    Object.keys(bids)
+      .filter(function (x) {
+        return bids[x];
+      })
+      .join(", ") +
     "}, waiting on {" +
-    Object.keys(bids).filter(function (x) { return !bids[x]; }).join(", ") + "}"
+    Object.keys(bids)
+      .filter(function (x) {
+        return !bids[x];
+      })
+      .join(", ") +
+    "}"
   );
 }
 
@@ -77,7 +94,8 @@ function bidReset(chan) {
 // command doesn't actually parse out numbers or deal with payments in any way.
 function bidPay() {
   const r = randint(10);
-  const y = "_/roll 10 → 1 ∴ PAY 10X!_ :money_with_wings: :moneybag: :money_mouth_face:";
+  const y =
+    "_/roll 10 → 1 ∴ PAY 10X!_ :money_with_wings: :moneybag: :money_mouth_face:";
   const n = "_/roll 10 → " + r + " not 1 ∴ no payments!_ :sweat_smile:";
   return r === 1 ? y : n;
 }
@@ -93,8 +111,10 @@ function bidProc(chan, user, text) {
   } else {
     bidReset(chan);
 
-    response += `Got final bid from ${user}! :tada: Results:\n` +
-      bidSummary(obj) + `\n\n${bidPay()}`;
+    response +=
+      `Got final bid from ${user}! :tada: Results:\n` +
+      bidSummary(obj) +
+      `\n\n${bidPay()}`;
   }
   return response;
 }
@@ -102,15 +122,15 @@ function bidProc(chan, user, text) {
 // whisper the documentation
 function help() {
   return {
-    output: 
-"How to use /bid\n" +
-"`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
-"`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
-// currently thinking /bid with no args should just be disallowed
-//"`/bid` (with no args) — check who has bid and who we're waiting on\n" +
-"`/bid status` — show how current auction was initiated and who has bid\n" +
-"`/bid abort` — abort the current auction, showing partial results\n" +
-"`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
+    output:
+      "How to use /bid\n" +
+      "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
+      "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
+      // currently thinking /bid with no args should just be disallowed
+      //"`/bid` (with no args) — check who has bid and who we're waiting on\n" +
+      "`/bid status` — show how current auction was initiated and who has bid\n" +
+      "`/bid abort` — abort the current auction, showing partial results\n" +
+      "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
     voxmode: "whisp",
   };
 }
@@ -118,7 +138,8 @@ function help() {
 function status(auction, bids) {
   let output;
   if (auction) {
-    output = `Currently active auction initiated by ${auction.initiator} via:\n` +
+    output =
+      `Currently active auction initiated by ${auction.initiator} via:\n` +
       `${auction.urtext}\n${bidStatus(bids)}`;
   } else {
     output = "No current auction";
@@ -128,7 +149,8 @@ function status(auction, bids) {
 
 function abort(auction, channel, bids) {
   if (auction) {
-    const output = `*Aborted.* :panda_face: Partial results:\n` +
+    const output =
+      `*Aborted.* :panda_face: Partial results:\n` +
       `${bidSummary(bids)}\n\n${bidPay()}`;
     bidReset(channel);
     return { output, voxmode: "holla" };
@@ -139,9 +161,9 @@ function abort(auction, channel, bids) {
 
 function debug(auction, urtext) {
   return {
-    output: auction ?
-      `urtext = ${urtext} / datastore = ${JSON.stringify(datastore)}` :
-      "No current auction",
+    output: auction
+      ? `urtext = ${urtext} / datastore = ${JSON.stringify(datastore)}`
+      : "No current auction",
     voxmode: "whisp",
   };
 }
@@ -189,24 +211,34 @@ function handleSlash(chan, user, text) {
   }
 
   switch (text) {
-    case "help": return help();
-    case "status": return status(auction, bids);
-    case "abort": return abort(auction, chan, bids);
-    case "debug": return debug(auction, urtext);
-    case "": return printBids(auction, bids);
-    default: return maybeProc(auction, chan, user, text);
+    case "help":
+      return help();
+    case "status":
+      return status(auction, bids);
+    case "abort":
+      return abort(auction, chan, bids);
+    case "debug":
+      return debug(auction, urtext);
+    case "":
+      return printBids(auction, bids);
+    default:
+      return maybeProc(auction, chan, user, text);
   }
 }
 
-module.exports = {
-  name: "bid",
-  description: "Collect and later reveal sealed bids.",
-  input: {
-    name: "input",
-    //required: true,  // careful, this might break things?
-    description: "Start an auction or place a sealed bid",
-  },
-  execute: ({ channel_id, sender, input }) => {
-    return handleSlash(channel_id, sender, input || "");
-  },
+module.exports = ({ plat, serv, chan, user, mesg, msid }, sendmesg) => {
+  const response = handleSlash(chan, user, mesg || "");
+
+  let message = { plat, serv, chan, user, mesg: response.output };
+
+  switch (response.voxmode) {
+    case "whisp":
+      message.priv = true;
+      break;
+    case "holla":
+      message.mrid = msid;
+      break;
+  }
+
+  sendmesg(message);
 };

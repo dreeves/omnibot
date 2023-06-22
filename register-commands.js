@@ -1,7 +1,6 @@
 require("dotenv").config(); // or import 'dotenv/config'
 
-const { REST, Routes } = require("discord.js");
-const convertCommands = require("./convert-commands.js");
+const { REST, Routes, SlashCommandBuilder } = require("discord.js");
 const clientId = process.env.DISCORD_CLIENT_ID;
 const token = process.env.DISCORD_BOT_TOKEN;
 
@@ -18,26 +17,30 @@ const discord = new Discord.Client({
 const fs = require("node:fs");
 
 const discordCommands = [];
-// Grab all the command files from the commands directory you created earlier
-const commandFiles = fs
-  .readdirSync("./commands")
-  .filter((file) => file.endsWith(".js"));
 
-// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
-for (const file of commandFiles) {
-  const botCommand = require(`./commands/${file}`);
+const slashmeta = require("./slashmeta.js");
 
+slashmeta.forEach((meta) => {
   // Discord
-  const discordCommand = convertCommands.toDiscord(botCommand);
+  const discordCommand = {};
+
+  discordCommand.data = new SlashCommandBuilder()
+    .setName(meta.name)
+    .setDescription(meta.description);
+
+  discordCommand.data.addStringOption((option) =>
+    option.setName("input").setDescription("Input to the command")
+  );
+
   discordCommands.push(discordCommand.data.toJSON());
 
   // Slack
   console.log(`Add a new command to the slack app with the following details:`);
-  console.log(`name: ${botCommand.name}`);
-  console.log(`description: ${botCommand.description}`);
-  const usageHint = `[${botCommand.input.description}]`;
+  console.log(`name: ${meta.name}`);
+  console.log(`description: ${meta.description}`);
+  const usageHint = `[Input to the command]`;
   console.log(`usage hint: ${usageHint}`);
-}
+});
 
 // Construct and prepare an instance of the REST module
 // const rest = new REST({ version: "10" }).setToken(token);
