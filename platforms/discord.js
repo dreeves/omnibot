@@ -87,7 +87,7 @@ discord.on("messageCreate", async (msg) => {
             plat: "discord",
             serv: msg.guildId,
             chan: msg.channel.name,
-            user: msg.author.id,
+            user: `<@${msg.author.id}>`,
             mesg: msg.content,
             msid: msg.id,
         },
