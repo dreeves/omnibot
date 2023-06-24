@@ -54,7 +54,7 @@ discord.on("interactionCreate", async (interaction) => {
     const command = interaction.commandName;
     const input = interaction.options.getString("input");
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.reply({ content: "running", ephemeral: true });
 
     try {
         dispatch(
