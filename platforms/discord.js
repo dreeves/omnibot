@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 
 const dispatch = require("../dispatch.js");
+const { registerPlatform } = require("../sendemitter.js");
 
 const discord = new Discord.Client({
     intents: [
@@ -10,37 +11,18 @@ const discord = new Discord.Client({
     ],
 });
 
-async function sendmesg({ serv, chan, mrid, user, mesg }) {
-    const guild = discord.guilds.cache.find((g) => g.id === serv);
-    const channel = guild.channels.cache.find((c) => c.name === chan);
+async function sendmesg({ fief, chan, mesg }) {
+    const guilds = await discord.guilds.fetch();
+    let guild = guilds.find((g) => g.name === fief);
+    guild = await guild.fetch();
 
-    if (mrid) {
-        await channel.messages
-            .fetch(mrid)
-            .then(async (message) => await message.reply(mesg));
-    } else {
-        await channel.send(mesg);
-    }
+    const channels = await guild.channels.fetch();
+    const channel = channels.find((c) => c.name === chan);
+
+    await channel.send(mesg);
 }
 
-function maybePriv(interaction) {
-    const command = interaction.commandName;
-    const input = interaction.options.getString("input");
-
-    return async (message) => {
-        if (message.priv) {
-            await interaction.followUp({
-                content: message.mesg,
-                ephemeral: message.priv,
-            });
-        } else if (message.mrid === interaction.id) {
-            await interaction.followUp(`/${command} ${input || ""}`);
-            await interaction.followUp(message.mesg);
-        } else {
-            sendmesg(message);
-        }
-    };
-}
+registerPlatform("discord", sendmesg);
 
 discord.once("ready", () => {
     console.log(
@@ -57,17 +39,14 @@ discord.on("interactionCreate", async (interaction) => {
     await interaction.reply({ content: "running", ephemeral: true });
 
     try {
-        dispatch(
-            {
-                plat: "discord",
-                serv: interaction.guildId,
-                chan: interaction.channel.name,
-                user: `<@${interaction.user.id}>`,
-                mesg: `/${command} ${input || ""}`,
-                msid: interaction.id,
-            },
-            maybePriv(interaction)
-        );
+        dispatch({
+            plat: "discord",
+            serv: interaction.guildId,
+            chan: interaction.channel.name,
+            user: `<@${interaction.user.id}>`,
+            mesg: `/${command} ${input || ""}`,
+            msid: interaction.id,
+        });
     } catch (error) {
         console.error(error);
         await interaction.reply({
@@ -82,17 +61,14 @@ discord.on("messageCreate", async (msg) => {
         return;
     }
 
-    dispatch(
-        {
-            plat: "discord",
-            serv: msg.guildId,
-            chan: msg.channel.name,
-            user: `<@${msg.author.id}>`,
-            mesg: msg.content,
-            msid: msg.id,
-        },
-        sendmesg
-    );
+    dispatch({
+        plat: "discord",
+        fief: msg.guild.name,
+        chan: msg.channel.name,
+        user: `<@${msg.author.id}>`,
+        mesg: msg.content,
+        msid: msg.id,
+    });
 });
 
 process.on("exit", () => {

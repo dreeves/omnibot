@@ -2,6 +2,7 @@ const omninom = require("./commands/omninom.js");
 const bid = require("./commands/bid.js");
 const roll = require("./commands/roll.js");
 const { lexup } = require("./lexiguess.js");
+const sendmesg = require("./sendmesg.js");
 
 /**
  * A message and its metadata from one of the supported chat
@@ -24,8 +25,8 @@ const SLASH_COMMAND_REGEX = /^\/([a-z]+) /i;
  * Send a message to the correct handler.
  * @param {Message} message - received message
  */
-function dispatch(message, sendmesg) {
-    const { plat, serv, chan, user, mesg, msid, priv } = message;
+function dispatch(message) {
+    const { plat, fief, chan, user, mesg, msid, priv } = message;
 
     if (!LEXIGUESS_CHANNEL_REGEX.test(chan)) {
         return;
@@ -34,7 +35,7 @@ function dispatch(message, sendmesg) {
     if (/(^|\W)@omnibot\W/.test(mesg)) {
         sendmesg({
             plat,
-            serv,
+            fief,
             chan,
             user,
             mesg: "Hey there!",
@@ -47,7 +48,7 @@ function dispatch(message, sendmesg) {
     if (LEXIGUESS_REGEX.test(mesg)) {
         const reply = lexup(chan, mesg);
         if (reply) {
-            sendmesg({ plat, serv, chan, mesg: reply });
+            sendmesg({ plat, fief, chan, mesg: reply });
         }
     }
 
@@ -64,7 +65,7 @@ function dispatch(message, sendmesg) {
             omninom(
                 {
                     plat,
-                    serv,
+                    fief,
                     chan,
                     user,
                     mesg: commandInput,
@@ -78,7 +79,7 @@ function dispatch(message, sendmesg) {
             bid(
                 {
                     plat,
-                    serv,
+                    fief,
                     chan,
                     user,
                     mesg: commandInput,
@@ -92,7 +93,7 @@ function dispatch(message, sendmesg) {
             roll(
                 {
                     plat,
-                    serv,
+                    fief,
                     chan,
                     user,
                     mesg: commandInput,

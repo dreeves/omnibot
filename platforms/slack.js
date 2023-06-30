@@ -1,6 +1,7 @@
 const { App, ExpressReceiver } = require("@slack/bolt");
 
 const dispatch = require("../dispatch");
+const { registerPlatform } = require("../sendemitter.js");
 
 const receiver = new ExpressReceiver({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -42,6 +43,8 @@ async function sendmesg(message) {
         });
     }
 }
+
+registerPlatform("slack", sendmesg);
 
 app.command(/^\/.+/, async ({ command, ack }) => {
     console.log("got command");
