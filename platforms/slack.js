@@ -21,23 +21,18 @@ const app = new App({
 });
 
 async function sendmesg(message) {
-    let user = message.user;
-
     if (message.fief) {
         console.log("fief is a noop on slack");
     }
 
-    if (message.user) {
+    if (message.user && message.priv) {
         const match = message.user.match(/([UW][A-Z0-9]{2,})/);
-        user = match[1];
-    }
+        const userId = match[1];
 
-    if (message.priv) {
-        await app.client.chat.postEphemeral({
+        await app.client.chat.postMessage({
             thread_ts: message.mrid,
-            channel: message.chan,
+            channel: userId,
             text: message.mesg,
-            user: user,
         });
     } else {
         await app.client.chat.postMessage({

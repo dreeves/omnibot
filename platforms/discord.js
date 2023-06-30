@@ -13,7 +13,16 @@ const discord = new Discord.Client({
 
 let interactionCache = {};
 
-async function sendmesg({ fief, chan, mesg, mrid }) {
+function mentionToID(mention) {
+    const match = mention.match(/^<@(.*)>$/);
+    if (match) {
+        return match[1];
+    } else {
+        throw `Invalid mention: @{mention}`;
+    }
+}
+
+async function sendmesg({ fief, chan, mesg, mrid, user, priv }) {
     const guilds = await discord.guilds.fetch();
     let guild = guilds.find((g) => g.name === fief);
     guild = await guild.fetch();
@@ -21,7 +30,12 @@ async function sendmesg({ fief, chan, mesg, mrid }) {
     const channels = await guild.channels.fetch();
     const channel = channels.find((c) => c.name === chan);
 
-    if (mrid) {
+    if (user && priv) {
+        const userId = mentionToID(user);
+        const discordUser = await discord.users.fetch(userId);
+
+        discordUser.send(mesg);
+    } else if (mrid) {
         // HACK
         let realMrid = mrid;
 
