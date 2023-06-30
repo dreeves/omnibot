@@ -25,7 +25,16 @@ async function sendmesg(message) {
         console.log("fief is a noop on slack");
     }
 
-    if (message.user && message.priv) {
+    if (message.user && message.phem) {
+        const match = message.user.match(/([UW][A-Z0-9]{2,})/);
+        const userId = match[1];
+
+        await app.client.chat.postEphemeral({
+            channel: message.chan,
+            user: userId,
+            text: message.mesg,
+        });
+    } else if (message.user && message.priv) {
         const match = message.user.match(/([UW][A-Z0-9]{2,})/);
         const userId = match[1];
 

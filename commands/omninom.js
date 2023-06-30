@@ -15,6 +15,10 @@ module.exports = ({ plat, fief, chan, user, mesg, msid }, sendmesg) => {
         voxmode = { priv: false };
     }
 
+    if (mesg === "phem") {
+        voxmode = { phem: true, mrid: msid, user };
+    }
+
     let output =
         `\
 This is Omnibot v${packageData.version} \
@@ -37,5 +41,6 @@ Debugging factoid: ` +
         mesg: output,
         priv: voxmode.priv,
         mrid: voxmode.mrid,
+        phem: voxmode.phem,
     });
 };

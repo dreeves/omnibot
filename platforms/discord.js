@@ -22,7 +22,7 @@ function mentionToID(mention) {
     }
 }
 
-async function sendmesg({ fief, chan, mesg, mrid, user, priv }) {
+async function sendmesg({ fief, chan, mesg, mrid, user, priv, phem }) {
     const guilds = await discord.guilds.fetch();
     let guild = guilds.find((g) => g.name === fief);
     guild = await guild.fetch();
@@ -39,8 +39,15 @@ async function sendmesg({ fief, chan, mesg, mrid, user, priv }) {
         // HACK
         let realMrid = mrid;
 
-        if (mrid.startsWith("interaction:")) {
-            const fauxMessage = await channel.send(interactionCache[mrid]);
+        if (mrid.startsWith("interaction:") && phem) {
+            interactionCache[mrid].interaction.followUp({
+                content: mesg,
+                ephemeral: true,
+            });
+        } else if (mrid.startsWith("interaction:")) {
+            const fauxMessage = await channel.send(
+                interactionCache[mrid].fauxInput
+            );
             realMrid = fauxMessage.id;
         }
 
@@ -79,7 +86,10 @@ discord.on("interactionCreate", async (interaction) => {
     });
 
     const fauxInput = `/${command} ${input || ""}`;
-    interactionCache[`interaction:${interaction.id}`] = fauxInput;
+    interactionCache[`interaction:${interaction.id}`] = {
+        interaction,
+        fauxInput,
+    };
 
     try {
         dispatch({
