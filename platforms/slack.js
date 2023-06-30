@@ -23,6 +23,10 @@ const app = new App({
 async function sendmesg(message) {
     let user = message.user;
 
+    if (message.fief) {
+        console.log("fief is a noop on slack");
+    }
+
     if (message.user) {
         const match = message.user.match(/([UW][A-Z0-9]{2,})/);
         user = match[1];
@@ -54,7 +58,7 @@ app.command(/^\/.+/, async ({ command, ack }) => {
     dispatch(
         {
             plat: "slack",
-            serv: command.team_id,
+            fief: command.team_id,
             chan: command.channel_name,
             user: `<@${command.user_id}|${command.user_name}>`,
             mesg: `${command.command} ${command.text}`,
@@ -81,7 +85,6 @@ app.message(/^.*$/i, async ({ message }) => {
     dispatch(
         {
             plat: "slack",
-            serv: message.team,
             chan: channel,
             user: message.user,
             mesg: message.text,

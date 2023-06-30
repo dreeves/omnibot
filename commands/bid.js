@@ -225,10 +225,10 @@ function handleSlash(chan, user, text) {
   }
 }
 
-module.exports = ({ plat, serv, chan, user, mesg, msid }, sendmesg) => {
+module.exports = ({ plat, fief, chan, user, mesg, msid }, sendmesg) => {
   const response = handleSlash(chan, user, mesg || "");
 
-  let message = { plat, serv, chan, user, mesg: response.output };
+  let message = { plat, fief, chan, user, mesg: response.output };
 
   switch (response.voxmode) {
     case "whisp":

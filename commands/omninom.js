@@ -2,7 +2,7 @@ const NOM = "omninom"; // name of this slash command
 
 const packageData = require("../package.json"); // to see the version number
 
-module.exports = ({ plat, serv, chan, user, mesg, msid }, sendmesg) => {
+module.exports = ({ plat, fief, chan, user, mesg, msid }, sendmesg) => {
     let voxmode = { user, priv: true };
 
     if (mesg === "holla") {
@@ -31,7 +31,7 @@ Debugging factoid: ` +
 
     sendmesg({
         plat,
-        serv,
+        fief,
         chan,
         user: voxmode.user,
         mesg: output,

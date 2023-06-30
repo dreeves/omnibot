@@ -41,7 +41,7 @@ discord.on("interactionCreate", async (interaction) => {
     try {
         dispatch({
             plat: "discord",
-            serv: interaction.guildId,
+            fief: interaction.guild.name,
             chan: interaction.channel.name,
             user: `<@${interaction.user.id}>`,
             mesg: `/${command} ${input || ""}`,
