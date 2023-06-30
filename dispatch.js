@@ -32,7 +32,7 @@ function dispatch(message) {
         return;
     }
 
-    if (/(^|\W)@omnibot\W/.test(mesg)) {
+    if (/(^|\W)@omnibot($|\W)/.test(mesg)) {
         sendmesg({
             plat,
             fief,

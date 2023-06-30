@@ -11,7 +11,9 @@ const discord = new Discord.Client({
     ],
 });
 
-async function sendmesg({ fief, chan, mesg }) {
+let interactionCache = {};
+
+async function sendmesg({ fief, chan, mesg, mrid }) {
     const guilds = await discord.guilds.fetch();
     let guild = guilds.find((g) => g.name === fief);
     guild = await guild.fetch();
@@ -19,7 +21,28 @@ async function sendmesg({ fief, chan, mesg }) {
     const channels = await guild.channels.fetch();
     const channel = channels.find((c) => c.name === chan);
 
-    await channel.send(mesg);
+    if (mrid) {
+        // HACK
+        let realMrid = mrid;
+
+        if (mrid.startsWith("interaction:")) {
+            const fauxMessage = await channel.send(interactionCache[mrid]);
+            realMrid = fauxMessage.id;
+        }
+
+        await Promise.all(
+            channels.map((c) => {
+                if (c.messages) {
+                    return c.messages
+                        .fetch(realMrid)
+                        .then((m) => m.reply(mesg))
+                        .catch(() => {});
+                }
+            })
+        );
+    } else {
+        await channel.send(mesg);
+    }
 }
 
 registerPlatform("discord", sendmesg);
@@ -36,7 +59,13 @@ discord.on("interactionCreate", async (interaction) => {
     const command = interaction.commandName;
     const input = interaction.options.getString("input");
 
-    await interaction.reply({ content: "running", ephemeral: true });
+    await interaction.reply({
+        content: "running",
+        ephemeral: true,
+    });
+
+    const fauxInput = `/${command} ${input || ""}`;
+    interactionCache[`interaction:${interaction.id}`] = fauxInput;
 
     try {
         dispatch({
@@ -44,8 +73,8 @@ discord.on("interactionCreate", async (interaction) => {
             fief: interaction.guild.name,
             chan: interaction.channel.name,
             user: `<@${interaction.user.id}>`,
-            mesg: `/${command} ${input || ""}`,
-            msid: interaction.id,
+            mesg: fauxInput,
+            msid: `interaction:${interaction.id}`,
         });
     } catch (error) {
         console.error(error);
