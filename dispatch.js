@@ -62,46 +62,37 @@ function dispatch(message) {
     const commandInput = mesg.substring(mesg.indexOf(" ") + 1);
     switch (commandName) {
         case "omninom":
-            omninom(
-                {
-                    plat,
-                    fief,
-                    chan,
-                    user,
-                    mesg: commandInput,
-                    msid,
-                    priv,
-                },
-                sendmesg
-            );
+            omninom({
+                plat,
+                fief,
+                chan,
+                user,
+                mesg: commandInput,
+                msid,
+                priv,
+            });
             break;
         case "bid":
-            bid(
-                {
-                    plat,
-                    fief,
-                    chan,
-                    user,
-                    mesg: commandInput,
-                    msid,
-                    priv,
-                },
-                sendmesg
-            );
+            bid({
+                plat,
+                fief,
+                chan,
+                user,
+                mesg: commandInput,
+                msid,
+                priv,
+            });
             break;
         case "roll":
-            roll(
-                {
-                    plat,
-                    fief,
-                    chan,
-                    user,
-                    mesg: commandInput,
-                    msid,
-                    priv,
-                },
-                sendmesg
-            );
+            roll({
+                plat,
+                fief,
+                chan,
+                user,
+                mesg: commandInput,
+                msid,
+                priv,
+            });
             break;
         default:
             console.log(`no command /${commandName} found`);

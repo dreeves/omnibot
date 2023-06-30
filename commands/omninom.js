@@ -1,8 +1,9 @@
+const sendmesg = require("../sendmesg.js");
 const NOM = "omninom"; // name of this slash command
 
 const packageData = require("../package.json"); // to see the version number
 
-module.exports = ({ plat, fief, chan, user, mesg, msid }, sendmesg) => {
+module.exports = ({ plat, fief, chan, user, mesg, msid }) => {
     let voxmode = { user, priv: true };
 
     if (mesg === "holla") {
