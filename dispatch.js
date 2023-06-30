@@ -25,7 +25,7 @@ const SLASH_COMMAND_REGEX = /^\/([a-z]+) /i;
  * Send a message to the correct handler.
  * @param {Message} message - received message
  */
-function dispatch(message) {
+async function dispatch(message) {
     const { plat, fief, chan, user, mesg, msid, priv } = message;
 
     if (!LEXIGUESS_CHANNEL_REGEX.test(chan)) {
@@ -33,7 +33,7 @@ function dispatch(message) {
     }
 
     if (/(^|\W)@omnibot($|\W)/.test(mesg)) {
-        sendmesg({
+        await sendmesg({
             plat,
             fief,
             chan,
@@ -48,7 +48,7 @@ function dispatch(message) {
     if (LEXIGUESS_REGEX.test(mesg)) {
         const reply = lexup(chan, mesg);
         if (reply) {
-            sendmesg({ plat, fief, chan, mesg: reply });
+            await sendmesg({ plat, fief, chan, mesg: reply });
         }
     }
 
@@ -62,7 +62,7 @@ function dispatch(message) {
     const commandInput = mesg.substring(mesg.indexOf(" ") + 1);
     switch (commandName) {
         case "omninom":
-            omninom({
+            await omninom({
                 plat,
                 fief,
                 chan,
@@ -73,7 +73,7 @@ function dispatch(message) {
             });
             break;
         case "bid":
-            bid({
+            await bid({
                 plat,
                 fief,
                 chan,
@@ -84,7 +84,7 @@ function dispatch(message) {
             });
             break;
         case "roll":
-            roll({
+            await roll({
                 plat,
                 fief,
                 chan,
@@ -96,7 +96,7 @@ function dispatch(message) {
             break;
         default:
             console.log(`no command /${commandName} found`);
-            sendmesg({
+            await sendmesg({
                 ...message,
                 mesg: `no command \`/${commandName}\` found`,
                 priv: true,

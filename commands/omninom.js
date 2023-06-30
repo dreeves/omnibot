@@ -3,7 +3,7 @@ const NOM = "omninom"; // name of this slash command
 
 const packageData = require("../package.json"); // to see the version number
 
-module.exports = ({ plat, fief, chan, user, mesg, msid }) => {
+module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
     let voxmode = { user, priv: true };
 
     if (mesg === "holla") {
@@ -34,7 +34,7 @@ Debugging factoid: ` +
               "saw it."
             : "Interestingly, arg1's whitespace was not trimmed before Omnibot saw it.");
 
-    sendmesg({
+    await sendmesg({
         plat,
         fief,
         chan,

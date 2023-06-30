@@ -227,7 +227,7 @@ function handleSlash(chan, user, text) {
   }
 }
 
-module.exports = ({ plat, fief, chan, user, mesg, msid }) => {
+module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
   const response = handleSlash(chan, user, mesg || "");
 
   let message = { plat, fief, chan, user, mesg: response.output };
@@ -241,5 +241,5 @@ module.exports = ({ plat, fief, chan, user, mesg, msid }) => {
       break;
   }
 
-  sendmesg(message);
+  await sendmesg(message);
 };
