@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 
+const { hasKeysExclusively } = require("./utils.js");
 const dispatch = require("../dispatch.js");
 const { registerPlatform } = require("../sendemitter.js");
 
@@ -22,47 +23,64 @@ function mentionToID(mention) {
     }
 }
 
-async function sendmesg({ fief, chan, mesg, mrid, user, priv, phem }) {
-    const guilds = await discord.guilds.fetch();
-    let guild = guilds.find((g) => g.name === fief);
-    guild = await guild.fetch();
+async function sendmesg(message) {
+    const { fief, chan, mesg, mrid, user, phem } = message;
 
-    const channels = await guild.channels.fetch();
-    const channel = channels.find((c) => c.name === chan);
-
-    if (user && priv) {
+    if (hasKeysExclusively(message, ["plat", "user", "priv", "mesg"])) {
         const userId = mentionToID(user);
         const discordUser = await discord.users.fetch(userId);
 
         discordUser.send(mesg);
-    } else if (mrid) {
+    } else if (
+        hasKeysExclusively(message, ["plat", "fief", "chan", "mrid", "mesg"]) ||
+        hasKeysExclusively(message, [
+            "plat",
+            "fief",
+            "chan",
+            "mrid",
+            "phem",
+            "mesg",
+        ])
+    ) {
+        const guilds = await discord.guilds.fetch();
+        let guild = guilds.find((g) => g.name === fief);
+        guild = await guild.fetch();
+
+        const channels = await guild.channels.fetch();
+        const channel = channels.find((c) => c.name === chan);
+
         // HACK
         let realMrid = mrid;
 
         if (mrid.startsWith("interaction:") && phem) {
-            interactionCache[mrid].interaction.followUp({
+            const { interaction } = interactionCache[mrid];
+            interaction.followUp({
                 content: mesg,
                 ephemeral: true,
             });
         } else if (mrid.startsWith("interaction:")) {
-            const fauxMessage = await channel.send(
+            const { interaction } = interactionCache[mrid];
+            const fauxMessage = await interaction.channel.send(
                 interactionCache[mrid].fauxInput
             );
             realMrid = fauxMessage.id;
         }
 
-        await Promise.all(
-            channels.map((c) => {
-                if (c.messages) {
-                    return c.messages
-                        .fetch(realMrid)
-                        .then((m) => m.reply(mesg))
-                        .catch(() => {});
-                }
-            })
-        );
-    } else {
+        await channel.messages.fetch(realMrid).then((m) => m.reply(mesg));
+    } else if (hasKeysExclusively(message, ["plat", "fief", "chan", "mesg"])) {
+        const guilds = await discord.guilds.fetch();
+        let guild = guilds.find((g) => g.name === fief);
+        guild = await guild.fetch();
+
+        const channels = await guild.channels.fetch();
+        const channel = channels.find((c) => c.name === chan);
+
         await channel.send(mesg);
+    } else {
+        throw (
+            "Malformed message, Discord doesn't know what to do: " +
+            JSON.stringify(message)
+        );
     }
 }
 
