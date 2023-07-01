@@ -230,11 +230,12 @@ function handleSlash(chan, user, text) {
 module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
   const response = handleSlash(chan, user, mesg || "");
 
-  let message = { plat, fief, chan, user, mesg: response.output };
+  let message = { plat, fief, chan, mesg: response.output };
 
   switch (response.voxmode) {
     case "whisp":
-      message.priv = true;
+      message.phem = true;
+      message.mrid = msid;
       break;
     case "holla":
       message.mrid = msid;
