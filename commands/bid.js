@@ -1,3 +1,5 @@
+const sendmesg = require("../sendmesg.js");
+
 // VOXMODE: One of 3 ways to reply to a user's command:
 //  1. whisp: eat the command and reply so only the user sees it
 //  2. holla: echo the command publicly and reply (holla back) publicly
@@ -225,19 +227,20 @@ function handleSlash(chan, user, text) {
   }
 }
 
-module.exports = ({ plat, serv, chan, user, mesg, msid }, sendmesg) => {
+module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
   const response = handleSlash(chan, user, mesg || "");
 
-  let message = { plat, serv, chan, user, mesg: response.output };
+  let message = { plat, fief, chan, mesg: response.output };
 
   switch (response.voxmode) {
     case "whisp":
-      message.priv = true;
+      message.phem = true;
+      message.mrid = msid;
       break;
     case "holla":
       message.mrid = msid;
       break;
   }
 
-  sendmesg(message);
+  await sendmesg(message);
 };

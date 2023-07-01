@@ -1,6 +1,8 @@
 const { App, ExpressReceiver } = require("@slack/bolt");
 
+const { hasKeysExclusively } = require("./utils.js");
 const dispatch = require("../dispatch");
+const { registerPlatform } = require("../sendemitter.js");
 
 const receiver = new ExpressReceiver({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -19,73 +21,91 @@ const app = new App({
     ...appOptions,
 });
 
-async function sendmesg(message) {
-    let user = message.user;
+const commandCache = {};
 
-    if (message.user) {
-        const match = message.user.match(/([UW][A-Z0-9]{2,})/);
-        user = match[1];
+async function sendmesg(message) {
+    if (message.fief) {
+        console.log("Fief is a noop on Slack!");
+        delete message.fief;
     }
 
-    if (message.priv) {
+    if (hasKeysExclusively(message, ["plat", "user", "phem", "mesg"])) {
+        const match = message.user.match(/([UW][A-Z0-9]{2,})/);
+        const userId = match[1];
+
         await app.client.chat.postEphemeral({
-            thread_ts: message.mrid,
             channel: message.chan,
+            user: userId,
             text: message.mesg,
-            user: user,
         });
-    } else {
+    } else if (hasKeysExclusively(message, ["plat", "user", "priv", "mesg"])) {
+        const match = message.user.match(/([UW][A-Z0-9]{2,})/);
+        const userId = match[1];
+
         await app.client.chat.postMessage({
             thread_ts: message.mrid,
+            channel: userId,
+            text: message.mesg,
+        });
+    } else if (
+        hasKeysExclusively(message, ["plat", "chan", "mesg"]) ||
+        hasKeysExclusively(message, ["plat", "chan", "mrid", "mesg"])
+    ) {
+        let realMrid = message.mrid;
+
+        if (message.mrid.startsWith("command:")) {
+            const command = commandCache[message.mrid];
+            const { message: fauxMessage } = await app.client.chat.postMessage({
+                channel: message.chan,
+                text: `${command.command} ${command.text}`,
+            });
+
+            realMrid = fauxMessage.ts;
+        }
+
+        await app.client.chat.postMessage({
+            thread_ts: realMrid,
             channel: message.chan,
             text: message.mesg,
         });
+    } else {
+        throw (
+            "Malformed message, Slack doesn't know what to do: " +
+            JSON.stringify(message)
+        );
     }
 }
+
+registerPlatform("slack", sendmesg);
 
 app.command(/^\/.+/, async ({ command, ack }) => {
     console.log("got command");
     await ack();
 
-    console.log(command.user_id);
-    dispatch(
-        {
-            plat: "slack",
-            serv: command.team_id,
-            chan: command.channel_name,
-            user: `<@${command.user_id}|${command.user_name}>`,
-            mesg: `${command.command} ${command.text}`,
-            msid: null,
-        },
-        async (message) => {
-            // HACK
-            if (message.mrid === null) {
-                await sendmesg({
-                    ...message,
-                    mesg: `${command.command} ${command.text}`,
-                });
-            }
-            await sendmesg(message);
-        }
-    );
+    console.log(command.trigger_id);
+    const commandID = `command:${command.trigger_id}`;
+    commandCache[commandID] = command;
+    dispatch({
+        plat: "slack",
+        fief: command.team_id,
+        chan: command.channel_name,
+        user: `<@${command.user_id}|${command.user_name}>`,
+        mesg: `${command.command} ${command.text}`,
+        msid: commandID,
+    });
 });
 
 app.message(/^.*$/i, async ({ message }) => {
-    console.log("got message");
     const { channels } = await app.client.conversations.list();
     const channel = channels.find((c) => c.id === message.channel).name;
 
-    dispatch(
-        {
-            plat: "slack",
-            serv: message.team,
-            chan: channel,
-            user: message.user,
-            mesg: message.text,
-            msid: message.ts,
-        },
-        sendmesg
-    );
+    dispatch({
+        plat: "slack",
+        chan: channel,
+        user: message.user,
+        mesg: message.text,
+        msid: message.ts,
+    });
 });
 
 // Someone clicks on the Home tab of our app in Slack; render the page

@@ -1,8 +1,9 @@
+const sendmesg = require("../sendmesg.js");
 const NOM = "omninom"; // name of this slash command
 
 const packageData = require("../package.json"); // to see the version number
 
-module.exports = ({ plat, serv, chan, user, mesg, msid }, sendmesg) => {
+module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
     let voxmode = { user, priv: true };
 
     if (mesg === "holla") {
@@ -13,6 +14,10 @@ module.exports = ({ plat, serv, chan, user, mesg, msid }, sendmesg) => {
     }
     if (mesg === "blurt") {
         voxmode = { priv: false };
+    }
+
+    if (mesg === "phem") {
+        voxmode = { phem: true, mrid: msid, user };
     }
 
     let output =
@@ -29,13 +34,14 @@ Debugging factoid: ` +
               "saw it."
             : "Interestingly, arg1's whitespace was not trimmed before Omnibot saw it.");
 
-    sendmesg({
+    await sendmesg({
         plat,
-        serv,
+        fief,
         chan,
         user: voxmode.user,
         mesg: output,
         priv: voxmode.priv,
         mrid: voxmode.mrid,
+        phem: voxmode.phem,
     });
 };

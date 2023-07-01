@@ -2,6 +2,7 @@ const omninom = require("./commands/omninom.js");
 const bid = require("./commands/bid.js");
 const roll = require("./commands/roll.js");
 const { lexup } = require("./lexiguess.js");
+const sendmesg = require("./sendmesg.js");
 
 /**
  * A message and its metadata from one of the supported chat
@@ -24,17 +25,17 @@ const SLASH_COMMAND_REGEX = /^\/([a-z]+) /i;
  * Send a message to the correct handler.
  * @param {Message} message - received message
  */
-function dispatch(message, sendmesg) {
-    const { plat, serv, chan, user, mesg, msid, priv } = message;
+async function dispatch(message) {
+    const { plat, fief, chan, user, mesg, msid, priv } = message;
 
     if (!LEXIGUESS_CHANNEL_REGEX.test(chan)) {
         return;
     }
 
-    if (/(^|\W)@omnibot\W/.test(mesg)) {
-        sendmesg({
+    if (/(^|\W)@omnibot($|\W)/.test(mesg)) {
+        await sendmesg({
             plat,
-            serv,
+            fief,
             chan,
             user,
             mesg: "Hey there!",
@@ -47,7 +48,7 @@ function dispatch(message, sendmesg) {
     if (LEXIGUESS_REGEX.test(mesg)) {
         const reply = lexup(chan, mesg);
         if (reply) {
-            sendmesg({ plat, serv, chan, mesg: reply });
+            await sendmesg({ plat, fief, chan, mesg: reply });
         }
     }
 
@@ -61,50 +62,41 @@ function dispatch(message, sendmesg) {
     const commandInput = mesg.substring(mesg.indexOf(" ") + 1);
     switch (commandName) {
         case "omninom":
-            omninom(
-                {
-                    plat,
-                    serv,
-                    chan,
-                    user,
-                    mesg: commandInput,
-                    msid,
-                    priv,
-                },
-                sendmesg
-            );
+            await omninom({
+                plat,
+                fief,
+                chan,
+                user,
+                mesg: commandInput,
+                msid,
+                priv,
+            });
             break;
         case "bid":
-            bid(
-                {
-                    plat,
-                    serv,
-                    chan,
-                    user,
-                    mesg: commandInput,
-                    msid,
-                    priv,
-                },
-                sendmesg
-            );
+            await bid({
+                plat,
+                fief,
+                chan,
+                user,
+                mesg: commandInput,
+                msid,
+                priv,
+            });
             break;
         case "roll":
-            roll(
-                {
-                    plat,
-                    serv,
-                    chan,
-                    user,
-                    mesg: commandInput,
-                    msid,
-                    priv,
-                },
-                sendmesg
-            );
+            await roll({
+                plat,
+                fief,
+                chan,
+                user,
+                mesg: commandInput,
+                msid,
+                priv,
+            });
             break;
         default:
             console.log(`no command /${commandName} found`);
-            sendmesg({
+            await sendmesg({
                 ...message,
                 mesg: `no command \`/${commandName}\` found`,
                 priv: true,
