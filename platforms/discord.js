@@ -54,10 +54,20 @@ async function sendmesg(message) {
 
         if (mrid.startsWith("interaction:") && phem) {
             const { interaction } = interactionCache[mrid];
-            interaction.followUp({
-                content: mesg,
-                ephemeral: true,
-            });
+
+            if (interaction.replied) {
+                interaction.followUp({
+                    content: mesg,
+                    ephemeral: true,
+                });
+            } else {
+                interaction.reply({
+                    content: mesg,
+                    ephemeral: true,
+                });
+            }
+
+            realMrid = null;
         } else if (mrid.startsWith("interaction:")) {
             const { interaction } = interactionCache[mrid];
             const fauxMessage = await interaction.channel.send(
@@ -66,7 +76,9 @@ async function sendmesg(message) {
             realMrid = fauxMessage.id;
         }
 
-        await channel.messages.fetch(realMrid).then((m) => m.reply(mesg));
+        if (realMrid) {
+            await channel.messages.fetch(realMrid).then((m) => m.reply(mesg));
+        }
     } else if (hasKeysExclusively(message, ["plat", "fief", "chan", "mesg"])) {
         const guilds = await discord.guilds.fetch();
         let guild = guilds.find((g) => g.name === fief);
@@ -98,11 +110,6 @@ discord.on("interactionCreate", async (interaction) => {
     const command = interaction.commandName;
     const input = interaction.options.getString("input");
 
-    await interaction.reply({
-        content: "running",
-        ephemeral: true,
-    });
-
     const fauxInput = `/${command} ${input || ""}`;
     interactionCache[`interaction:${interaction.id}`] = {
         interaction,
@@ -110,7 +117,7 @@ discord.on("interactionCreate", async (interaction) => {
     };
 
     try {
-        dispatch({
+        await dispatch({
             plat: "discord",
             fief: interaction.guild.name,
             chan: interaction.channel.name,
