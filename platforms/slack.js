@@ -79,10 +79,8 @@ async function sendmesg(message) {
 registerPlatform("slack", sendmesg);
 
 app.command(/^\/.+/, async ({ command, ack }) => {
-    console.log("got command");
     await ack();
 
-    console.log(command.trigger_id);
     const commandID = `command:${command.trigger_id}`;
     commandCache[commandID] = command;
     dispatch({
