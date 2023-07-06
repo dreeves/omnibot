@@ -4,22 +4,6 @@ const NOM = "omninom"; // name of this slash command
 const packageData = require("../package.json"); // to see the version number
 
 module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
-    let voxmode = { user, priv: true };
-
-    if (mesg === "holla") {
-        voxmode = {
-            mrid: msid,
-            priv: false,
-        };
-    }
-    if (mesg === "blurt") {
-        voxmode = { priv: false };
-    }
-
-    if (mesg === "phem") {
-        voxmode = { phem: true, mrid: msid, user };
-    }
-
     let output =
         `\
 This is Omnibot v${packageData.version} \
@@ -34,14 +18,41 @@ Debugging factoid: ` +
               "saw it."
             : "Interestingly, arg1's whitespace was not trimmed before Omnibot saw it.");
 
-    await sendmesg({
-        plat,
-        fief,
-        chan,
-        user: voxmode.user,
-        mesg: output,
-        priv: voxmode.priv,
-        mrid: voxmode.mrid,
-        phem: voxmode.phem,
-    });
+    if (mesg === "holla") {
+        await sendmesg({
+            plat,
+            fief,
+            chan,
+            mesg: output,
+            mrid: msid,
+        });
+    } else if (mesg === "blurt") {
+        await sendmesg({
+            plat,
+            fief,
+            chan,
+            mesg: output,
+        });
+    } else if (mesg === "phem") {
+        let message = {
+            plat,
+            fief,
+            chan,
+            mesg: output,
+            phem: true,
+        };
+        if (plat === "discord") {
+            message.mrid = msid;
+        } else if (plat === "slack") {
+            message.user = user;
+        }
+        await sendmesg(message);
+    } else {
+        await sendmesg({
+            plat,
+            mesg: output,
+            user,
+            priv: true,
+        });
+    }
 };
