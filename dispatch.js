@@ -14,7 +14,7 @@ const { sendmesg } = require("./sendemitter.js");
  * @property {string} user - username of the message author
  * @property {string} mesg - literal content of the message
  * @property {string} msid - platform-assigned id of the message
- * @property {string} priv - whether the message was send privately
+ * @property {string} priv - whether the message was sent privately
  */
 
 const LEXIGUESS_REGEX = /^[a-z]+$/i;
