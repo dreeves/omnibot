@@ -2,7 +2,7 @@ const omninom = require("./commands/omninom.js");
 const bid = require("./commands/bid.js");
 const roll = require("./commands/roll.js");
 const { lexup } = require("./lexiguess.js");
-const sendmesg = require("./sendmesg.js");
+const { sendmesg } = require("./sendemitter.js");
 
 /**
  * A message and its metadata from one of the supported chat

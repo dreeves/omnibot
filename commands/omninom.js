@@ -1,4 +1,4 @@
-const sendmesg = require("../sendmesg.js");
+const { sendmesg } = require("../sendemitter.js");
 const NOM = "omninom"; // name of this slash command
 
 const packageData = require("../package.json"); // to see the version number

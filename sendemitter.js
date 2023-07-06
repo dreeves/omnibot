@@ -4,11 +4,11 @@ function registerPlatform(plat, handler) {
     platforms[plat] = handler;
 }
 
-async function sendMessage(message) {
+async function sendmesg(message) {
     await platforms[message.plat](message);
 }
 
 module.exports = {
     registerPlatform,
-    sendMessage,
+    sendmesg,
 };
