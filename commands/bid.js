@@ -1,4 +1,4 @@
-const sendmesg = require("../sendmesg.js");
+const { sendmesg } = require("../sendemitter.js");
 
 // VOXMODE: One of 3 ways to reply to a user's command:
 //  1. whisp: eat the command and reply so only the user sees it

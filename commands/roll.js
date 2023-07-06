@@ -1,4 +1,4 @@
-const sendmesg = require("../sendmesg.js");
+const { sendmesg } = require("../sendemitter.js");
 
 // TODO: DRY this up with commands/bid.js
 // Random integer from 1 to n inclusive

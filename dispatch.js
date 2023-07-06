@@ -2,7 +2,7 @@ const omninom = require("./commands/omninom.js");
 const bid = require("./commands/bid.js");
 const roll = require("./commands/roll.js");
 const { lexup } = require("./lexiguess.js");
-const sendmesg = require("./sendmesg.js");
+const { sendmesg } = require("./sendemitter.js");
 
 /**
  * A message and its metadata from one of the supported chat
@@ -14,7 +14,7 @@ const sendmesg = require("./sendmesg.js");
  * @property {string} user - username of the message author
  * @property {string} mesg - literal content of the message
  * @property {string} msid - platform-assigned id of the message
- * @property {string} priv - whether the message was send privately
+ * @property {string} priv - whether the message was sent privately
  */
 
 const LEXIGUESS_REGEX = /^[a-z]+$/i;
