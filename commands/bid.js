@@ -239,6 +239,15 @@ module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
       break;
     case "holla":
       message.mrid = msid;
+    default:
+      await sendmesg({
+        plat,
+        fief,
+        chan,
+        mesg: "Command received!",
+        phem: true,
+        mrid: msid,
+      });
       break;
   }
 
