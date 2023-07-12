@@ -29,7 +29,7 @@ async function sendmesg(message) {
         delete message.fief;
     }
 
-    if (hasKeysExclusively(message, ["plat", "user", "phem", "mesg"])) {
+    if (hasKeysExclusively(message, ["plat", "fief", "user", "phem", "mesg"])) {
         const match = message.user.match(/([UW][A-Z0-9]{2,})/);
         const userId = match[1];
 
@@ -48,8 +48,8 @@ async function sendmesg(message) {
             text: message.mesg,
         });
     } else if (
-        hasKeysExclusively(message, ["plat", "chan", "mesg"]) ||
-        hasKeysExclusively(message, ["plat", "chan", "mrid", "mesg"])
+        hasKeysExclusively(message, ["plat", "fief", "chan", "mesg"]) ||
+        hasKeysExclusively(message, ["plat", "fief", "chan", "mrid", "mesg"])
     ) {
         let realMrid = message.mrid;
 

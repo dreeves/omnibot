@@ -27,17 +27,20 @@ const SLASH_COMMAND_REGEX = /^\/([a-z]+) /i;
  */
 async function dispatch(message) {
     const { plat, fief, chan, user, mesg, msid, priv } = message;
+    const botIDs = [process.env.DISCORD_BOT_ID, process.env.SLACK_BOT_ID];
 
     if (!LEXIGUESS_CHANNEL_REGEX.test(chan)) {
         return;
     }
 
-    if (/(^|\W)@omnibot($|\W)/.test(mesg)) {
+    const mentioned = botIDs.some((rx) =>
+        new RegExp(`<@${rx}(|.*)?>`).test(mesg)
+    );
+    if (mentioned) {
         await sendmesg({
             plat,
             fief,
             chan,
-            user,
             mesg: "Hey there!",
             mrid: msid,
         });
