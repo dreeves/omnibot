@@ -1,3 +1,10 @@
+## Adding Omnibot to Your Server
+
+### Discord
+
+Use this oauth2 link to add omnibot to your Discord server:
+https://discord.com/api/oauth2/authorize?client_id=911686934206771212&permissions=0&scope=bot
+
 ## Building and Running
 
 ### Enable Socket Mode for Slack
