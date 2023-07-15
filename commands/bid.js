@@ -235,6 +235,7 @@ module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
   switch (response.voxmode) {
     case "whisp":
       message.phem = true;
+      message.user = user;
       message.mrid = msid;
       break;
     case "holla":

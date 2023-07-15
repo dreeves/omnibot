@@ -50,6 +50,7 @@ Debugging factoid: ` +
     } else {
         await sendmesg({
             plat,
+            fief,
             mesg: output,
             user,
             priv: true,
