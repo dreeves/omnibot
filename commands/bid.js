@@ -73,12 +73,13 @@ function bidMissing(bids) {
 }
 
 // Initialize the auction and shot that it's started
-function bidStart(chan, user, text, others) {
+function bidStart(chan, user, text, others, msid) {
   others[user] = ""; // "others" now includes initiating user too
   datastore["beebot.auctions." + chan + ".bids"] = others;
   let auction = {};
   auction.urtext = "/bid " + text.trim();
   auction.initiator = user;
+  auction.initialMsid = msid;
   datastore["beebot.auctions." + chan] = auction;
   return `Auction started! ${bidStatus(others)}`;
 }
@@ -104,16 +105,18 @@ function bidProc(chan, user, text) {
   const obj = datastore["beebot.auctions." + chan + ".bids"];
   obj[user] = text;
 
-  let response = "";
+  let response = {};
   if (bidMissing(obj)) {
-    response += "New bid from " + user + "! " + bidStatus(obj);
+    response.output = "New bid from " + user + "! " + bidStatus(obj);
+    response.voxmode = "blurt";
   } else {
     bidReset(chan);
 
-    response +=
+    response.output =
       `Got final bid from ${user}! :tada: Results:\n` +
       bidSummary(obj) +
       `\n\n${bidPay()}`;
+    response.voxmode = "holla";
   }
   return response;
 }
@@ -177,20 +180,23 @@ function printBids(auction, bids) {
   return { output, voxmode: "holla" };
 }
 
-function maybeStart(auction, chan, user, text, others) {
+function maybeStart(auction, chan, user, text, others, msid) {
   if (auction) {
     return {
       output: "No @-mentions allowed in bids! Try `/bid help`",
       voxmode: "whisp",
     };
   } else {
-    return { output: bidStart(chan, user, text, others), voxmode: "holla" };
+    return {
+      output: bidStart(chan, user, text, others, msid),
+      voxmode: "holla",
+    };
   }
 }
 
 function maybeProc(auction, channel, user, text) {
   if (auction) {
-    return { output: bidProc(channel, user, text), voxmode: "blurt" };
+    return bidProc(channel, user, text);
   } else {
     return {
       output: "/bid " + text + "\nNo current auction! Try `/bid help`",
@@ -199,14 +205,14 @@ function maybeProc(auction, channel, user, text) {
   }
 }
 
-function handleSlash(chan, user, text) {
+function handleSlash(chan, user, text, msid) {
   const urtext = "/bid " + text + "\n";
   const others = bidParse(text);
   const auction = datastore["beebot.auctions." + chan];
   const bids = datastore["beebot.auctions." + chan + ".bids"];
 
   if (!isEmpty(others)) {
-    return maybeStart(auction, chan, user, text, others);
+    return maybeStart(auction, chan, user, text, others, msid);
   }
 
   switch (text) {
@@ -226,7 +232,8 @@ function handleSlash(chan, user, text) {
 }
 
 module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
-  const response = handleSlash(chan, user, mesg || "");
+  let auction = datastore["beebot.auctions." + chan];
+  const response = handleSlash(chan, user, mesg || "", msid);
 
   let commandReply = {
     plat,
@@ -244,7 +251,10 @@ module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
   }
 
   if (response.voxmode === "holla") {
-    message.mrid = msid;
+    if (!auction) {
+      auction = datastore["beebot.auctions." + chan];
+    }
+    message.mrid = auction.initialMsid;
     await sendmesg(message);
   } else {
     await sendmesg(commandReply);
