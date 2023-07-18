@@ -230,18 +230,31 @@ function handleSlash(chan, user, text) {
 module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
   const response = handleSlash(chan, user, mesg || "");
 
+  let commandReply = {
+    plat,
+    fief,
+    chan,
+    mesg: "Roger that",
+    phem: true,
+  };
+
+  if (plat === "discord") {
+    commandReply.mrid = msid;
+  } else if (plat === "slack") {
+    commandReply.user = user;
+  }
+
   let message = { plat, fief, chan, mesg: response.output };
 
   switch (response.voxmode) {
     case "whisp":
-      message.phem = true;
-      message.user = user;
-      message.mrid = msid;
-      break;
+      return await sendmesg(message);
+
     case "holla":
       message.mrid = msid;
-      break;
+      return await sendmesg(message);
   }
 
+  await sendmesg(commandReply);
   await sendmesg(message);
 };

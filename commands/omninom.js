@@ -18,35 +18,45 @@ Debugging factoid: ` +
               "saw it."
             : "Interestingly, arg1's whitespace was not trimmed before Omnibot saw it.");
 
+    let commandReply = {
+        plat,
+        fief,
+        chan,
+        mesg: "Roger that",
+        phem: true,
+    };
+
+    if (plat === "discord") {
+        commandReply.mrid = msid;
+    } else if (plat === "slack") {
+        commandReply.user = user;
+    }
+
+    if (mesg === "phem") {
+        commandReply.mesg = mesg;
+
+        return await sendmesg(commandReply);
+    }
+
     if (mesg === "holla") {
-        await sendmesg({
+        return await sendmesg({
             plat,
             fief,
             chan,
             mesg: output,
             mrid: msid,
         });
-    } else if (mesg === "blurt") {
+    }
+
+    await sendmesg(commandReply);
+
+    if (mesg === "blurt") {
         await sendmesg({
             plat,
             fief,
             chan,
             mesg: output,
         });
-    } else if (mesg === "phem") {
-        let message = {
-            plat,
-            fief,
-            chan,
-            mesg: output,
-            phem: true,
-        };
-        if (plat === "discord") {
-            message.mrid = msid;
-        } else if (plat === "slack") {
-            message.user = user;
-        }
-        await sendmesg(message);
     } else {
         await sendmesg({
             plat,
