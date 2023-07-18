@@ -28,7 +28,16 @@ async function sendmesg(message) {
         console.log("Fief is a noop on Slack!");
     }
 
-    if (hasKeysExclusively(message, ["plat", "fief", "user", "phem", "mesg"])) {
+    if (
+        hasKeysExclusively(message, [
+            "plat",
+            "fief",
+            "chan",
+            "user",
+            "phem",
+            "mesg",
+        ])
+    ) {
         const match = message.user.match(/([UW][A-Z0-9]{2,})/);
         const userId = match[1];
 
@@ -107,15 +116,14 @@ app.command(/^\/.+/, async ({ command, ack }) => {
     });
 });
 
-app.message(/^.*$/i, async ({ message }) => {
+app.message(/^[^\/].*$/i, async ({ message }) => {
     const { channels } = await app.client.conversations.list();
     const channel = channels.find((c) => c.id === message.channel).name;
-
     dispatch({
         plat: "slack",
         fief: "noop",
         chan: channel,
-        user: message.user,
+        user: `<@${message.user}>`,
         mesg: message.text,
         msid: message.ts,
     });

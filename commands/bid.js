@@ -236,13 +236,8 @@ module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
     chan,
     mesg: "Roger that",
     phem: true,
+    mrid: msid,
   };
-
-  if (plat === "discord") {
-    commandReply.mrid = msid;
-  } else if (plat === "slack") {
-    commandReply.user = user;
-  }
 
   let message = { plat, fief, chan, mesg: response.output };
 

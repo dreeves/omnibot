@@ -24,13 +24,8 @@ Debugging factoid: ` +
         chan,
         mesg: "Roger that",
         phem: true,
+        mrid: msid,
     };
-
-    if (plat === "discord") {
-        commandReply.mrid = msid;
-    } else if (plat === "slack") {
-        commandReply.user = user;
-    }
 
     if (mesg === "phem") {
         commandReply.mesg = mesg;
