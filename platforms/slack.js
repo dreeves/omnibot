@@ -26,7 +26,6 @@ const commandCache = {};
 async function sendmesg(message) {
     if (message.fief) {
         console.log("Fief is a noop on Slack!");
-        delete message.fief;
     }
 
     if (hasKeysExclusively(message, ["plat", "fief", "user", "phem", "mesg"])) {
@@ -37,8 +36,11 @@ async function sendmesg(message) {
             channel: message.chan,
             user: userId,
             text: message.mesg,
+            thread_ts: message.mrid,
         });
-    } else if (hasKeysExclusively(message, ["plat", "user", "priv", "mesg"])) {
+    } else if (
+        hasKeysExclusively(message, ["plat", "fief", "user", "priv", "mesg"])
+    ) {
         const match = message.user.match(/([UW][A-Z0-9]{2,})/);
         const userId = match[1];
 
@@ -49,25 +51,39 @@ async function sendmesg(message) {
         });
     } else if (
         hasKeysExclusively(message, ["plat", "fief", "chan", "mesg"]) ||
-        hasKeysExclusively(message, ["plat", "fief", "chan", "mrid", "mesg"])
+        hasKeysExclusively(message, ["plat", "fief", "chan", "mrid", "mesg"]) ||
+        hasKeysExclusively(message, [
+            "plat",
+            "fief",
+            "chan",
+            "user",
+            "phem",
+            "mesg",
+            "mrid",
+        ])
     ) {
-        let realMrid = message.mrid;
-
-        if (message.mrid.startsWith("command:")) {
-            const command = commandCache[message.mrid];
-            const { message: fauxMessage } = await app.client.chat.postMessage({
-                channel: message.chan,
-                text: `${command.command} ${command.text}`,
+        if (message.mrid && message.mrid.startsWith("command:")) {
+            const ack = commandCache[message.mrid];
+            await ack({
+                response_type: message.phem ? "ephemeral" : "in_channel",
+                text: message.mesg,
             });
-
-            realMrid = fauxMessage.ts;
+        } else {
+            if (message.phem) {
+                await app.client.chat.postEphemeral({
+                    user: message.user,
+                    thread_ts: message.mrid,
+                    channel: message.chan,
+                    text: message.mesg,
+                });
+            } else {
+                await app.client.chat.postMessage({
+                    thread_ts: message.mrid,
+                    channel: message.chan,
+                    text: message.mesg,
+                });
+            }
         }
-
-        await app.client.chat.postMessage({
-            thread_ts: realMrid,
-            channel: message.chan,
-            text: message.mesg,
-        });
     } else {
         throw (
             "Malformed message, Slack doesn't know what to do: " +
@@ -79,10 +95,8 @@ async function sendmesg(message) {
 registerPlatform("slack", sendmesg);
 
 app.command(/^\/.+/, async ({ command, ack }) => {
-    await ack();
-
     const commandID = `command:${command.trigger_id}`;
-    commandCache[commandID] = command;
+    commandCache[commandID] = ack;
     dispatch({
         plat: "slack",
         fief: command.team_id,
@@ -99,6 +113,7 @@ app.message(/^.*$/i, async ({ message }) => {
 
     dispatch({
         plat: "slack",
+        fief: "noop",
         chan: channel,
         user: message.user,
         mesg: message.text,
