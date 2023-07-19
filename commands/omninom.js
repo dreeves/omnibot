@@ -53,12 +53,15 @@ Debugging factoid: ` +
             mesg: output,
         });
     } else {
-        await sendmesg({
+        const reply = {
             plat,
-            fief,
             mesg: output,
             user,
             priv: true,
-        });
+        };
+        if (plat === "slack") {
+            reply.fief = "noop";
+        }
+        await sendmesg(reply);
     }
 };
