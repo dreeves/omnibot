@@ -85,8 +85,48 @@ describe("sending a message to Discord", function () {
     });
 
     describe("sending an ephemeral message", function () {
-        xit("replies to a message if mrid is an interaction", function () {});
+        it("replies to a message if mrid is an interaction", async function () {
+            const message = {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mrid: "interaction:123",
+                mesg: "Hello, world!",
+                phem: true,
+            };
 
-        xit("throws an error if anything else is true", function () {});
+            const interaction = {
+                reply: sinon.fake(),
+            };
+            interactionCache[message.mrid] = interaction;
+            await sendmesg(fakeClient, interactionCache, message);
+            const called = interaction.reply.calledWith({
+                content: message.mesg,
+                ephemeral: message.phem,
+            });
+            expect(called).to.be.true;
+        });
+
+        it("throws an error if anything else is true", async function () {
+            const message = {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mrid: "123",
+                mesg: "Hello, world!",
+                phem: true,
+            };
+
+            const interaction = {
+                reply: sinon.fake(),
+            };
+            interactionCache[message.mrid] = interaction;
+            await sendmesg(fakeClient, interactionCache, message);
+            const called = interaction.reply.calledWith({
+                content: message.mesg,
+                ephemeral: message.phem,
+            });
+            expect(called).to.be.false;
+        });
     });
 });
