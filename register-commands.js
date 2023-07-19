@@ -58,38 +58,38 @@ slashmeta.forEach((meta) => {
       body: discordCommands,
     });
 
-    const guilds = await discord.guilds.fetch();
+    // const guilds = await discord.guilds.fetch();
 
-    for (let [gId] of guilds) {
-      const guild = await discord.guilds.fetch(gId);
+    // for (let [gId] of guilds) {
+    //   const guild = await discord.guilds.fetch(gId);
 
-      const rules = await guild.autoModerationRules.fetch();
+    //   const rules = await guild.autoModerationRules.fetch();
 
-      for (let command of discordCommands) {
-        const ruleName = `omnibot-${command.name}`;
+    //   for (let command of discordCommands) {
+    //     const ruleName = `omnibot-${command.name}`;
 
-        if (!rules.some(({ name }) => name === ruleName)) {
-          await guild.autoModerationRules.create({
-            name: ruleName,
-            eventType: Discord.AutoModerationRuleEventType.MessageSend,
-            triggerType: Discord.AutoModerationRuleTriggerType.Keyword,
-            triggerMetadata: {
-              regexPatterns: [`^/${command.name} .*`],
-            },
-            enabled: true,
-            actions: [
-              {
-                type: Discord.AutoModerationActionType.BlockMessage,
-                metadata: {
-                  customMessage:
-                    "Oops. Looks like you meant to send a bot command, not a message!",
-                },
-              },
-            ],
-          });
-        }
-      }
-    }
+    //     if (!rules.some(({ name }) => name === ruleName)) {
+    //       await guild.autoModerationRules.create({
+    //         name: ruleName,
+    //         eventType: Discord.AutoModerationRuleEventType.MessageSend,
+    //         triggerType: Discord.AutoModerationRuleTriggerType.Keyword,
+    //         triggerMetadata: {
+    //           regexPatterns: [`^/${command.name} .*`],
+    //         },
+    //         enabled: true,
+    //         actions: [
+    //           {
+    //             type: Discord.AutoModerationActionType.BlockMessage,
+    //             metadata: {
+    //               customMessage:
+    //                 "Oops. Looks like you meant to send a bot command, not a message!",
+    //             },
+    //           },
+    //         ],
+    //       });
+    //     }
+    //   }
+    // }
 
     console.log(
       `Successfully reloaded ${data.length} application (/) commands.`
