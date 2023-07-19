@@ -13,6 +13,7 @@
     "@discordjs/rest": "^1.7.1",
     "@slack/bolt": "^3.13.1",
     "axios": "^1.4.0",
+    "chai-as-promised": "^7.1.1",
     "discord-api-types": "^0.37.42",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
@@ -38,6 +39,7 @@
     "mocha": "^10.2.0",
     "puppeteer": "^20.2.0",
     "selenium-webdriver": "^4.9.2",
+    "sinon": "^15.2.0",
     "snowpack": "^3.2.2"
   }
 }
