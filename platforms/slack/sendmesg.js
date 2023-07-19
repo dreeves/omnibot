@@ -56,8 +56,11 @@ async function sendmesg(client, commandCache, message) {
             });
         } else {
             if (message.phem) {
+                const match = message.user.match(/([UW][A-Z0-9]{2,})/);
+                const userId = match[1];
+
                 await client.chat.postEphemeral({
-                    user: message.user,
+                    user: userId,
                     thread_ts: message.mrid,
                     channel: message.chan,
                     text: message.mesg,
