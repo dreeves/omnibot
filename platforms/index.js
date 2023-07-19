@@ -2,8 +2,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const convertCommands = require("../convert-commands.js");
-const discord = require("./discord.js");
-const slack = require("./slack.js");
+const discord = require("./discord");
+const slack = require("./slack");
 const web = require("./web.js");
 
 const commandsPath = path.join(__dirname, "../commands");

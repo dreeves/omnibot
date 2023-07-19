@@ -9,6 +9,7 @@ describe("when the user submits text in chat", function () {
 
   before(async function () {
     browser = await puppeteer.launch({
+      headless: "new",
       args: ["--disable-gpu"],
     });
     page = (await browser.pages())[0];
