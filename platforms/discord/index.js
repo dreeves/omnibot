@@ -14,7 +14,9 @@ const discord = new Discord.Client({
 
 let interactionCache = {};
 
-registerPlatform("discord", (message) => sendmesg(discord, message));
+registerPlatform("discord", (message) =>
+    sendmesg(discord, interactionCache, message)
+);
 
 discord.once("ready", () => ready(discord.user.tag));
 
