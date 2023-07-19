@@ -1,10 +1,6 @@
 const { hasKeysExclusively } = require("../utils.js");
 
 async function sendmesg(client, commandCache, message) {
-    if (message.fief) {
-        console.log("Fief is a noop on Slack!");
-    }
-
     if (
         hasKeysExclusively(message, [
             "plat",
