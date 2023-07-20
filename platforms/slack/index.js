@@ -1,6 +1,7 @@
 const { App, ExpressReceiver } = require("@slack/bolt");
 const { commandHandler, messageHandler } = require("./handlers.js");
 const { registerPlatform } = require("../../sendemitter.js");
+const sendmesg = require("./sendmesg.js");
 
 const receiver = new ExpressReceiver({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
