@@ -1,4 +1,5 @@
 const dispatch = require("../../dispatch.js");
+const { sendmesg } = require("../../sendemitter.js");
 
 function ready(username) {
     console.log(`Omnibot is running; logged in to Discord as ${username}`);
@@ -14,7 +15,7 @@ async function interactionCreate(interactionCache, interaction) {
     interactionCache[`interaction:${interaction.id}`] = interaction;
 
     try {
-        await dispatch({
+        await dispatch(sendmesg, {
             plat: "discord",
             fief: interaction.guild.name,
             chan: interaction.channel.name,
@@ -36,7 +37,7 @@ async function messageCreate(msg) {
         return;
     }
 
-    dispatch({
+    dispatch(sendmesg, {
         plat: "discord",
         fief: msg.guild.name,
         chan: msg.channel.name,

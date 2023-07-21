@@ -1,9 +1,10 @@
 const dispatch = require("../../dispatch");
+const { sendmesg } = require("../../sendemitter.js");
 
 async function commandHandler(commandCache, command, ack) {
     const commandID = `command:${command.trigger_id}`;
     commandCache[commandID] = ack;
-    dispatch({
+    dispatch(sendmesg, {
         plat: "slack",
         fief: command.team_id,
         chan: command.channel_name,
@@ -15,7 +16,7 @@ async function commandHandler(commandCache, command, ack) {
 
 async function messageHandler(channels, message) {
     const channel = channels.find((c) => c.id === message.channel).name;
-    dispatch({
+    dispatch(sendmesg, {
         plat: "slack",
         fief: "noop",
         chan: channel,

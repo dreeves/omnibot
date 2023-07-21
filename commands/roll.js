@@ -1,5 +1,3 @@
-const { sendmesg } = require("../sendemitter.js");
-
 // TODO: DRY this up with commands/bid.js
 // Random integer from 1 to n inclusive
 function randint(n) {
@@ -11,7 +9,7 @@ function bern(p) {
   return Math.random() < p;
 }
 
-module.exports = ({ mesg, ...message }) => {
+module.exports = (sendmesg, { mesg, ...message }) => {
   if (mesg === "" || mesg === "help") {
     return sendmesg({
       ...message,

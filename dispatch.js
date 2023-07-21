@@ -2,7 +2,6 @@ const omninom = require("./commands/omninom.js");
 const bid = require("./commands/bid.js");
 const roll = require("./commands/roll.js");
 const { lexup } = require("./lexiguess.js");
-const { sendmesg } = require("./sendemitter.js");
 
 /**
  * A message and its metadata from one of the supported chat
@@ -25,7 +24,7 @@ const SLASH_COMMAND_REGEX = /^\/([a-z]+) /i;
  * Send a message to the correct handler.
  * @param {Message} message - received message
  */
-async function dispatch(message) {
+async function dispatch(sendmesg, message) {
     const { plat, fief, chan, user, mesg, msid, priv } = message;
     const botIDs = [process.env.DISCORD_BOT_ID, process.env.SLACK_BOT_ID];
 
@@ -65,7 +64,7 @@ async function dispatch(message) {
     const commandInput = mesg.substring(mesg.indexOf(" ") + 1);
     switch (commandName) {
         case "omninom":
-            await omninom({
+            await omninom(sendmesg, {
                 plat,
                 fief,
                 chan,
@@ -76,7 +75,7 @@ async function dispatch(message) {
             });
             break;
         case "bid":
-            await bid({
+            await bid(sendmesg, {
                 plat,
                 fief,
                 chan,
@@ -87,7 +86,7 @@ async function dispatch(message) {
             });
             break;
         case "roll":
-            await roll({
+            await roll(sendmesg, {
                 plat,
                 fief,
                 chan,

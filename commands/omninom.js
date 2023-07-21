@@ -1,9 +1,8 @@
-const { sendmesg } = require("../sendemitter.js");
 const NOM = "omninom"; // name of this slash command
 
 const packageData = require("../package.json"); // to see the version number
 
-module.exports = async ({ plat, fief, chan, user, mesg, msid }) => {
+module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
     let output =
         `\
 This is Omnibot v${packageData.version} \
