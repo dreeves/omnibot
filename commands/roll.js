@@ -28,7 +28,8 @@ module.exports = (sendmesg, { mesg, ...message }) => {
     return sendmesg({
       ...message,
       mesg: "Psst, this is not an integer: " + mesg,
-      priv: true,
+      mrid: message.msid,
+      phem: true,
     });
   } else if (n <= 0) {
     return sendmesg({
