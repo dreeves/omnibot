@@ -239,15 +239,15 @@ module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
 
   let message = { plat, fief, chan, mesg: response.output };
 
-  switch (response.voxmode) {
-    case "whisp":
-      return await sendmesg(message);
-
-    case "holla":
-      message.mrid = msid;
-      return await sendmesg(message);
+  if (response.voxmode === "whisp") {
+    message = { plat, user, priv: true, mesg: response.output };
   }
 
-  await sendmesg(commandReply);
-  await sendmesg(message);
+  if (response.voxmode === "holla") {
+    message.mrid = msid;
+    await sendmesg(message);
+  } else {
+    await sendmesg(commandReply);
+    await sendmesg(message);
+  }
 };
