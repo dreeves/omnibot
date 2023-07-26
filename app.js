@@ -10,6 +10,8 @@ require("dotenv").config(); // or import 'dotenv/config'
 const express = require("express");
 const webApp = express();
 const { discord, slack, web } = require("./platforms");
+const announceVersion = require("./announce.js");
+const { sendmesg } = require("./sendemitter.js");
 
 webApp.use(express.static("public"));
 webApp.use("/lib", express.static("node_modules"));
@@ -43,6 +45,8 @@ if (slack.receiver.router) {
   });
 
   CLOG("Omnibot is running; listening for events from Slack / the web");
+
+  announceVersion(sendmesg);
 })();
 
 process.on("exit", () => {
