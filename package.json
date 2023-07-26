@@ -23,7 +23,7 @@
     "remarkable": "^2.0.1"
   },
   "engines": {
-    "node": "16"
+    "node": "18.17.0"
   },
   "repository": {
     "url": "https://github.com/dreeves/omnibot"
