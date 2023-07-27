@@ -4,10 +4,6 @@ const CLOG = console.log
 
 const {version} = require('./package.json')
 
-const crypto = require('crypto');
-let nonce = crypto.randomBytes(16).toString('base64');
-CLOG(`DEBUG nonce: ${nonce}`)
-
 // Maps platform/server/channel names to game states
 let gamestates = {}
 

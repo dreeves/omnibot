@@ -1,4 +1,8 @@
 const { version } = require("./package.json");
+const crypto = require("crypto");
+let nonce = crypto.randomBytes(16).toString("base64");
+console.log(`DEBUG nonce: ${nonce}`);
+
 const ANNOUNCE_USER_IDS = ["298617884664528896", "376112731478163466"];
 
 async function announceVersion(sendmesg) {
@@ -6,7 +10,10 @@ async function announceVersion(sendmesg) {
         await sendmesg({
             plat: "discord",
             user: `<@${userId}>`,
-            mesg: "New version of omnibot launched: " + version,
+            mesg:
+                "New version of omnibot launched: " +
+                version +
+                `\nNonce: ${nonce}`,
             priv: true,
         });
     }
