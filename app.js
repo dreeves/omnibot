@@ -2,6 +2,14 @@
 const CLOG = console.log;
 CLOG("Omnibot!");
 
+const fs = require("node:fs");
+
+if (fs.existsSync("omnibot.lock")) {
+  CLOG("Lockfile already exists!");
+  process.exit();
+}
+fs.writeFileSync("omnibot.lock", `${process.pid}`);
+
 // -----------------------------------------------------------------------------
 // -------- Initialization, create and start server, log in to Discord ---------
 
@@ -50,5 +58,14 @@ if (slack.receiver.router) {
 })();
 
 process.on("exit", () => {
-  CLOG("Shutting down!");
+  CLOG("Shutting down: exiting!");
+  fs.unlinkSync("omnibot.lock");
+});
+
+process.on("SIGINT", () => {
+  process.exit();
+});
+
+process.on("SIGTERM", () => {
+  process.exit();
 });

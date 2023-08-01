@@ -79,7 +79,7 @@ wsServer.on("connection", (socket, req) => {
 });
 
 process.on("exit", () => {
-    web.clients.forEach((s) =>
+    wsServer.clients.forEach((s) =>
         send(
             s,
             "chat",
