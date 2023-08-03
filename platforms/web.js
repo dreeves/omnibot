@@ -19,7 +19,8 @@ wsServer.on("connection", (socket, req) => {
     send(socket, "chat", "Omnibot!");
     send(socket, "name", !!clientNames[ip]);
 
-    socket.on("message", (message) => {
+    socket.on("message", (data) => {
+        const message = data.toString();
         if (!clientNames[ip]) {
             const used = Object.values(clientNames).includes(message);
             if (/^[a-zA-Z0-9 ]+$/.test(message) && !used) {
