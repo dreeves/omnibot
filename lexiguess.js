@@ -1,14 +1,14 @@
-const rand  = Math.random
-const floor = Math.floor
-const CLOG = console.log
+const rand  = Math.random;
+const floor = Math.floor;
+const CLOG = console.log;
 
-const {version} = require('./package.json')
+const { version } = require('./package.json');
 
 const crypto = require('crypto');
 let nonce = crypto.randomBytes(16).toString('base64');
-CLOG(`DEBUG nonce: ${nonce}`)
+CLOG(`DEBUG nonce: ${nonce}`);
 
-// Maps platform/server/channel names to game states
+// Maps platform/fief/channel names to game states
 let gamestates = {}
 
 /*******************************************************************************
@@ -290,7 +290,7 @@ function lexout(s) {
     //+ debuggery
 }
 
-// Take a platform/server/channel-identifying string and a string said by the
+// Take a platform/fief/channel-identifying string and a string said by the
 // user and update the corresponding game state in the gamestates hash; return
 // the string for the bot to reply with.
 function lexup(cid, x) {
