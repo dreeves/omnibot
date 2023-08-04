@@ -31,7 +31,6 @@ function bidParse(txt) {
   if (txt.match(pattern)) {
     // RegExp.exec() might avoid doing match in 2 places
     txt.match(pattern).forEach(function (u) {
-      console.log(u);
       users[u] = "";
     });
   }
