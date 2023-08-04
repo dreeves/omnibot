@@ -1,3 +1,4 @@
+// -----------------------------------------------------------------------------
 const omninom = require("./commands/omninom.js");
 const bid = require("./commands/bid.js");
 const roll = require("./commands/roll.js");
