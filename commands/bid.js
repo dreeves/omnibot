@@ -215,18 +215,12 @@ function handleSlash(chan, user, text, msid) {
   }
 
   switch (text) {
-    case "help":
-      return help();
-    case "status":
-      return status(auction, bids);
-    case "abort":
-      return abort(auction, chan, bids);
-    case "debug":
-      return debug(auction, urtext);
-    case "":
-      return printBids(auction, bids);
-    default:
-      return maybeProc(auction, chan, user, text);
+    case "help":    return help();
+    case "status":  return status(auction, bids);
+    case "abort":   return abort(auction, chan, bids);
+    case "debug":   return debug(auction, urtext);
+    case "":        return printBids(auction, bids);
+    default:        return maybeProc(auction, chan, user, text);
   }
 }
 
