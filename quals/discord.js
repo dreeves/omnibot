@@ -80,7 +80,7 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            expect(sendmesg(fakeClient, interactionCache, message)).to.be
+            return expect(sendmesg(fakeClient, interactionCache, message)).to.be
                 .rejected;
         });
     });

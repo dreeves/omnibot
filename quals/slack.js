@@ -34,7 +34,7 @@ describe("sending a message to Slack", function () {
                     thread_ts: message.mrid,
                     channel: message.chan,
                     text: message.mesg,
-                })
+                }),
             ).to.be.true;
         });
 
@@ -54,7 +54,7 @@ describe("sending a message to Slack", function () {
                     thread_ts: undefined,
                     channel: "U123",
                     text: message.mesg,
-                })
+                }),
             ).to.be.true;
         });
 
@@ -73,7 +73,7 @@ describe("sending a message to Slack", function () {
                     thread_ts: undefined,
                     channel: message.chan,
                     text: message.mesg,
-                })
+                }),
             ).to.be.true;
         });
 
@@ -88,7 +88,8 @@ describe("sending a message to Slack", function () {
                 mesg: "Hello, world!",
             };
 
-            expect(sendmesg(fakeClient, commandCache, message)).to.be.rejected;
+            return expect(sendmesg(fakeClient, commandCache, message)).to.be
+                .rejected;
         });
     });
 
@@ -112,7 +113,7 @@ describe("sending a message to Slack", function () {
                     thread_ts: message.mrid,
                     channel: message.chan,
                     text: message.mesg,
-                })
+                }),
             ).to.be.true;
         });
 
@@ -126,7 +127,8 @@ describe("sending a message to Slack", function () {
                 phem: true,
             };
 
-            expect(sendmesg(fakeClient, commandCache, message)).to.be.rejected;
+            return expect(sendmesg(fakeClient, commandCache, message)).to.be
+                .rejected;
         });
 
         it("sends a message in a channel if fief, chan, and mesg are present", async function () {
@@ -147,7 +149,7 @@ describe("sending a message to Slack", function () {
                     thread_ts: undefined,
                     channel: message.chan,
                     text: message.mesg,
-                })
+                }),
             ).to.be.true;
         });
 
@@ -159,7 +161,8 @@ describe("sending a message to Slack", function () {
                 mesg: "Hello, world!",
             };
 
-            expect(sendmesg(fakeClient, commandCache, message)).to.be.rejected;
+            return expect(sendmesg(fakeClient, commandCache, message)).to.be
+                .rejected;
         });
     });
 });
