@@ -5,6 +5,7 @@ const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 
 const sendmesg = require("../platforms/discord/sendmesg");
+const { interactionCreate } = require("../platforms/discord/handlers");
 
 describe("sending a message to Discord", function () {
     const interactionCache = {};
@@ -128,5 +129,24 @@ describe("sending a message to Discord", function () {
             });
             expect(called).to.be.false;
         });
+    });
+});
+
+describe("handling direct messages", function () {
+    const directMessage = {
+        commandName: "/bid",
+        options: {
+            getString: () => "Hello, world!",
+        },
+        user: { id: 1234 },
+        id: 1234,
+        isChatInputCommand: () => true,
+    };
+
+    it("doesn't throw an error", async function () {
+        const cache = {};
+        const promise = interactionCreate(cache, directMessage);
+
+        return expect(promise).to.be.fulfilled;
     });
 });
