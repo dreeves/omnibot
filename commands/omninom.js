@@ -12,7 +12,7 @@ function ordain(n) {
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 
-module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
+module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid, priv }) => {
   count++; // This is the count-th chum the /omninom command has received
   chash[count] = msid; 
   // hmm, but the incoming chum, at least on Discord, is not a public message in the
@@ -43,6 +43,12 @@ replies:\n\
 * phem: Similar to whisp but reply ephemerally in the channel\n` +
 (mesg !== mesg.trim() ? `WARNING! A thing happened we thought never happens: \
 \`${mesg}\` was not trimmed.` : '');
+
+  if(priv) {
+    chash[count] = await sendmesg({plat, user, mesg: outmesg, priv: true});
+    console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
+    return chash[count]
+  }
 
   if (args === "whisp") {
     // Why doesn't it work to let fief be whatever was passed in?

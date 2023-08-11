@@ -13,6 +13,7 @@ async function interactionCreate(interactionCache, interaction) {
 
   const fauxInput = `/${command} ${input || ""}`;
   interactionCache[`interaction:${interaction.id}`] = interaction;
+  const priv = !interaction.channel;
 
   await dispatch(sendmesg, {
     plat: "discord",
@@ -21,6 +22,7 @@ async function interactionCreate(interactionCache, interaction) {
     user: `<@${interaction.user.id}>`,
     mesg: fauxInput,
     msid: `interaction:${interaction.id}`,
+    priv,
   });
 }
 

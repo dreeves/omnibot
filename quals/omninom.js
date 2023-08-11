@@ -29,4 +29,23 @@ describe('running the command with "foo" as an argument', function () {
             phem: true,
         });
     });
+
+    it("responds to a Slack DM with a DM", async function () {
+        const sendmesg = sinon.fake.returns(Promise.resolve());
+        let message = {
+            plat: "slack",
+            user: "<@1234>",
+            mesg: "holla",
+            msid: "1234",
+            priv: true,
+        };
+        await omninom(sendmesg, message);
+        sinon.assert.calledWith(sendmesg, {
+            plat: message.plat,
+            mrid: message.msid,
+            user: message.user,
+            mesg: sinon.match.string,
+            priv: true,
+        });
+    });
 });
