@@ -159,6 +159,7 @@ describe("sending a message to Slack", function () {
                 fief: "testserver",
                 chan: "botspam",
                 mesg: "Hello, world!",
+                phem: true,
             };
 
             return expect(sendmesg(fakeClient, commandCache, message)).to.be
