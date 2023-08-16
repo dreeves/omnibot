@@ -240,7 +240,10 @@ module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
   let message = { plat, fief, chan, mesg: response.output };
 
   if (response.voxmode === "whisp") {
-    message = { plat, user, priv: true, mesg: response.output };
+    message = { plat, priv: true, mesg: response.output };
+    if (plat === "slack") {
+      message.user = user;
+    }
   }
 
   if (response.voxmode === "holla") {

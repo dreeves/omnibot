@@ -54,7 +54,11 @@ replies:\n\
     // Why doesn't it work to let fief be whatever was passed in?
     //if (plat === "slack") { reply.fief = "noop" }
     const ack = "Got it. DMing you now.";
-    await sendmesg({plat, fief, chan, mesg: ack, mrid: msid, phem: true});
+    const message = {plat, fief, chan, mesg: ack, mrid: msid, phem: true}
+    if (plat === "slack") {
+      message.user = user;
+    }
+    await sendmesg(message);
     chash[count] = await sendmesg({plat, user, mesg: outmesg, priv: true});
     console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
     return chash[count];
@@ -83,6 +87,10 @@ replies:\n\
 
   if (args === "phem" || true) {
     console.log(`replying ephemerally to /omninom command ${count}`)
-    return await sendmesg({plat,fief,chan, mesg:outmesg, mrid:msid, phem:true});
+    const message = {plat,fief,chan, mesg:outmesg, mrid:msid, phem:true}
+    if (plat === "slack") {
+      message.user = user;
+    }
+    return await sendmesg(message);
   }
 };
