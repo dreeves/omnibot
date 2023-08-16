@@ -74,3 +74,25 @@ describe("the bid command", function () {
         });
     });
 });
+
+describe("auctions in DMs", function () {
+    it("not supported on Discord", async function () {
+        const sendmesg = sinon.fake();
+
+        await bid(sendmesg, {
+            plat: "discord",
+            user: "<@123>",
+            mesg: "vote on lunch with <@456>",
+            msid: "1234",
+            priv: true,
+        });
+
+        sinon.assert.calledOnceWithExactly(sendmesg, {
+            plat: "discord",
+            mesg: "Auctions in DMs aren't supported on Discord.",
+            mrid: "1234",
+            user: "<@123>",
+            priv: true,
+        });
+    });
+});

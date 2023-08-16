@@ -224,7 +224,20 @@ function handleSlash(chan, user, text, msid) {
   }
 }
 
-module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
+module.exports = async (
+  sendmesg,
+  { plat, fief, chan, user, mesg, msid, priv },
+) => {
+  if (plat === "discord" && priv) {
+    return sendmesg({
+      plat: "discord",
+      mesg: "Auctions in DMs aren't supported on Discord.",
+      mrid: msid,
+      user,
+      priv,
+    });
+  }
+
   let auction = datastore["beebot.auctions." + chan];
   const response = handleSlash(chan, user, mesg || "", msid);
 
