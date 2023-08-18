@@ -42,7 +42,8 @@ describe("sending a message to Discord", function () {
             };
 
             await sendmesg(fakeClient, interactionCache, message);
-            expect(fakeMessage.reply.calledWith(message.mesg)).to.be.true;
+            expect(fakeMessage.reply.calledWith({ content: message.mesg })).to
+                .be.true;
         });
 
         it("sends a DM if priv, user, and mesg are present", async function () {
@@ -54,7 +55,8 @@ describe("sending a message to Discord", function () {
             };
 
             await sendmesg(fakeClient, interactionCache, message);
-            expect(fakeUser.send.calledWith(message.mesg)).to.be.true;
+            expect(fakeUser.send.calledWith({ content: message.mesg })).to.be
+                .true;
         });
 
         it("sends a message in a channel if fief, chan, and mesg are present", async function () {
@@ -66,7 +68,8 @@ describe("sending a message to Discord", function () {
             };
 
             await sendmesg(fakeClient, interactionCache, message);
-            expect(fakeChannel.send.calledWith(message.mesg)).to.be.true;
+            expect(fakeChannel.send.calledWith({ content: message.mesg })).to.be
+                .true;
         });
 
         it("throws an error if anything else is true", async function () {
@@ -89,8 +92,6 @@ describe("sending a message to Discord", function () {
         it("replies to a message if mrid is an interaction", async function () {
             const message = {
                 plat: "discord",
-                fief: "testserver",
-                chan: "botspam",
                 mrid: "interaction:123",
                 mesg: "Hello, world!",
                 phem: true,
