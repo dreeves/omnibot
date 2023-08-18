@@ -17,8 +17,8 @@ async function interactionCreate(interactionCache, interaction) {
   try {
     await dispatch(sendmesg, {
       plat: "discord",
-      fief: interaction.guild.name,
-      chan: interaction.channel.name,
+      fief: interaction.guild ? interaction.guild.name : null,
+      chan: interaction.channel ? interaction.channel.name : null,
       user: `<@${interaction.user.id}>`,
       mesg: fauxInput,
       msid: `interaction:${interaction.id}`,
@@ -26,7 +26,8 @@ async function interactionCreate(interactionCache, interaction) {
   } catch (error) {
     console.error(error);
     await interaction.reply({
-      content: `ERROR: ${JSON.stringify(error)}`,
+      content: `ERROR: ${JSON.stringify(error)} -- ` +
+        `probably Omnibot tried to reply to a slash command from inside a DM?`,
       ephemeral: true,
     });
   }
