@@ -18,10 +18,9 @@ describe("sending a message to Slack", function () {
     };
 
     describe("sending a non-ephemeral message", function () {
-        it("replies to a message if fief, chan, mrid, and mesg are present", async function () {
+        it("replies to a message if chan, mrid, and mesg are present", async function () {
             const message = {
                 plat: "slack",
-                fief: "testserver",
                 chan: "botspam",
                 mrid: "123",
                 mesg: "Hello, world!",
@@ -38,10 +37,9 @@ describe("sending a message to Slack", function () {
             ).to.be.true;
         });
 
-        it("sends a DM if fief, priv, user, and mesg are present", async function () {
+        it("sends a DM if priv, user, and mesg are present", async function () {
             const message = {
                 plat: "slack",
-                fief: "testserver",
                 user: "<@U123>",
                 priv: true,
                 mesg: "Hello, world!",
@@ -49,19 +47,18 @@ describe("sending a message to Slack", function () {
 
             chatAPI.postMessage = sinon.fake.resolves();
             await sendmesg(fakeClient, commandCache, message);
-            expect(
-                chatAPI.postMessage.calledWith({
-                    thread_ts: undefined,
-                    channel: "U123",
-                    text: message.mesg,
-                }),
-            ).to.be.true;
+
+            sinon.assert.calledWith(chatAPI.postMessage, {
+                text: message.mesg,
+                thread_ts: undefined,
+                channel: "U123",
+                user: "U123",
+            });
         });
 
-        it("sends a message in a channel if fief, chan, and mesg are present", async function () {
+        it("sends a message in a channel if chan, and mesg are present", async function () {
             const message = {
                 plat: "slack",
-                fief: "testserver",
                 chan: "botspam",
                 mesg: "Hello, world!",
             };
