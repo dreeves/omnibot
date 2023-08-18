@@ -1,3 +1,4 @@
+const { ChannelType } = require("discord.js");
 const dispatch = require("../../dispatch.js");
 const { sendmesg } = require("../../sendemitter.js");
 
@@ -13,7 +14,7 @@ async function interactionCreate(interactionCache, interaction) {
 
   const fauxInput = `/${command} ${input || ""}`;
   interactionCache[`interaction:${interaction.id}`] = interaction;
-  const priv = !interaction.channel;
+  const priv = interaction.channel.type === ChannelType.DM;
 
   await dispatch(sendmesg, {
     plat: "discord",

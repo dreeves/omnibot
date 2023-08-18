@@ -4,6 +4,8 @@ const expect = chai.expect;
 const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 
+const { ChannelType } = require("discord.js");
+
 const sendmesg = require("../platforms/discord/sendmesg");
 const { interactionCreate } = require("../platforms/discord/handlers");
 
@@ -142,6 +144,9 @@ describe("handling direct messages", function () {
         user: { id: 1234 },
         id: 1234,
         isChatInputCommand: () => true,
+        channel: {
+            type: ChannelType.DM,
+        },
     };
 
     it("doesn't throw an error", async function () {
