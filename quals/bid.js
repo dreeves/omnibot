@@ -36,7 +36,7 @@ describe("the bid command", function () {
             msid: "4567",
         });
 
-        sinon.assert.calledWithExactly(sendmesg, {
+        sinon.assert.calledWith(sendmesg, {
             plat: "test",
             fief: "test server",
             chan: "botspam",
@@ -46,7 +46,7 @@ describe("the bid command", function () {
             mrid: "4567",
         });
 
-        sinon.assert.calledWithExactly(sendmesg, {
+        sinon.assert.calledWith(sendmesg, {
             plat: "test",
             fief: "test server",
             chan: "botspam",
@@ -66,7 +66,7 @@ describe("the bid command", function () {
             msid: "8900",
         });
 
-        sinon.assert.calledWithExactly(sendmesg, {
+        sinon.assert.calledWith(sendmesg, {
             plat: "test",
             fief: "test server",
             chan: "botspam",

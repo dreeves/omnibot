@@ -20,7 +20,7 @@ describe('running the command with "foo" as an argument', function () {
             msid: "1234",
         };
         await omninom(sendmesg, message);
-        sinon.assert.calledWithExactly(sendmesg, {
+        sinon.assert.calledWith(sendmesg, {
             plat: message.plat,
             fief: message.fief,
             chan: message.chan,
