@@ -243,6 +243,8 @@ module.exports = async (
 
   let commandReply = {
     plat,
+    fief,
+    chan,
     mesg: "Roger that",
     user,
     phem: true,

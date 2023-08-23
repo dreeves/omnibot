@@ -41,6 +41,7 @@ describe("the bid command", function () {
             fief: "test server",
             chan: "botspam",
             mesg: "Roger that",
+            user: "<@123>",
             phem: true,
             mrid: "4567",
         });
