@@ -26,7 +26,7 @@ function isEmpty(obj) {
 
 // Returns a hash of usernames (without the @'s) who are @-mentioned in txt
 function bidParse(txt) {
-  const pattern = /<@[a-z0-9_-|]+>/gi; // regex for @-mentions, HT StackOverflow
+  const pattern = /<@[a-z0-9_-|.]+>/gi; // regex for @-mentions, HT StackOverflow
   let users = {};
   if (txt.match(pattern)) {
     // RegExp.exec() might avoid doing match in 2 places
