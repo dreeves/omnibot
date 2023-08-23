@@ -1,6 +1,10 @@
 function mentionToID(mention) {
-  const match = mention.match(/^<@(.*)>$/);
-  if (match) { return match[1] } else { throw `Invalid mention: @{mention}` }
+    const match = mention.match(/^<@(.*)>$/);
+    if (match) {
+        return match[1];
+    } else {
+        throw `Invalid mention: {mention}`;
+    }
 }
 
 async function sendmesg(client, interactionCache, message) {
