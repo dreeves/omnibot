@@ -12,14 +12,14 @@ const { interactionCreate } = require("../platforms/discord/handlers");
 describe("sending a message to Discord", function () {
     const interactionCache = {};
 
-    const fakeUser = { send: sinon.fake.resolves() };
-    const fakeMessage = { reply: sinon.fake() };
+    const fakeUser = { send: sinon.fake.resolves({ id: "123" }) };
+    const fakeMessage = { reply: sinon.fake.returns({ id: "123" }) };
     const fakeCollection = (item) => ({
         fetch: (id) => (id ? Promise.resolve(item) : Promise.resolve([item])),
     });
     const fakeChannel = {
         name: "botspam",
-        send: sinon.fake.resolves(),
+        send: sinon.fake.resolves({ id: "123" }),
         messages: fakeCollection(fakeMessage),
     };
     const fakeGuild = {
@@ -100,7 +100,7 @@ describe("sending a message to Discord", function () {
             };
 
             const interaction = {
-                reply: sinon.fake(),
+                reply: sinon.fake.returns({ id: "123" }),
             };
             interactionCache[message.mrid] = interaction;
             await sendmesg(fakeClient, interactionCache, message);

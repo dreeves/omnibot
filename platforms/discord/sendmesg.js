@@ -66,7 +66,8 @@ async function sendmesg(client, interactionCache, message) {
     }
 
     if (target && funcName) {
-        await target[funcName](payload);
+        const sent = await target[funcName](payload);
+        return sent.id || sent.interaction?.id;
     } else {
         throw "Ambiguous message!";
     }

@@ -20,7 +20,7 @@ function registerPlatform(plat, handler) {
  * to the given user
  */
 async function sendmesg(message) {
-    await platforms[message.plat](message);
+    return await platforms[message.plat](message);
 }
 
 module.exports = {
