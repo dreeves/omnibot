@@ -234,7 +234,7 @@ module.exports = async (
       mesg: "Auctions in DMs aren't supported on Discord.",
       mrid: msid,
       user,
-      priv,
+      priv: true,
     });
   }
 
@@ -243,9 +243,8 @@ module.exports = async (
 
   let commandReply = {
     plat,
-    fief,
-    chan,
     mesg: "Roger that",
+    user,
     phem: true,
     mrid: msid,
   };

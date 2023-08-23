@@ -45,16 +45,22 @@ replies:\n\
 \`${mesg}\` was not trimmed.` : '');
 
   if(priv) {
-    chash[count] = await sendmesg({plat, user, mesg: outmesg, priv: true});
+    const message = {plat, mrid: msid, mesg: outmesg}
+    if (plat === "slack") {
+      message.user = user;
+      message.priv = true;
+    }
+    chash[count] = await sendmesg(message);
     console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
     return chash[count]
   }
 
   if (args === "whisp") {
+    console.log("whispering")
     // Why doesn't it work to let fief be whatever was passed in?
     //if (plat === "slack") { reply.fief = "noop" }
     const ack = "Got it. DMing you now.";
-    const message = {plat, fief, chan, mesg: ack, mrid: msid, phem: true}
+    const message = {plat, mesg: ack, mrid: msid, phem: true}
     if (plat === "slack") {
       message.user = user;
     }
