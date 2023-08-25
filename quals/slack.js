@@ -35,12 +35,11 @@ describe("sending a message to Slack", function () {
 
             chatAPI.postMessage = sinon.fake.resolves();
             await sendmesg(fakeClient, commandCache, message);
-            expect(
-                chatAPI.postMessage.calledWith({
-                    channel: message.chan,
-                    text: message.mesg,
-                }),
-            ).to.be.true;
+
+            sinon.assert.calledWith(chatAPI.postMessage, {
+                channel: message.chan,
+                text: message.mesg,
+            });
         });
 
         it("sends an ephemeral message if phem and user are present", async function () {
@@ -55,13 +54,11 @@ describe("sending a message to Slack", function () {
 
             chatAPI.postEphemeral = sinon.fake.resolves();
             await sendmesg(fakeClient, commandCache, message);
-            expect(
-                chatAPI.postEphemeral.calledWith({
-                    user: "U123",
-                    channel: message.chan,
-                    text: message.mesg,
-                }),
-            ).to.be.true;
+            sinon.assert.calledWith(chatAPI.postEphemeral, {
+                user: "U123",
+                channel: message.chan,
+                text: message.mesg,
+            });
         });
 
         it("replies to a message if chan, mrid, and mesg are present", async function () {
@@ -74,13 +71,11 @@ describe("sending a message to Slack", function () {
 
             chatAPI.postMessage = sinon.fake.resolves();
             await sendmesg(fakeClient, commandCache, message);
-            expect(
-                chatAPI.postMessage.calledWith({
-                    thread_ts: message.mrid,
-                    channel: message.chan,
-                    text: message.mesg,
-                }),
-            ).to.be.true;
+            sinon.assert.calledWith(chatAPI.postMessage, {
+                thread_ts: message.mrid,
+                channel: message.chan,
+                text: message.mesg,
+            });
         });
 
         it("replies to a message ephemerally if chan, mrid, user, phem, and mesg are present", async function () {
@@ -96,14 +91,12 @@ describe("sending a message to Slack", function () {
 
             chatAPI.postEphemeral = sinon.fake.resolves();
             await sendmesg(fakeClient, commandCache, message);
-            expect(
-                chatAPI.postEphemeral.calledWith({
-                    user: "U123",
-                    thread_ts: message.mrid,
-                    channel: message.chan,
-                    text: message.mesg,
-                }),
-            ).to.be.true;
+            sinon.assert.calledWith(chatAPI.postEphemeral, {
+                user: "U123",
+                thread_ts: message.mrid,
+                channel: message.chan,
+                text: message.mesg,
+            });
         });
     });
 
