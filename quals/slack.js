@@ -18,11 +18,61 @@ describe("sending a message to Slack", function () {
     };
 
     describe("erroneous messages", function () {
-        xit("rejects the wrong platform");
-        xit("rejects a missing message");
-        xit("rejects missing user for priv");
-        xit("rejects missing user for phem");
-        xit("rejects ambiguity between channel messages and private messages");
+        it("rejects the wrong platform", async function () {
+            const message = {
+                plat: "discord",
+                chan: "botspam",
+                mesg: "Hello, world!",
+            };
+
+            const result = sendmesg(fakeClient, commandCache, message);
+            return expect(result).to.be.rejectedWith(
+                `Slack got erroneous platform ${message.plat}`,
+            );
+        });
+        it("rejects a missing message", async function () {
+            const message = {
+                plat: "slack",
+                chan: "botspam",
+            };
+
+            const result = sendmesg(fakeClient, commandCache, message);
+            return expect(result).to.be.rejectedWith("Missing message!");
+        });
+        it("rejects missing user for priv", async function () {
+            const message = {
+                plat: "slack",
+                mesg: "Hello, world!",
+                priv: true,
+            };
+
+            const result = sendmesg(fakeClient, commandCache, message);
+            return expect(result).to.be.rejectedWith("Missing target user!");
+        });
+        it("rejects missing user for phem", async function () {
+            const message = {
+                plat: "slack",
+                mesg: "Hello, world!",
+                phem: true,
+            };
+
+            const result = sendmesg(fakeClient, commandCache, message);
+            return expect(result).to.be.rejectedWith("Missing target user!");
+        });
+        it("rejects ambiguity between channel messages and private messages", async function () {
+            const message = {
+                plat: "slack",
+                mesg: "Hello, world!",
+                chan: "botspam",
+                user: "<@123>",
+                priv: true,
+            };
+
+            const result = sendmesg(fakeClient, commandCache, message);
+            return expect(result).to.be.rejectedWith(
+                "Unclear whether to send a private message!",
+            );
+        });
     });
 
     describe("sending a channel message", function () {
