@@ -31,9 +31,12 @@ async function sendmesg(client, commandCache, message) {
 
     let payload = {
         text: mesg,
-        thread_ts: mrid,
         channel: chan,
     };
+
+    if (mrid) {
+        payload.thread_ts = mrid;
+    }
 
     if (user) {
         const match = message.user.match(/([UW][A-Z0-9]{2,})/);
