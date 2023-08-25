@@ -4,17 +4,11 @@ const { sendmesg } = require("../../sendemitter.js");
 async function commandHandler(commandCache, command, ack) {
     const commandID = `command:${command.trigger_id}`;
     const dm = command.channel_name === "directmessage";
-    let chan = command.channel_name;
-    if (dm) {
-        chan = command.user_id;
-    } else if (command.channel_name.startsWith("mpdm-")) {
-        chan = command.channel_id;
-    }
     commandCache[commandID] = ack;
     dispatch(sendmesg, {
         plat: "slack",
         fief: command.team_id,
-        chan,
+        chan: command.channel_name,
         user: `<@${command.user_id}|${command.user_name}>`,
         mesg: `${command.command} ${command.text}`,
         msid: commandID,
