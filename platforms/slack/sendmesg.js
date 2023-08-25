@@ -1,12 +1,24 @@
 async function sendmesg(client, commandCache, message) {
-    const { chan, mesg, mrid, phem, priv, user } = message;
+    const { chan, mesg, mrid, phem, priv, user, plat } = message;
+
+    if (plat !== "slack") {
+        throw `Slack got erroneous platform ${plat}`;
+    }
+
+    if (priv && chan) {
+        throw "Unclear whether to send a private message!";
+    }
+
+    if (!mesg) {
+        throw "Missing message!";
+    }
 
     if (priv && phem) {
         throw "Ambiguous message:\n" + JSON.stringify(message, null, 4);
     }
 
     if ((priv || phem) && !user) {
-        throw "Ambiguous message:\n" + JSON.stringify(message, null, 4);
+        throw "Missing target user!";
     }
 
     if (mrid && mrid.startsWith("command:")) {
