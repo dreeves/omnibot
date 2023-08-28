@@ -35,7 +35,7 @@ async function sendmesg(client, commandCache, message) {
     };
 
     if (mrid) {
-        payload.thread_ts = mrid;
+        throw "Replies are not supported on Slack";
     }
 
     if (user) {

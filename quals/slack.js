@@ -71,6 +71,20 @@ describe("sending a message to Slack", function () {
                 "Unclear whether to send a private message!",
             );
         });
+        it("does not support replying to messages", async function () {
+            const message = {
+                plat: "slack",
+                chan: "botspam",
+                mrid: "123",
+                mesg: "Hello, world!",
+            };
+
+            chatAPI.postMessage = sinon.fake.resolves();
+            const result = sendmesg(fakeClient, {}, message);
+            return expect(result).to.be.rejectedWith(
+                "Replies are not supported on Slack",
+            );
+        });
     });
 
     describe("sending a channel message", function () {
@@ -104,44 +118,6 @@ describe("sending a message to Slack", function () {
             await sendmesg(fakeClient, {}, message);
             sinon.assert.calledWith(chatAPI.postEphemeral, {
                 user: "U123",
-                channel: message.chan,
-                text: message.mesg,
-            });
-        });
-
-        it("replies to a message if chan, mrid, and mesg are present", async function () {
-            const message = {
-                plat: "slack",
-                chan: "botspam",
-                mrid: "123",
-                mesg: "Hello, world!",
-            };
-
-            chatAPI.postMessage = sinon.fake.resolves();
-            await sendmesg(fakeClient, {}, message);
-            sinon.assert.calledWith(chatAPI.postMessage, {
-                thread_ts: message.mrid,
-                channel: message.chan,
-                text: message.mesg,
-            });
-        });
-
-        it("replies to a message ephemerally if chan, mrid, user, phem, and mesg are present", async function () {
-            const message = {
-                plat: "slack",
-                fief: "testserver",
-                chan: "botspam",
-                mrid: "123",
-                mesg: "Hello, world!",
-                user: "<@U123>",
-                phem: true,
-            };
-
-            chatAPI.postEphemeral = sinon.fake.resolves();
-            await sendmesg(fakeClient, {}, message);
-            sinon.assert.calledWith(chatAPI.postEphemeral, {
-                user: "U123",
-                thread_ts: message.mrid,
                 channel: message.chan,
                 text: message.mesg,
             });
@@ -219,26 +195,6 @@ describe("sending a message to Slack", function () {
             };
 
             return expect(sendmesg(fakeClient, {}, message)).to.be.rejected;
-        });
-
-        it("replies to a message if chan, mrid, and mesg are present", async function () {
-            const message = {
-                plat: "slack",
-                user: "<@U123>",
-                mrid: "123",
-                priv: true,
-                mesg: "Hello, world!",
-            };
-
-            chatAPI.postMessage = sinon.fake.resolves();
-            await sendmesg(fakeClient, {}, message);
-
-            sinon.assert.calledWith(chatAPI.postMessage, {
-                thread_ts: message.mrid,
-                text: message.mesg,
-                channel: "U123",
-                user: "U123",
-            });
         });
     });
 });
