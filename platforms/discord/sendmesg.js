@@ -75,21 +75,6 @@ async function sendmesg(client, interactionCache, message) {
     } else {
         throw "Ambiguous message!";
     }
-  } else if (hasKeysExclusively(message, ["plat", "fief", "chan", "mesg"])) {
-    const guilds = await client.guilds.fetch();
-    let guild = guilds.find((g) => g.name === fief);
-    guild = await guild.fetch();
-
-    const channels = guild ? await guild.channels.fetch() : null;
-    const channel = channels ? channels.find(c => c.name === chan) : null;
-
-    await channel.send(mesg);
-  } else {
-    throw (
-      "Malformed message, Discord doesn't know what to do: " +
-      JSON.stringify(message)
-    );
-  }
 }
 
 module.exports = sendmesg;
