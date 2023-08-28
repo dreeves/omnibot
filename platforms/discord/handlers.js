@@ -1,3 +1,4 @@
+const { ChannelType } = require("discord.js");
 const dispatch = require("../../dispatch.js");
 const { sendmesg } = require("../../sendemitter.js");
 
@@ -7,30 +8,23 @@ function ready(username) {
 
 async function interactionCreate(interactionCache, interaction) {
   if (!interaction.isChatInputCommand()) return;
-  
+
   const command = interaction.commandName;
   const input = interaction.options.getString("input");
-  
+
   const fauxInput = `/${command} ${input || ""}`;
   interactionCache[`interaction:${interaction.id}`] = interaction;
-  
-  try {
-    await dispatch(sendmesg, {
-      plat: "discord",
-      fief: interaction.guild ? interaction.guild.name : null,
-      chan: interaction.channel ? interaction.channel.name : null,
-      user: `<@${interaction.user.id}>`,
-      mesg: fauxInput,
-      msid: `interaction:${interaction.id}`,
-    });
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({
-      content: `ERROR: ${JSON.stringify(error)} -- ` +
-        `probably Omnibot tried to reply to a slash command from inside a DM?`,
-      ephemeral: true,
-    });
-  }
+  const priv = interaction.channel.type === ChannelType.DM;
+
+  await dispatch(sendmesg, {
+    plat: "discord",
+    fief: interaction.guild?.name,
+    chan: interaction.channel?.name,
+    user: `<@${interaction.user.id}>`,
+    mesg: fauxInput,
+    msid: `interaction:${interaction.id}`,
+    priv,
+  });
 }
 
 async function messageCreate(msg) {

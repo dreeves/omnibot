@@ -12,7 +12,7 @@ function bern(p) {
 module.exports = (sendmesg, { mesg, ...message }) => {
   if (mesg === "" || mesg === "help") {
     return sendmesg({
-      ...message,
+      user: message.user,
       mesg:
         "How to use /roll\n" +
         "`/roll N` — roll an N-sided :game_die:\n" +
@@ -26,14 +26,18 @@ module.exports = (sendmesg, { mesg, ...message }) => {
   if (isNaN(n)) {
     //console.log("DEBUG051: " + JSON.stringify(mesg));
     return sendmesg({
-      ...message,
+      plat: message.plat,
+      chan: message.plat === "slack" && message.chan,
+      user: message.user,
       mesg: "Psst, this is not an integer: " + mesg,
       mrid: message.msid,
       phem: true,
     });
   } else if (n <= 0) {
     return sendmesg({
-      ...message,
+      plat: message.plat,
+      fief: message.fief,
+      chan: message.chan,
       mesg:
         "Rolling a " +
         n +
@@ -44,13 +48,17 @@ module.exports = (sendmesg, { mesg, ...message }) => {
     });
   } else if (n === 1) {
     return sendmesg({
-      ...message,
+      plat: message.plat,
+      fief: message.fief,
+      chan: message.chan,
       mesg: "Rolling a D1... it came up 1. Duh.",
       mrid: message.msid,
     });
   } else {
     return sendmesg({
-      ...message,
+      plat: message.plat,
+      fief: message.fief,
+      chan: message.chan,
       mesg: `Rolling a D${n}... it came up ${randint(n)}.`,
       mrid: message.msid,
     });

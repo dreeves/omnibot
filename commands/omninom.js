@@ -12,7 +12,7 @@ function ordain(n) {
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 
-module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
+module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid, priv }) => {
   count++; // This is the count-th chum the /omninom command has received
   chash[count] = msid; 
   // hmm, but the incoming chum, at least on Discord, is not a public message in the
@@ -44,11 +44,27 @@ replies:\n\
 (mesg !== mesg.trim() ? `WARNING! A thing happened we thought never happens: \
 \`${mesg}\` was not trimmed.` : '');
 
+  if(priv) {
+    const message = {plat, mrid: msid, mesg: outmesg}
+    if (plat === "slack") {
+      message.user = user;
+      message.priv = true;
+    }
+    chash[count] = await sendmesg(message);
+    console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
+    return chash[count]
+  }
+
   if (args === "whisp") {
+    console.log("whispering")
     // Why doesn't it work to let fief be whatever was passed in?
     //if (plat === "slack") { reply.fief = "noop" }
     const ack = "Got it. DMing you now.";
-    await sendmesg({plat, fief, chan, mesg: ack, mrid: msid, phem: true});
+    const message = {plat, mesg: ack, mrid: msid, phem: true}
+    if (plat === "slack") {
+      message.user = user;
+    }
+    await sendmesg(message);
     chash[count] = await sendmesg({plat, user, mesg: outmesg, priv: true});
     console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
     return chash[count];
@@ -77,6 +93,10 @@ replies:\n\
 
   if (args === "phem" || true) {
     console.log(`replying ephemerally to /omninom command ${count}`)
-    return await sendmesg({plat,fief,chan, mesg:outmesg, mrid:msid, phem:true});
+    const message = {plat,fief,chan, mesg:outmesg, mrid:msid, phem:true}
+    if (plat === "slack") {
+      message.user = user;
+    }
+    return await sendmesg(message);
   }
 };

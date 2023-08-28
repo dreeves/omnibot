@@ -31,7 +31,10 @@ app.command(/^\/.+/, ({ command, ack }) =>
 );
 
 app.message(/^[^\/].*$/i, async ({ message }) => {
-    const { channels } = await client.conversations.list();
+    if (message.subtype === "bot_message") {
+        return;
+    }
+    const { channels } = await app.client.conversations.list();
     await messageHandler(channels, message);
 });
 

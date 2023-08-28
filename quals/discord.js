@@ -4,19 +4,22 @@ const expect = chai.expect;
 const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 
+const { ChannelType } = require("discord.js");
+
 const sendmesg = require("../platforms/discord/sendmesg");
+const { interactionCreate } = require("../platforms/discord/handlers");
 
 describe("sending a message to Discord", function () {
     const interactionCache = {};
 
-    const fakeUser = { send: sinon.fake.resolves() };
-    const fakeMessage = { reply: sinon.fake() };
+    const fakeUser = { send: sinon.fake.resolves({ id: "123" }) };
+    const fakeMessage = { reply: sinon.fake.returns({ id: "123" }) };
     const fakeCollection = (item) => ({
         fetch: (id) => (id ? Promise.resolve(item) : Promise.resolve([item])),
     });
     const fakeChannel = {
         name: "botspam",
-        send: sinon.fake.resolves(),
+        send: sinon.fake.resolves({ id: "123" }),
         messages: fakeCollection(fakeMessage),
     };
     const fakeGuild = {
@@ -41,7 +44,8 @@ describe("sending a message to Discord", function () {
             };
 
             await sendmesg(fakeClient, interactionCache, message);
-            expect(fakeMessage.reply.calledWith(message.mesg)).to.be.true;
+            expect(fakeMessage.reply.calledWith({ content: message.mesg })).to
+                .be.true;
         });
 
         it("sends a DM if priv, user, and mesg are present", async function () {
@@ -53,7 +57,8 @@ describe("sending a message to Discord", function () {
             };
 
             await sendmesg(fakeClient, interactionCache, message);
-            expect(fakeUser.send.calledWith(message.mesg)).to.be.true;
+            expect(fakeUser.send.calledWith({ content: message.mesg })).to.be
+                .true;
         });
 
         it("sends a message in a channel if fief, chan, and mesg are present", async function () {
@@ -65,7 +70,8 @@ describe("sending a message to Discord", function () {
             };
 
             await sendmesg(fakeClient, interactionCache, message);
-            expect(fakeChannel.send.calledWith(message.mesg)).to.be.true;
+            expect(fakeChannel.send.calledWith({ content: message.mesg })).to.be
+                .true;
         });
 
         it("throws an error if anything else is true", async function () {
@@ -79,7 +85,7 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            expect(sendmesg(fakeClient, interactionCache, message)).to.be
+            return expect(sendmesg(fakeClient, interactionCache, message)).to.be
                 .rejected;
         });
     });
@@ -88,15 +94,13 @@ describe("sending a message to Discord", function () {
         it("replies to a message if mrid is an interaction", async function () {
             const message = {
                 plat: "discord",
-                fief: "testserver",
-                chan: "botspam",
                 mrid: "interaction:123",
                 mesg: "Hello, world!",
                 phem: true,
             };
 
             const interaction = {
-                reply: sinon.fake(),
+                reply: sinon.fake.returns({ id: "123" }),
             };
             interactionCache[message.mrid] = interaction;
             await sendmesg(fakeClient, interactionCache, message);
@@ -128,5 +132,27 @@ describe("sending a message to Discord", function () {
             });
             expect(called).to.be.false;
         });
+    });
+});
+
+describe("handling direct messages", function () {
+    const directMessage = {
+        commandName: "/bid",
+        options: {
+            getString: () => "Hello, world!",
+        },
+        user: { id: 1234 },
+        id: 1234,
+        isChatInputCommand: () => true,
+        channel: {
+            type: ChannelType.DM,
+        },
+    };
+
+    it("doesn't throw an error", async function () {
+        const cache = {};
+        const promise = interactionCreate(cache, directMessage);
+
+        return expect(promise).to.be.fulfilled;
     });
 });

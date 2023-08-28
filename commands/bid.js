@@ -26,7 +26,7 @@ function isEmpty(obj) {
 
 // Returns a hash of usernames (without the @'s) who are @-mentioned in txt
 function bidParse(txt) {
-  const pattern = /<@[a-z0-9_-|]+>/gi; // regex for @-mentions, HT StackOverflow
+  const pattern = /<@[a-z0-9_-|.]+>/gi; // regex for @-mentions, HT StackOverflow
   let users = {};
   if (txt.match(pattern)) {
     // RegExp.exec() might avoid doing match in 2 places
@@ -224,7 +224,20 @@ function handleSlash(chan, user, text, msid) {
   }
 }
 
-module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
+module.exports = async (
+  sendmesg,
+  { plat, fief, chan, user, mesg, msid, priv },
+) => {
+  if (plat === "discord" && priv) {
+    return sendmesg({
+      plat: "discord",
+      mesg: "Auctions in DMs aren't supported on Discord.",
+      mrid: msid,
+      user,
+      priv: true,
+    });
+  }
+
   let auction = datastore["beebot.auctions." + chan];
   const response = handleSlash(chan, user, mesg || "", msid);
 
@@ -233,6 +246,7 @@ module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
     fief,
     chan,
     mesg: "Roger that",
+    user,
     phem: true,
     mrid: msid,
   };
@@ -240,14 +254,24 @@ module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid }) => {
   let message = { plat, fief, chan, mesg: response.output };
 
   if (response.voxmode === "whisp") {
-    message = { plat, user, priv: true, mesg: response.output };
+    message = { plat, priv: true, mesg: response.output };
+    if (plat === "slack") {
+      message.user = user;
+    }
   }
 
   if (response.voxmode === "holla") {
+    if (auction && plat !== "slack") {
+      message.mrid = auction.initialMsid;
+    } else if (auction) {
+      message.mrid = msid;
+    }
+
     if (!auction) {
       auction = datastore["beebot.auctions." + chan];
+      message.mrid = auction.initialMsid;
     }
-    message.mrid = auction.initialMsid;
+
     await sendmesg(message);
   } else {
     await sendmesg(commandReply);
