@@ -1,8 +1,19 @@
 const sinon = require("sinon");
+const chai = require("chai");
+const expect = chai.expect;
+const chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
 
-const bid = require("../commands/bid.js");
+const proxyquire = require("proxyquire");
+proxyquire.noPreserveCache();
+
+let bid = require("../commands/bid.js");
 
 describe("the bid command", function () {
+    beforeEach(() => {
+        bid = proxyquire("../commands/bid.js", {});
+    });
+
     it("starts the auction", async function () {
         const sendmesg = sinon.fake();
 
@@ -26,6 +37,15 @@ describe("the bid command", function () {
 
     it("quietly receives bids", async function () {
         const sendmesg = sinon.fake();
+
+        await bid(sendmesg, {
+            plat: "test",
+            fief: "test server",
+            chan: "botspam",
+            user: "<@123>",
+            mesg: "vote on lunch with <@456>",
+            msid: "1234",
+        });
 
         await bid(sendmesg, {
             plat: "test",
@@ -61,6 +81,24 @@ describe("the bid command", function () {
             plat: "test",
             fief: "test server",
             chan: "botspam",
+            user: "<@123>",
+            mesg: "vote on lunch with <@456>",
+            msid: "1234",
+        });
+
+        await bid(sendmesg, {
+            plat: "test",
+            fief: "test server",
+            chan: "botspam",
+            user: "<@123>",
+            mesg: "cool bid",
+            msid: "4567",
+        });
+
+        await bid(sendmesg, {
+            plat: "test",
+            fief: "test server",
+            chan: "botspam",
             user: "<@456>",
             mesg: "another bid",
             msid: "8900",
@@ -72,6 +110,44 @@ describe("the bid command", function () {
             chan: "botspam",
             mesg: sinon.match(/Got final bid from <@456>/),
             mrid: "1234",
+        });
+    });
+
+    it("doesn't reply to the original command on Slack", async function () {
+        const sendmesg = sinon.fake();
+
+        await bid(sendmesg, {
+            plat: "slack",
+            fief: "test server",
+            chan: "botspam",
+            user: "<@123>",
+            mesg: "vote on lunch with <@456>",
+            msid: "1234",
+        });
+
+        await bid(sendmesg, {
+            plat: "slack",
+            fief: "test server",
+            chan: "botspam",
+            user: "<@123>",
+            mesg: "cool bid",
+            msid: "command:4567",
+        });
+
+        await bid(sendmesg, {
+            plat: "slack",
+            fief: "test server",
+            chan: "botspam",
+            user: "<@456>",
+            mesg: "another bid",
+            msid: "8900",
+        });
+
+        sinon.assert.calledWith(sendmesg, {
+            plat: "slack",
+            fief: "test server",
+            chan: "botspam",
+            mesg: sinon.match(/Got final bid from <@456>/),
         });
     });
 });
