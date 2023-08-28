@@ -13,6 +13,10 @@ describe("sending a message to Slack", function () {
     };
     const fakeClient = {
         chat: chatAPI,
+        conversations: {
+            list: async () =>
+                Promise.resolve({ channels: [{ id: "123", name: "botspam" }] }),
+        },
     };
 
     describe("erroneous messages", function () {
@@ -99,7 +103,7 @@ describe("sending a message to Slack", function () {
             await sendmesg(fakeClient, {}, message);
 
             sinon.assert.calledWith(chatAPI.postMessage, {
-                channel: message.chan,
+                channel: "123",
                 text: message.mesg,
             });
         });
@@ -118,7 +122,7 @@ describe("sending a message to Slack", function () {
             await sendmesg(fakeClient, {}, message);
             sinon.assert.calledWith(chatAPI.postEphemeral, {
                 user: "U123",
-                channel: message.chan,
+                channel: "123",
                 text: message.mesg,
             });
         });
