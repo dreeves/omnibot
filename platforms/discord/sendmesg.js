@@ -16,18 +16,6 @@ async function sendmesg(client, interactionCache, message) {
         content: mesg,
     };
 
-    if (mrid && mrid.startsWith("interaction:")) {
-        const interaction = interactionCache[mrid];
-        payload.ephemeral = phem;
-        target = interaction;
-
-        if (interaction.replied) {
-            funcName = "followUp";
-        } else {
-            funcName = "reply";
-        }
-    }
-
     if (userMention && priv) {
         if (target) {
             throw "Ambiguous message!";
@@ -59,7 +47,17 @@ async function sendmesg(client, interactionCache, message) {
         const channels = await guild.channels.fetch();
         const channel = channels.find((c) => c.name === chan);
 
-        if (mrid) {
+        if (mrid && mrid.startsWith("interaction:")) {
+            const interaction = interactionCache[mrid];
+            payload.ephemeral = phem;
+            target = interaction;
+
+            if (interaction.replied) {
+                funcName = "followUp";
+            } else {
+                funcName = "reply";
+            }
+        } else if (mrid) {
             const message = await channel.messages.fetch(mrid);
             target = message;
             funcName = "reply";
