@@ -263,13 +263,9 @@ module.exports = async (
   if (response.voxmode === "holla") {
     if (auction && plat !== "slack") {
       message.mrid = auction.initialMsid;
-    } else if (auction) {
+      await sendmesg(commandReply);
+    } else {
       message.mrid = msid;
-    }
-
-    if (!auction) {
-      auction = datastore["beebot.auctions." + chan];
-      message.mrid = auction.initialMsid;
     }
 
     await sendmesg(message);
