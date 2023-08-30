@@ -24,7 +24,17 @@ async function sendmesg(client, interactionCache, message) {
         const userId = mentionToID(userMention);
         const user = await client.users.fetch(userId);
 
-        if (mrid) {
+        if (mrid && mrid.startsWith("interaction:")) {
+            const interaction = interactionCache[mrid];
+            payload.ephemeral = phem;
+            target = interaction;
+
+            if (interaction.replied) {
+                funcName = "followUp";
+            } else {
+                funcName = "reply";
+            }
+        } else if (mrid) {
             const channel = user.dmChannel;
             const message = await channel.messages.fetch(mrid);
             target = message;
