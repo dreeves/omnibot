@@ -228,10 +228,10 @@ module.exports = async (
   sendmesg,
   { plat, fief, chan, user, mesg, msid, priv },
 ) => {
-  if (plat === "discord" && priv) {
+  if (priv) {
     return sendmesg({
-      plat: "discord",
-      mesg: "Auctions in DMs aren't supported on Discord.",
+      plat,
+      mesg: "Auctions in DMs aren't supported.",
       mrid: msid,
       user,
       priv: true,
