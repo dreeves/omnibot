@@ -228,14 +228,18 @@ module.exports = async (
   sendmesg,
   { plat, fief, chan, user, mesg, msid, priv },
 ) => {
-  if (plat === "discord" && priv) {
-    return sendmesg({
-      plat: "discord",
-      mesg: "Auctions in DMs aren't supported on Discord.",
+  if (priv) {
+    const message = {
+      plat,
+      mesg: "Auctions in DMs aren't supported.",
       mrid: msid,
-      user,
-      priv: true,
-    });
+    };
+
+    if (plat === "slack") {
+      message.user = user;
+      message.priv = true;
+    }
+    return sendmesg(message);
   }
 
   let auction = datastore["beebot.auctions." + chan];
@@ -243,15 +247,18 @@ module.exports = async (
 
   let commandReply = {
     plat,
-    fief,
-    chan,
     mesg: "Roger that",
     user,
     phem: true,
     mrid: msid,
   };
 
-  let message = { plat, fief, chan, mesg: response.output };
+  if (plat === "slack") {
+    commandReply.fief = fief;
+    commandReply.chan = chan;
+  }
+
+  let message = { plat, mesg: response.output };
 
   if (response.voxmode === "whisp") {
     message = { plat, priv: true, mesg: response.output };
@@ -263,17 +270,21 @@ module.exports = async (
   if (response.voxmode === "holla") {
     if (auction && plat !== "slack") {
       message.mrid = auction.initialMsid;
-    } else if (auction) {
+      await sendmesg(commandReply);
+    } else {
       message.mrid = msid;
     }
 
-    if (!auction) {
-      auction = datastore["beebot.auctions." + chan];
-      message.mrid = auction.initialMsid;
+    if (!message.mrid.startsWith("interaction:")) {
+      message.fief = fief;
+      message.chan = chan;
     }
 
     await sendmesg(message);
   } else {
+    message.fief = fief;
+    message.chan = chan;
+
     await sendmesg(commandReply);
     await sendmesg(message);
   }

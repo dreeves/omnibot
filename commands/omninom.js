@@ -62,6 +62,7 @@ replies:\n\
     const ack = "Got it. DMing you now.";
     const message = {plat, mesg: ack, mrid: msid, phem: true}
     if (plat === "slack") {
+      message.chan = chan;
       message.user = user;
     }
     await sendmesg(message);
@@ -78,14 +79,25 @@ replies:\n\
     // This is analogous to when someone starts an auction with /bid which
     // should be publicly visible.
     outmesg = `${user}: ${mesg}\n\n${outmesg}`;
-    chash[count] = await sendmesg({plat, fief, chan, mesg: outmesg, mrid: msid});
+    const message = {plat, mesg: outmesg, mrid: msid}
+    if (!msid.startsWith("interaction:")){
+      message.fief = fief;
+      message.chan = chan;
+    }
+    chash[count] = await sendmesg(message);
     console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
     return chash[count];
   }
 
   if (args === "blurt") {
     const ack = "Got it. Only you see this ack but now also replying publicly.";
-    await sendmesg({plat, fief, chan, mesg: ack, mrid: msid, phem: true});
+    const message  = {plat, mesg: ack, mrid: msid, phem: true};
+    if (plat === "slack") {
+      message.fief = fief;
+      message.chan = chan;
+      message.user = user;
+    }
+    await sendmesg(message);
     chash[count] = await sendmesg({plat, fief, chan, mesg: outmesg});
     console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
     return chash[count];
@@ -93,8 +105,10 @@ replies:\n\
 
   if (args === "phem" || true) {
     console.log(`replying ephemerally to /omninom command ${count}`)
-    const message = {plat,fief,chan, mesg:outmesg, mrid:msid, phem:true}
+    const message = {plat, mesg:outmesg, mrid:msid, phem:true}
     if (plat === "slack") {
+      message.fief = fief;
+      message.chan = chan;
       message.user = user;
     }
     return await sendmesg(message);
