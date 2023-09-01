@@ -51,7 +51,28 @@ if (slack.receiver.router) {
   announceVersion(sendmesg);
 })();
 
+let lastMessage;
+const HOUR_IN_MS = 1000 * 60 * 60;
+function rateLimit() {
+  const now = Date.now();
+  lastMessage = lastMessage || 0;
+  const remaining = Math.max(0, lastMessage + HOUR_IN_MS - now);
+  if (!remaining) {
+    lastMessage = now;
+  }
+  return Math.ceil(remaining / 1000);
+}
+
 webApp.post("/sendmesg", async (req, res) => {
+  const cooldown = rateLimit();
+  if (cooldown) {
+    res.status(401).json({
+      error: "Rate Limited",
+      details: `Try again in ${cooldown} seconds.`,
+    });
+    return;
+  }
+
   const chum = req.body;
   try {
     await sendmesg(chum);
