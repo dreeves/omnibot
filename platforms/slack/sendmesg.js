@@ -1,24 +1,28 @@
+const { ChumError } = require("../../sendemitter.js");
+
 async function sendmesg(client, commandCache, message) {
     const { chan, mesg, mrid, phem, priv, user, plat } = message;
 
     if (plat !== "slack") {
-        throw `Slack got erroneous platform ${plat}`;
+        throw new ChumError(`Slack got erroneous platform ${plat}`);
     }
 
     if (priv && chan) {
-        throw "Unclear whether to send a private message!";
+        throw new ChumError("Unclear whether to send a private message!");
     }
 
     if (!mesg) {
-        throw "Missing message!";
+        throw new ChumError("Missing message!");
     }
 
     if (priv && phem) {
-        throw "Ambiguous message:\n" + JSON.stringify(message, null, 4);
+        throw new ChumError(
+            "Ambiguous message:\n" + JSON.stringify(message, null, 4),
+        );
     }
 
     if ((priv || phem) && !user) {
-        throw "Missing target user!";
+        throw new ChumError("Missing target user!");
     }
 
     // FIXME the current channel might need to be a separate function.
@@ -48,7 +52,7 @@ async function sendmesg(client, commandCache, message) {
         });
     } else {
         if (mrid) {
-            throw "Replies are not supported on Slack";
+            throw new ChumError("Replies are not supported on Slack");
         }
 
         if (user) {
