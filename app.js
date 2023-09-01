@@ -8,11 +8,13 @@ CLOG("Omnibot!");
 require("dotenv").config(); // or import 'dotenv/config'
 
 const express = require("express");
+const bodyParser = require("body-parser");
 const webApp = express();
 const { discord, slack, web } = require("./platforms");
 const announceVersion = require("./announce.js");
 const { sendmesg } = require("./sendemitter.js");
 
+webApp.use(bodyParser.json());
 webApp.use(express.static("public"));
 webApp.use("/lib", express.static("node_modules"));
 webApp.get("/health", (req, res) => {
@@ -30,7 +32,7 @@ if (slack.receiver.router) {
     } catch (error) {
       console.log(error);
       console.log(
-        `ERROR! Your login token was ${process.env.DISCORD_BOT_TOKEN}`
+        `ERROR! Your login token was ${process.env.DISCORD_BOT_TOKEN}`,
       );
     }
   }
@@ -48,6 +50,19 @@ if (slack.receiver.router) {
 
   announceVersion(sendmesg);
 })();
+
+webApp.post("/sendmesg", async (req, res) => {
+  const chum = req.body;
+  try {
+    await sendmesg(chum);
+    res.status(200).json(chum);
+  } catch ({ name, message }) {
+    res.status(500).json({
+      error: name,
+      details: message,
+    });
+  }
+});
 
 process.on("exit", () => {
   CLOG("Shutting down!");
