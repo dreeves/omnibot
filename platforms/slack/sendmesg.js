@@ -31,7 +31,7 @@ async function sendmesg(client, commandCache, message) {
     if (user && priv) {
         channelId = user;
     } else {
-        const channel = channels.find((c) => c.name === chan);
+        const channel = channels.find((c) => c.name === chan || c.id === chan);
         channelId = channel.id;
     }
 
