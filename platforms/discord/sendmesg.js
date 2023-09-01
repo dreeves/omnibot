@@ -1,9 +1,11 @@
+const { ChumError } = require("../../sendemitter.js");
+
 function mentionToID(mention) {
     const match = mention.match(/^<@(.*)>$/);
     if (match) {
         return match[1];
     } else {
-        throw `Invalid mention: {mention}`;
+        throw new ChumError(`Invalid mention: {mention}`);
     }
 }
 
@@ -30,7 +32,7 @@ async function sendmesg(client, interactionCache, message) {
 
     if (userMention && priv) {
         if (target) {
-            throw "Ambiguous message!";
+            throw new ChumError("Ambiguous message!");
         }
 
         const userId = mentionToID(userMention);
@@ -49,7 +51,7 @@ async function sendmesg(client, interactionCache, message) {
 
     if (fief && chan) {
         if (target) {
-            throw "Ambiguous message!";
+            throw new ChumError("Ambiguous message!");
         }
 
         const guilds = await client.guilds.fetch();
@@ -73,7 +75,7 @@ async function sendmesg(client, interactionCache, message) {
         const sent = await target[funcName](payload);
         return sent.id || sent.interaction?.id;
     } else {
-        throw "Ambiguous message!";
+        throw new ChumError("Ambiguous message!");
     }
 }
 

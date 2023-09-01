@@ -12,7 +12,7 @@ const bodyParser = require("body-parser");
 const webApp = express();
 const { discord, slack, web } = require("./platforms");
 const announceVersion = require("./announce.js");
-const { sendmesg } = require("./sendemitter.js");
+const { sendmesg, ChumError } = require("./sendemitter.js");
 
 webApp.use(bodyParser.json());
 webApp.use(express.static("public"));
@@ -51,6 +51,13 @@ if (slack.receiver.router) {
   announceVersion(sendmesg);
 })();
 
+class RateLimitError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "RateLimitError";
+  }
+}
+
 let lastMessage;
 const HOUR_IN_MS = 1000 * 60 * 60;
 function rateLimit() {
@@ -59,28 +66,31 @@ function rateLimit() {
   const remaining = Math.max(0, lastMessage + HOUR_IN_MS - now);
   if (!remaining) {
     lastMessage = now;
+  } else {
+    const seconds = Math.ceil(remaining / 1000);
+    throw new RateLimitError(`Try again in ${seconds} seconds.`);
   }
-  return Math.ceil(remaining / 1000);
 }
 
 webApp.post("/sendmesg", async (req, res) => {
-  const cooldown = rateLimit();
-  if (cooldown) {
-    res.status(401).json({
-      error: "Rate Limited",
-      details: `Try again in ${cooldown} seconds.`,
-    });
-    return;
-  }
-
   const chum = req.body;
   try {
+    rateLimit();
     await sendmesg(chum);
     res.status(200).json(chum);
-  } catch ({ name, message }) {
-    res.status(500).json({
-      error: name,
-      details: message,
+  } catch (err) {
+    if (err instanceof ChumError) {
+      lastMessage = 0;
+      res.status(400);
+    } else if (err instanceof RateLimitError) {
+      res.status(401);
+    } else {
+      res.status(500);
+    }
+
+    res.json({
+      error: err.name,
+      details: err.message,
     });
   }
 });

@@ -1,3 +1,10 @@
+class ChumError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "ChumError";
+    }
+}
+
 const platforms = {};
 
 function registerPlatform(plat, handler) {
@@ -26,4 +33,5 @@ async function sendmesg(message) {
 module.exports = {
     registerPlatform,
     sendmesg,
+    ChumError,
 };
