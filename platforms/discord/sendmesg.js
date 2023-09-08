@@ -31,17 +31,8 @@ async function sendmesg(client, interactionCache, message) {
 
     let channelMessage = fief && chan;
     let directMessage = userMention && priv;
-    let commandReply = mrid && mrid.startsWith("interaction:");
     if (channelMessage && directMessage) {
         throw new ChumError("Unclear whether to send a private message!");
-    }
-
-    if (channelMessage && commandReply) {
-        throw new ChumError("Command replies don't accept fief and chan.");
-    }
-
-    if (directMessage && commandReply) {
-        throw new ChumError("Command replies don't accept user and priv.");
     }
 
     if (fief && !chan) {
@@ -58,6 +49,12 @@ async function sendmesg(client, interactionCache, message) {
 
     if (!userMention && priv) {
         throw new ChumError("Missing user!");
+    }
+
+    if (!directMessage && !channelMessage) {
+        throw new ChumError(
+            "Messages require either fief and chan or user and priv!",
+        );
     }
 
     let target;
@@ -78,13 +75,7 @@ async function sendmesg(client, interactionCache, message) {
         } else {
             funcName = "reply";
         }
-    }
-
-    if (userMention && priv) {
-        if (target) {
-            throw new ChumError("Ambiguous message!");
-        }
-
+    } else if (directMessage) {
         const userId = mentionToID(userMention);
         const user = await client.users.fetch(userId);
 
@@ -97,13 +88,7 @@ async function sendmesg(client, interactionCache, message) {
             target = user;
             funcName = "send";
         }
-    }
-
-    if (fief && chan) {
-        if (target) {
-            throw new ChumError("Ambiguous message!");
-        }
-
+    } else if (channelMessage) {
         const guilds = await client.guilds.fetch();
         let guild = guilds.find((g) => g.name === fief);
         guild = await guild.fetch();

@@ -86,32 +86,15 @@ describe("sending a message to Discord", function () {
                 "Unclear whether to send a private message!",
             );
         });
-        it("rejects ambiguity between channel message and command reply", async function () {
+        it("rejects message that is neither a channel message nor a private message", async function () {
             const message = {
                 plat: "discord",
-                fief: "testserver",
-                chan: "botspam",
-                mrid: "interaction:123",
                 mesg: "Hello, world!",
             };
 
             const result = sendmesg(fakeClient, {}, message);
             return expect(result).to.be.rejectedWith(
-                "Command replies don't accept fief and chan.",
-            );
-        });
-        it("rejects ambiguity between private message and command reply", async function () {
-            const message = {
-                plat: "discord",
-                user: "<@123>",
-                priv: true,
-                mrid: "interaction:123",
-                mesg: "Hello, world!",
-            };
-
-            const result = sendmesg(fakeClient, {}, message);
-            return expect(result).to.be.rejectedWith(
-                "Command replies don't accept user and priv.",
+                "Messages require either fief and chan or user and priv!",
             );
         });
         it("rejects fief with a missing chan", async function () {
@@ -226,6 +209,8 @@ describe("sending a message to Discord", function () {
         it('replies to a command if mrid starts with "interaction:"', async function () {
             const message = {
                 plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
                 mrid: "interaction:123",
                 mesg: "Hello, world!",
             };
@@ -242,6 +227,8 @@ describe("sending a message to Discord", function () {
         it("replies to a command ephemerally if phem is present", async function () {
             const message = {
                 plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
                 mrid: "interaction:123",
                 mesg: "Hello, world!",
                 phem: true,
