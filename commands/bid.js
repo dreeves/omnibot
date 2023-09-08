@@ -215,12 +215,18 @@ function handleSlash(chan, user, text, msid) {
   }
 
   switch (text) {
-    case "help":    return help();
-    case "status":  return status(auction, bids);
-    case "abort":   return abort(auction, chan, bids);
-    case "debug":   return debug(auction, urtext);
-    case "":        return printBids(auction, bids);
-    default:        return maybeProc(auction, chan, user, text);
+    case "help":
+      return help();
+    case "status":
+      return status(auction, bids);
+    case "abort":
+      return abort(auction, chan, bids);
+    case "debug":
+      return debug(auction, urtext);
+    case "":
+      return printBids(auction, bids);
+    default:
+      return maybeProc(auction, chan, user, text);
   }
 }
 
@@ -247,18 +253,15 @@ module.exports = async (
 
   let commandReply = {
     plat,
+    fief,
+    chan,
     mesg: "Roger that",
     user,
     phem: true,
     mrid: msid,
   };
 
-  if (plat === "slack") {
-    commandReply.fief = fief;
-    commandReply.chan = chan;
-  }
-
-  let message = { plat, mesg: response.output };
+  let message = { plat, fief, chan, mesg: response.output };
 
   if (response.voxmode === "whisp") {
     message = { plat, priv: true, mesg: response.output };
@@ -275,16 +278,8 @@ module.exports = async (
       message.mrid = msid;
     }
 
-    if (!message.mrid.startsWith("interaction:")) {
-      message.fief = fief;
-      message.chan = chan;
-    }
-
     await sendmesg(message);
   } else {
-    message.fief = fief;
-    message.chan = chan;
-
     await sendmesg(commandReply);
     await sendmesg(message);
   }

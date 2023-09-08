@@ -23,7 +23,7 @@ describe("the bid command", function () {
             chan: "botspam",
             user: "<@123>",
             mesg: "vote on lunch with <@456>",
-            msid: "1234",
+            msid: "interaction:1234",
         });
 
         sinon.assert.calledOnceWithExactly(sendmesg, {
@@ -31,7 +31,7 @@ describe("the bid command", function () {
             fief: "test server",
             chan: "botspam",
             mesg: "Auction started! Got bids from {}, waiting on {<@456>, <@123>}",
-            mrid: "1234",
+            mrid: "interaction:1234",
         });
     });
 
@@ -44,7 +44,7 @@ describe("the bid command", function () {
             chan: "botspam",
             user: "<@123>",
             mesg: "vote on lunch with <@456>",
-            msid: "1234",
+            msid: "interaction:1234",
         });
 
         await bid(sendmesg, {
@@ -53,15 +53,17 @@ describe("the bid command", function () {
             chan: "botspam",
             user: "<@123>",
             mesg: "cool bid",
-            msid: "4567",
+            msid: "interaction:4567",
         });
 
         sinon.assert.calledWith(sendmesg, {
             plat: "test",
+            fief: "test server",
+            chan: "botspam",
             mesg: "Roger that",
             user: "<@123>",
             phem: true,
-            mrid: "4567",
+            mrid: "interaction:4567",
         });
 
         sinon.assert.calledWith(sendmesg, {
@@ -81,7 +83,7 @@ describe("the bid command", function () {
             chan: "botspam",
             user: "<@123>",
             mesg: "vote on lunch with <@456>",
-            msid: "1234",
+            msid: "interaction:1234",
         });
 
         await bid(sendmesg, {
@@ -90,7 +92,7 @@ describe("the bid command", function () {
             chan: "botspam",
             user: "<@123>",
             mesg: "cool bid",
-            msid: "4567",
+            msid: "interaction:4567",
         });
 
         await bid(sendmesg, {
@@ -99,7 +101,7 @@ describe("the bid command", function () {
             chan: "botspam",
             user: "<@456>",
             mesg: "another bid",
-            msid: "8900",
+            msid: "interaction:8900",
         });
 
         sinon.assert.calledWith(sendmesg, {
@@ -107,7 +109,7 @@ describe("the bid command", function () {
             fief: "test server",
             chan: "botspam",
             mesg: sinon.match(/Got final bid from <@456>/),
-            mrid: "1234",
+            mrid: "interaction:1234",
         });
     });
 
