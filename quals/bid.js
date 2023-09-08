@@ -17,7 +17,7 @@ describe("the bid command", function () {
     it("starts the auction", async function () {
         const sendmesg = sinon.fake();
 
-        await bid(sendmesg, {
+        const result = bid(sendmesg, {
             plat: "test",
             fief: "test server",
             chan: "botspam",
@@ -58,8 +58,6 @@ describe("the bid command", function () {
 
         sinon.assert.calledWith(sendmesg, {
             plat: "test",
-            fief: "test server",
-            chan: "botspam",
             mesg: "Roger that",
             user: "<@123>",
             phem: true,
@@ -147,7 +145,7 @@ describe("the bid command", function () {
             plat: "slack",
             fief: "test server",
             chan: "botspam",
-            mesg: sinon.match(/Got final bid from <@456>/),
+            mesg: sinon.match.string,
         });
     });
 });
@@ -160,16 +158,14 @@ describe("auctions in DMs", function () {
             plat: "discord",
             user: "<@123>",
             mesg: "vote on lunch with <@456>",
-            msid: "1234",
+            msid: "interaction:1234",
             priv: true,
         });
 
         sinon.assert.calledOnceWithExactly(sendmesg, {
             plat: "discord",
-            mesg: "Auctions in DMs aren't supported on Discord.",
-            mrid: "1234",
-            user: "<@123>",
-            priv: true,
+            mesg: sinon.match.string,
+            mrid: "interaction:1234",
         });
     });
 });

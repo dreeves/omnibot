@@ -10,7 +10,55 @@ function mentionToID(mention) {
 }
 
 async function sendmesg(client, interactionCache, message) {
-    const { chan, fief, mesg, mrid, phem, priv, user: userMention } = message;
+    const {
+        plat,
+        chan,
+        fief,
+        mesg,
+        mrid,
+        phem,
+        priv,
+        user: userMention,
+    } = message;
+
+    if (plat !== "discord") {
+        throw new ChumError(`Discord got erroneous platform ${plat}`);
+    }
+
+    if (!mesg) {
+        throw new ChumError("Missing message!");
+    }
+
+    let channelMessage = fief && chan;
+    let directMessage = userMention && priv;
+    let commandReply = mrid && mrid.startsWith("interaction:");
+    if (channelMessage && directMessage) {
+        throw new ChumError("Unclear whether to send a private message!");
+    }
+
+    if (channelMessage && commandReply) {
+        throw new ChumError("Command replies don't accept fief and chan.");
+    }
+
+    if (directMessage && commandReply) {
+        throw new ChumError("Command replies don't accept user and priv.");
+    }
+
+    if (fief && !chan) {
+        throw new ChumError("Missing chan!");
+    }
+
+    if (!fief && chan) {
+        throw new ChumError("Missing fief!");
+    }
+
+    if (userMention && !priv) {
+        throw new ChumError("Missing priv!");
+    }
+
+    if (!userMention && priv) {
+        throw new ChumError("Missing user!");
+    }
 
     let target;
     let funcName;
@@ -20,7 +68,9 @@ async function sendmesg(client, interactionCache, message) {
 
     if (mrid && mrid.startsWith("interaction:")) {
         const interaction = interactionCache[mrid];
-        payload.ephemeral = phem;
+        if (phem) {
+            payload.ephemeral = true;
+        }
         target = interaction;
 
         if (interaction.replied) {

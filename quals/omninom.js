@@ -12,7 +12,7 @@ describe('running the command with "foo" as an argument', function () {
     it("calls sendmesg with a whisper", async function () {
         const sendmesg = sinon.fake.returns(Promise.resolve());
         let message = {
-            plat: "dummy",
+            plat: "discord",
             fief: "dummy",
             chan: "#botspam",
             user: "<@1234>",
@@ -22,8 +22,6 @@ describe('running the command with "foo" as an argument', function () {
         await omninom(sendmesg, message);
         sinon.assert.calledWith(sendmesg, {
             plat: message.plat,
-            fief: message.fief,
-            chan: message.chan,
             mesg: sinon.match(/.*/),
             mrid: message.msid,
             phem: true,
