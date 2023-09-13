@@ -4,6 +4,8 @@ const expect = chai.expect;
 const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 
+const DiscordFake = require("./fakes/discord.js");
+
 const { ChannelType } = require("discord.js");
 
 const sendmesg = require("../platforms/discord/sendmesg");
@@ -12,40 +14,8 @@ const { interactionCreate } = require("../platforms/discord/handlers");
 describe("sending a message to Discord", function () {
     const interactionCache = {};
 
-    let fakeUser;
-    let fakeMessage;
-    let fakeCollection = (item) => ({
-        fetch: (id) => (id ? Promise.resolve(item) : Promise.resolve([item])),
-    });
-    let fakeChannel;
-    let fakeGuild;
-    let fakeClient;
-    let fakeDM;
-    let fakeDMChannel;
-    beforeEach(function () {
-        fakeMessage = { reply: sinon.fake.resolves({ id: "123" }) };
-        fakeDM = { reply: sinon.fake.resolves({ id: "123" }) };
-        fakeDMChannel = {
-            messages: fakeCollection(fakeDM),
-        };
-        fakeUser = {
-            send: sinon.fake.resolves({ id: "123" }),
-            dmChannel: fakeDMChannel,
-        };
-        fakeChannel = {
-            name: "botspam",
-            send: sinon.fake.resolves({ id: "123" }),
-            messages: fakeCollection(fakeMessage),
-        };
-        fakeGuild = {
-            name: "testserver",
-            fetch: () => Promise.resolve(fakeGuild),
-            channels: fakeCollection(fakeChannel),
-        };
-        fakeClient = {
-            guilds: fakeCollection(fakeGuild),
-            users: fakeCollection(fakeUser),
-        };
+    afterEach(function () {
+        sinon.restore();
     });
 
     describe("erroneous messages", function () {
@@ -56,7 +26,7 @@ describe("sending a message to Discord", function () {
                 chan: "botspam",
                 mesg: "Hello, world!",
             };
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             return expect(result).to.be.rejectedWith(
                 `Discord got erroneous platform ${message.plat}`,
             );
@@ -68,7 +38,7 @@ describe("sending a message to Discord", function () {
                 chan: "botspam",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             return expect(result).to.be.rejectedWith("Missing message!");
         });
         it("rejects ambiguity between channel message and private message", async function () {
@@ -81,7 +51,7 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             return expect(result).to.be.rejectedWith(
                 "Unclear whether to send a private message!",
             );
@@ -92,7 +62,7 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             return expect(result).to.be.rejectedWith(
                 "Messages require either fief and chan or user and priv!",
             );
@@ -104,7 +74,7 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             return expect(result).to.be.rejectedWith("Missing chan!");
         });
         it("rejects chan with a missing fief", async function () {
@@ -114,7 +84,7 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             return expect(result).to.be.rejectedWith("Missing fief!");
         });
         it("rejects user with a missing priv", async function () {
@@ -124,7 +94,7 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             return expect(result).to.be.rejectedWith("Missing priv!");
         });
         it("rejects priv with a missing user", async function () {
@@ -134,7 +104,7 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             return expect(result).to.be.rejectedWith("Missing user!");
         });
     });
@@ -148,9 +118,9 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             await expect(result).to.be.fulfilled;
-            sinon.assert.calledWith(fakeChannel.send, {
+            sinon.assert.calledWith(DiscordFake.channel.send, {
                 content: message.mesg,
             });
         });
@@ -164,9 +134,9 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             await expect(result).to.be.fulfilled;
-            sinon.assert.calledWith(fakeMessage.reply, {
+            sinon.assert.calledWith(DiscordFake.message.reply, {
                 content: message.mesg,
             });
         });
@@ -181,9 +151,9 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             await expect(result).to.be.fulfilled;
-            sinon.assert.calledWith(fakeUser.send, {
+            sinon.assert.calledWith(DiscordFake.user.send, {
                 content: message.mesg,
             });
         });
@@ -197,9 +167,9 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(DiscordFake.client, {}, message);
             await expect(result).to.be.fulfilled;
-            sinon.assert.calledWith(fakeDM.reply, {
+            sinon.assert.calledWith(DiscordFake.dm.reply, {
                 content: message.mesg,
             });
         });
@@ -217,7 +187,11 @@ describe("sending a message to Discord", function () {
 
             const interaction = { reply: sinon.fake.resolves("123") };
             interactionCache[message.mrid] = interaction;
-            const result = sendmesg(fakeClient, interactionCache, message);
+            const result = sendmesg(
+                DiscordFake.client,
+                interactionCache,
+                message,
+            );
             await expect(result).to.be.fulfilled;
             sinon.assert.calledWith(interaction.reply, {
                 content: message.mesg,
@@ -236,7 +210,11 @@ describe("sending a message to Discord", function () {
 
             const interaction = { reply: sinon.fake.resolves("123") };
             interactionCache[message.mrid] = interaction;
-            const result = sendmesg(fakeClient, interactionCache, message);
+            const result = sendmesg(
+                DiscordFake.client,
+                interactionCache,
+                message,
+            );
             await expect(result).to.be.fulfilled;
             sinon.assert.calledWith(interaction.reply, {
                 content: message.mesg,
