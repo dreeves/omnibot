@@ -82,10 +82,8 @@ if (args === "whisp") {
 
   if (args === "blurt") {
     const ack = "Got it. Only you see this ack but now also replying publicly.";
-    const message  = {plat, mesg: ack, mrid: msid, phem: true};
+    const message  = {plat, fief, chan, mesg: ack, mrid: msid, phem: true};
     if (plat === "slack") {
-      message.fief = fief;
-      message.chan = chan;
       message.user = user;
     }
     await sendmesg(message);

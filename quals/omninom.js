@@ -101,6 +101,53 @@ const discordExpectations = [
             },
         ],
     },
+    {
+        desc: "replies to blurt (channel message)",
+        input: {
+            plat: "discord",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "blurt",
+            msid: "interaction:1234",
+        },
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: sinon.match.string,
+                mrid: "interaction:1234",
+                phem: true,
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: sinon.match.string,
+            },
+        ],
+    },
+    {
+        desc: "replies to blurt (DM message)",
+        input: {
+            plat: "discord",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "blurt",
+            user: "<@1234>",
+            priv: true,
+            msid: "interaction:1234",
+        },
+        output: [
+            {
+                plat: "discord",
+                user: "<@1234>",
+                priv: true,
+                mesg: sinon.match.string,
+                mrid: "interaction:1234",
+            },
+        ],
+    },
 ];
 
 const slackExpectations = [
@@ -185,6 +232,55 @@ const slackExpectations = [
             {
                 plat: "slack",
                 user: "<@1234>",
+                priv: true,
+                mesg: sinon.match.string,
+                mrid: "command:1234",
+            },
+        ],
+    },
+    {
+        desc: "replies to blurt (channel message)",
+        input: {
+            plat: "slack",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "blurt",
+            user: "<@U1234>",
+            msid: "command:1234",
+        },
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: sinon.match.string,
+                mrid: "command:1234",
+                user: "<@U1234>",
+                phem: true,
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: sinon.match.string,
+            },
+        ],
+    },
+    {
+        desc: "replies to blurt (DM message)",
+        input: {
+            plat: "slack",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "blurt",
+            user: "<@U1234>",
+            priv: true,
+            msid: "command:1234",
+        },
+        output: [
+            {
+                plat: "slack",
+                user: "<@U1234>",
                 priv: true,
                 mesg: sinon.match.string,
                 mrid: "command:1234",
