@@ -61,6 +61,46 @@ const discordExpectations = [
             },
         ],
     },
+    {
+        desc: "replies to holla (channel message)",
+        input: {
+            plat: "discord",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "holla",
+            msid: "interaction:1234",
+        },
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: sinon.match.string,
+                mrid: "interaction:1234",
+            },
+        ],
+    },
+    {
+        desc: "replies to holla (DM message)",
+        input: {
+            plat: "discord",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "holla",
+            user: "<@1234>",
+            priv: true,
+            msid: "interaction:1234",
+        },
+        output: [
+            {
+                plat: "discord",
+                user: "<@1234>",
+                priv: true,
+                mesg: sinon.match.string,
+                mrid: "interaction:1234",
+            },
+        ],
+    },
 ];
 
 const slackExpectations = [
@@ -107,6 +147,46 @@ const slackExpectations = [
                 mesg: sinon.match.string,
                 user: "<@U1234>",
                 priv: true,
+                mrid: "command:1234",
+            },
+        ],
+    },
+    {
+        desc: "replies to holla (channel message)",
+        input: {
+            plat: "slack",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "holla",
+            msid: "command:1234",
+        },
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: sinon.match.string,
+                mrid: "command:1234",
+            },
+        ],
+    },
+    {
+        desc: "replies to holla (DM message)",
+        input: {
+            plat: "slack",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "holla",
+            user: "<@1234>",
+            priv: true,
+            msid: "command:1234",
+        },
+        output: [
+            {
+                plat: "slack",
+                user: "<@1234>",
+                priv: true,
+                mesg: sinon.match.string,
                 mrid: "command:1234",
             },
         ],

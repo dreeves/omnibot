@@ -74,11 +74,7 @@ if (args === "whisp") {
     // This is analogous to when someone starts an auction with /bid which
     // should be publicly visible.
     outmesg = `${user}: ${mesg}\n\n${outmesg}`;
-    const message = {plat, mesg: outmesg, mrid: msid}
-    if (!msid.startsWith("interaction:")){
-      message.fief = fief;
-      message.chan = chan;
-    }
+    const message = {plat, fief, chan, mesg: outmesg, mrid: msid}
     chash[count] = await sendmesg(message);
     console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
     return chash[count];
