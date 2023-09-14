@@ -148,6 +148,47 @@ const discordExpectations = [
             },
         ],
     },
+    {
+        desc: "replies to phem (channel message)",
+        input: {
+            plat: "discord",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "phem",
+            msid: "interaction:1234",
+        },
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: sinon.match.string,
+                mrid: "interaction:1234",
+                phem: true,
+            },
+        ],
+    },
+    {
+        desc: "replies to phem (DM message)",
+        input: {
+            plat: "discord",
+            fief: "testserver",
+            chan: "botspam",
+            mesg: "phem",
+            user: "<@1234>",
+            priv: true,
+            msid: "interaction:1234",
+        },
+        output: [
+            {
+                plat: "discord",
+                user: "<@1234>",
+                priv: true,
+                mesg: sinon.match.string,
+                mrid: "interaction:1234",
+            },
+        ],
+    },
 ];
 
 const slackExpectations = [
@@ -239,12 +280,12 @@ const slackExpectations = [
         ],
     },
     {
-        desc: "replies to blurt (channel message)",
+        desc: "replies to phem (channel message)",
         input: {
             plat: "slack",
             fief: "testserver",
             chan: "botspam",
-            mesg: "blurt",
+            mesg: "phem",
             user: "<@U1234>",
             msid: "command:1234",
         },
@@ -258,21 +299,15 @@ const slackExpectations = [
                 user: "<@U1234>",
                 phem: true,
             },
-            {
-                plat: "slack",
-                fief: "testserver",
-                chan: "botspam",
-                mesg: sinon.match.string,
-            },
         ],
     },
     {
-        desc: "replies to blurt (DM message)",
+        desc: "replies to phem (DM message)",
         input: {
             plat: "slack",
             fief: "testserver",
             chan: "botspam",
-            mesg: "blurt",
+            mesg: "phem",
             user: "<@U1234>",
             priv: true,
             msid: "command:1234",

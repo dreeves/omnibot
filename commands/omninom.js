@@ -94,10 +94,8 @@ if (args === "whisp") {
 
   if (args === "phem" || true) {
     console.log(`replying ephemerally to /omninom command ${count}`)
-    const message = {plat, mesg:outmesg, mrid:msid, phem:true}
+    const message = {plat, fief, chan, mesg:outmesg, mrid:msid, phem:true}
     if (plat === "slack") {
-      message.fief = fief;
-      message.chan = chan;
       message.user = user;
     }
     return await sendmesg(message);
