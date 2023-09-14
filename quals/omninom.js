@@ -29,6 +29,8 @@ const discordExpectations = [
             {
                 plat: "discord",
                 mesg: sinon.match.string,
+                fief: "testserver",
+                chan: "botspam",
                 phem: true,
                 mrid: "interaction:1234",
             },
@@ -68,21 +70,24 @@ const slackExpectations = [
             plat: "slack",
             fief: "testserver",
             chan: "botspam",
-            user: "<@1234>",
+            user: "<@U1234>",
             mesg: "whisp",
-            msid: "interaction:1234",
+            msid: "command:1234",
         },
         output: [
             {
                 plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
                 mesg: sinon.match.string,
                 phem: true,
-                mrid: "interaction:1234",
+                user: "<@U1234>",
+                mrid: "command:1234",
             },
             {
                 plat: "slack",
                 priv: true,
-                user: "<@1234>",
+                user: "<@U1234>",
                 mesg: sinon.match.string,
             },
         ],
@@ -92,17 +97,17 @@ const slackExpectations = [
         input: {
             plat: "slack",
             priv: true,
-            user: "<@1234>",
+            user: "<@U1234>",
             mesg: "whisp",
-            msid: "interaction:1234",
+            msid: "command:1234",
         },
         output: [
             {
                 plat: "slack",
                 mesg: sinon.match.string,
-                user: "<@1234>",
+                user: "<@U1234>",
                 priv: true,
-                mrid: "interaction:1234",
+                mrid: "command:1234",
             },
         ],
     },
@@ -113,7 +118,7 @@ describe("running /omninom on Discord", function () {
 
     before(async function () {
         registerPlatform("discord", (message) =>
-            discordSendmesg(DiscordFake, interactionCache, message),
+            discordSendmesg(DiscordFake.client, interactionCache, message),
         );
     });
 
@@ -122,6 +127,14 @@ describe("running /omninom on Discord", function () {
     });
 
     discordExpectations.forEach((exp) => {
+        interactionCache[exp.input.msid] = {
+            reply: function () {
+                this.replied = true;
+                return Promise.resolve({ id: "123" });
+            },
+            followUp: () => Promise.resolve({ id: "123" }),
+            replied: false,
+        };
         it(exp.desc, async function () {
             const sendmesg = sinon.fake.resolves();
             await omninom(sendmesg, exp.input);
@@ -130,8 +143,7 @@ describe("running /omninom on Discord", function () {
         });
 
         it(`${exp.desc} without error`, async function () {
-            const promise = omninom(sendmesg, exp.input);
-            return expect(promise).to.be.fulfilled;
+            await omninom(sendmesg, exp.input);
         });
     });
 });
@@ -150,6 +162,7 @@ describe("running /omninom on Slack", function () {
     });
 
     slackExpectations.forEach((exp) => {
+        interactionCache[exp.input.msid] = () => Promise.resolve();
         it(exp.desc, async function () {
             const sendmesg = sinon.fake.resolves();
             await omninom(sendmesg, exp.input);
@@ -158,8 +171,7 @@ describe("running /omninom on Slack", function () {
         });
 
         it(`${exp.desc} without error`, async function () {
-            const promise = omninom(sendmesg, exp.input);
-            return expect(promise).to.be.fulfilled;
+            await omninom(sendmesg, exp.input);
         });
     });
 });
