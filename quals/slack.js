@@ -5,19 +5,12 @@ const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 
 const sendmesg = require("../platforms/slack/sendmesg");
+const SlackFake = require("./fakes/slack.js");
 
 describe("sending a message to Slack", function () {
-    const chatAPI = {
-        postEphemeral: Promise.resolve(),
-        postMessage: Promise.resolve(),
-    };
-    const fakeClient = {
-        chat: chatAPI,
-        conversations: {
-            list: async () =>
-                Promise.resolve({ channels: [{ id: "123", name: "botspam" }] }),
-        },
-    };
+    afterEach(() => {
+        sinon.restore();
+    });
 
     describe("erroneous messages", function () {
         it("rejects the wrong platform", async function () {
@@ -27,7 +20,7 @@ describe("sending a message to Slack", function () {
                 mesg: "Hello, world!",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(SlackFake, {}, message);
             return expect(result).to.be.rejectedWith(
                 `Slack got erroneous platform ${message.plat}`,
             );
@@ -38,7 +31,7 @@ describe("sending a message to Slack", function () {
                 chan: "botspam",
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(SlackFake, {}, message);
             return expect(result).to.be.rejectedWith("Missing message!");
         });
         it("rejects missing user for priv", async function () {
@@ -48,7 +41,7 @@ describe("sending a message to Slack", function () {
                 priv: true,
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(SlackFake, {}, message);
             return expect(result).to.be.rejectedWith("Missing target user!");
         });
         it("rejects missing user for phem", async function () {
@@ -58,7 +51,7 @@ describe("sending a message to Slack", function () {
                 phem: true,
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(SlackFake, {}, message);
             return expect(result).to.be.rejectedWith("Missing target user!");
         });
         it("rejects ambiguity between channel messages and private messages", async function () {
@@ -70,7 +63,7 @@ describe("sending a message to Slack", function () {
                 priv: true,
             };
 
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(SlackFake, {}, message);
             return expect(result).to.be.rejectedWith(
                 "Unclear whether to send a private message!",
             );
@@ -83,8 +76,7 @@ describe("sending a message to Slack", function () {
                 mesg: "Hello, world!",
             };
 
-            chatAPI.postMessage = sinon.fake.resolves();
-            const result = sendmesg(fakeClient, {}, message);
+            const result = sendmesg(SlackFake, {}, message);
             return expect(result).to.be.rejectedWith(
                 "Replies are not supported on Slack",
             );
@@ -99,10 +91,9 @@ describe("sending a message to Slack", function () {
                 mesg: "Hello, world!",
             };
 
-            chatAPI.postMessage = sinon.fake.resolves();
-            await sendmesg(fakeClient, {}, message);
+            await sendmesg(SlackFake, {}, message);
 
-            sinon.assert.calledWith(chatAPI.postMessage, {
+            sinon.assert.calledWith(SlackFake.chat.postMessage, {
                 channel: "123",
                 text: message.mesg,
             });
@@ -118,9 +109,8 @@ describe("sending a message to Slack", function () {
                 phem: true,
             };
 
-            chatAPI.postEphemeral = sinon.fake.resolves();
-            await sendmesg(fakeClient, {}, message);
-            sinon.assert.calledWith(chatAPI.postEphemeral, {
+            await sendmesg(SlackFake, {}, message);
+            sinon.assert.calledWith(SlackFake.chat.postEphemeral, {
                 user: "U123",
                 channel: "123",
                 text: message.mesg,
@@ -139,7 +129,7 @@ describe("sending a message to Slack", function () {
             const commandCache = {
                 "command:123": ack,
             };
-            await sendmesg(fakeClient, commandCache, message);
+            await sendmesg(SlackFake, commandCache, message);
             sinon.assert.calledWith(ack, {
                 response_type: "in_channel",
                 text: message.mesg,
@@ -161,7 +151,7 @@ describe("sending a message to Slack", function () {
             const commandCache = {
                 "command:123": ack,
             };
-            await sendmesg(fakeClient, commandCache, message);
+            await sendmesg(SlackFake, commandCache, message);
             sinon.assert.calledWith(ack, {
                 response_type: "ephemeral",
                 text: message.mesg,
@@ -178,10 +168,9 @@ describe("sending a message to Slack", function () {
                 mesg: "Hello, world!",
             };
 
-            chatAPI.postMessage = sinon.fake.resolves();
-            await sendmesg(fakeClient, {}, message);
+            await sendmesg(SlackFake, {}, message);
 
-            sinon.assert.calledWith(chatAPI.postMessage, {
+            sinon.assert.calledWith(SlackFake.chat.postMessage, {
                 text: message.mesg,
                 channel: "U123",
                 user: "U123",
@@ -198,7 +187,7 @@ describe("sending a message to Slack", function () {
                 phem: true,
             };
 
-            return expect(sendmesg(fakeClient, {}, message)).to.be.rejected;
+            return expect(sendmesg(SlackFake, {}, message)).to.be.rejected;
         });
     });
 });
