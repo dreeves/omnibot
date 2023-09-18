@@ -253,13 +253,28 @@ module.exports = async (
 
   let commandReply = {
     plat,
-    fief,
-    chan,
     mesg: "Roger that",
-    user,
     phem: true,
     mrid: msid,
   };
+
+  if (plat === "slack") {
+    commandReply.user = user;
+  }
+
+  if (priv) {
+    commandReply = {
+      ...commandReply,
+      user,
+      priv,
+    };
+  } else {
+    commandReply = {
+      ...commandReply,
+      fief,
+      chan,
+    };
+  }
 
   let message = { plat, fief, chan, mesg: response.output };
 

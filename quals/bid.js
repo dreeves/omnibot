@@ -169,6 +169,7 @@ const slackExpectations = [
             {
                 plat: "slack",
                 mesg: "Roger that",
+                user: "<@123>",
                 phem: true,
                 mrid: "command:5678",
                 fief: "testserver",
