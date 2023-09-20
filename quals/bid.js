@@ -78,7 +78,7 @@ const discordExpectations = [
                 fief: "testserver",
                 chan: "botspam",
                 mesg: sinon.match.string,
-                mrid: "interaction:1234",
+                mrid: "123",
             },
         ],
     },
@@ -123,7 +123,7 @@ const discordExpectations = [
                 fief: "testserver",
                 chan: "botspam",
                 mesg: sinon.match.string,
-                mrid: "interaction:1234",
+                mrid: "123",
             },
         ],
     },
@@ -251,15 +251,15 @@ describe("running /bid on Discord", function () {
             interactionCache[msid] = {
                 reply: function () {
                     this.replied = true;
-                    return Promise.resolve({ id: "123" });
+                    return Promise.resolve("123");
                 },
-                followUp: () => Promise.resolve({ id: "123" }),
+                followUp: () => Promise.resolve("123"),
                 replied: false,
             };
         });
 
         it(exp.desc, async function () {
-            const sendmesg = sinon.fake.resolves({ id: "123" });
+            const sendmesg = sinon.fake.resolves("123");
 
             for (const inpt of exp.input) {
                 await bid(sendmesg, inpt);

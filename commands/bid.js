@@ -2,6 +2,7 @@
 //  1. whisp: eat the command and reply so only the user sees it
 //  2. holla: echo the command publicly and reply (holla back) publicly
 //  3. blurt: eat the command but reply or say something publicly
+//  4. cease: eat the command but reply to the initiating msid
 //  (There's no voxmode for echoing the command publicly but replying privately
 //   but if we ever have a use case for that, maybe we'll call it "kibitz".)
 
@@ -72,13 +73,12 @@ function bidMissing(bids) {
 }
 
 // Initialize the auction and shot that it's started
-function bidStart(chan, user, text, others, msid) {
+function bidStart(chan, user, text, others) {
   others[user] = ""; // "others" now includes initiating user too
   datastore["beebot.auctions." + chan + ".bids"] = others;
   let auction = {};
   auction.urtext = "/bid " + text.trim();
   auction.initiator = user;
-  auction.initialMsid = msid;
   datastore["beebot.auctions." + chan] = auction;
   return `Auction started! ${bidStatus(others)}`;
 }
@@ -115,7 +115,7 @@ function bidProc(chan, user, text) {
       `Got final bid from ${user}! :tada: Results:\n` +
       bidSummary(obj) +
       `\n\n${bidPay()}`;
-    response.voxmode = "holla";
+    response.voxmode = "cease";
   }
   return response;
 }
@@ -154,7 +154,7 @@ function abort(auction, channel, bids) {
       `*Aborted.* :panda_face: Partial results:\n` +
       `${bidSummary(bids)}\n\n${bidPay()}`;
     bidReset(channel);
-    return { output, voxmode: "holla" };
+    return { output, voxmode: "cease" };
   } else {
     return { output: "No current auction", voxmode: "whisp" };
   }
@@ -179,7 +179,7 @@ function printBids(auction, bids) {
   return { output, voxmode: "holla" };
 }
 
-function maybeStart(auction, chan, user, text, others, msid) {
+function maybeStart(auction, chan, user, text, others) {
   if (auction) {
     return {
       output: "No @-mentions allowed in bids! Try `/bid help`",
@@ -187,7 +187,7 @@ function maybeStart(auction, chan, user, text, others, msid) {
     };
   } else {
     return {
-      output: bidStart(chan, user, text, others, msid),
+      output: bidStart(chan, user, text, others),
       voxmode: "holla",
     };
   }
@@ -204,14 +204,14 @@ function maybeProc(auction, channel, user, text) {
   }
 }
 
-function handleSlash(chan, user, text, msid) {
+function handleSlash(chan, user, text) {
   const urtext = "/bid " + text + "\n";
   const others = bidParse(text);
   const auction = datastore["beebot.auctions." + chan];
   const bids = datastore["beebot.auctions." + chan + ".bids"];
 
   if (!isEmpty(others)) {
-    return maybeStart(auction, chan, user, text, others, msid);
+    return maybeStart(auction, chan, user, text, others);
   }
 
   switch (text) {
@@ -272,7 +272,7 @@ module.exports = async (sendmesg, input) => {
   }
 
   let auction = datastore["beebot.auctions." + chan];
-  const response = handleSlash(chan, user, mesg || "", msid);
+  const response = handleSlash(chan, user, mesg || "");
 
   let commandReply = normalizeReply(input, {
     plat,
@@ -291,17 +291,25 @@ module.exports = async (sendmesg, input) => {
     });
   }
 
+  let responseMsid;
   if (response.voxmode === "holla") {
+    message.mrid = msid;
+    responseMsid = await sendmesg(message);
+  } else if (response.voxmode === "cease") {
     if (auction && plat !== "slack") {
       message.mrid = auction.initialMsid;
-      await sendmesg(commandReply);
+      responseMsid = await sendmesg(commandReply);
     } else {
       message.mrid = msid;
     }
 
     await sendmesg(message);
   } else {
-    await sendmesg(commandReply);
+    responseMsid = await sendmesg(commandReply);
     await sendmesg(message);
+  }
+
+  if (!auction && datastore["beebot.auctions." + chan] && responseMsid) {
+    datastore["beebot.auctions." + chan].initialMsid = responseMsid;
   }
 };

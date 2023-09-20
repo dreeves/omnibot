@@ -185,14 +185,17 @@ describe("sending a message to Discord", function () {
                 mesg: "Hello, world!",
             };
 
-            const interaction = { reply: sinon.fake.resolves("123") };
+            const interaction = {
+                reply: sinon.fake.resolves(),
+                fetchReply: () => Promise.resolve({ id: "123" }),
+            };
             interactionCache[message.mrid] = interaction;
             const result = sendmesg(
                 DiscordFake.client,
                 interactionCache,
                 message,
             );
-            await expect(result).to.be.fulfilled;
+            await expect(result).to.eventually.equal("123");
             sinon.assert.calledWith(interaction.reply, {
                 content: message.mesg,
             });
@@ -208,14 +211,17 @@ describe("sending a message to Discord", function () {
                 phem: true,
             };
 
-            const interaction = { reply: sinon.fake.resolves("123") };
+            const interaction = {
+                reply: sinon.fake.resolves(),
+                fetchReply: () => Promise.resolve({ id: "123" }),
+            };
             interactionCache[message.mrid] = interaction;
             const result = sendmesg(
                 DiscordFake.client,
                 interactionCache,
                 message,
             );
-            await expect(result).to.be.fulfilled;
+            await expect(result).to.eventually.equal("123");
             sinon.assert.calledWith(interaction.reply, {
                 content: message.mesg,
                 ephemeral: true,

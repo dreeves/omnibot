@@ -107,8 +107,12 @@ async function sendmesg(client, interactionCache, message) {
     }
 
     if (target && funcName) {
-        const sent = await target[funcName](payload);
-        return sent.id || sent.interaction?.id;
+        let sent = await target[funcName](payload);
+
+        if (target.fetchReply) {
+            sent = await target.fetchReply();
+        }
+        return sent.id;
     } else {
         throw new ChumError("Ambiguous message!");
     }
