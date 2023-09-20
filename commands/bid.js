@@ -230,10 +230,33 @@ function handleSlash(chan, user, text, msid) {
   }
 }
 
-module.exports = async (
-  sendmesg,
-  { plat, fief, chan, user, mesg, msid, priv },
-) => {
+function normalizeReply(orig, reply) {
+  const { plat, user, priv, fief, chan } = orig;
+  let normalized = reply;
+
+  if (plat === "slack" && normalized.phem) {
+    normalized.user = user;
+  }
+
+  if (priv) {
+    normalized = {
+      ...normalized,
+      user,
+      priv,
+    };
+  } else {
+    normalized = {
+      ...normalized,
+      fief,
+      chan,
+    };
+  }
+
+  return normalized;
+}
+
+module.exports = async (sendmesg, input) => {
+  const { plat, fief, chan, user, mesg, msid, priv } = input;
   if (priv) {
     const message = {
       plat,
@@ -251,38 +274,21 @@ module.exports = async (
   let auction = datastore["beebot.auctions." + chan];
   const response = handleSlash(chan, user, mesg || "", msid);
 
-  let commandReply = {
+  let commandReply = normalizeReply(input, {
     plat,
     mesg: "Roger that",
     phem: true,
     mrid: msid,
-  };
+  });
 
-  if (plat === "slack") {
-    commandReply.user = user;
-  }
-
-  if (priv) {
-    commandReply = {
-      ...commandReply,
-      user,
-      priv,
-    };
-  } else {
-    commandReply = {
-      ...commandReply,
-      fief,
-      chan,
-    };
-  }
-
-  let message = { plat, fief, chan, mesg: response.output };
+  let message = normalizeReply(input, { plat, mesg: response.output });
 
   if (response.voxmode === "whisp") {
-    message = { plat, priv: true, mesg: response.output };
-    if (plat === "slack") {
-      message.user = user;
-    }
+    message = normalizeReply(input, {
+      plat,
+      priv: true,
+      mesg: response.output,
+    });
   }
 
   if (response.voxmode === "holla") {
