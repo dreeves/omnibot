@@ -1,3 +1,4 @@
+const store = require("../store.js");
 // VOXMODE: One of 3 ways to reply to a user's command:
 //  1. whisp: eat the command and reply so only the user sees it
 //  2. holla: echo the command publicly and reply (holla back) publicly
@@ -5,8 +6,6 @@
 //  4. cease: eat the command but reply to the initiating msid
 //  (There's no voxmode for echoing the command publicly but replying privately
 //   but if we ever have a use case for that, maybe we'll call it "kibitz".)
-
-const datastore = {};
 
 // Not using this yet.
 const pumpkinThresh = {
@@ -75,18 +74,18 @@ function bidMissing(bids) {
 // Initialize the auction and shot that it's started
 function bidStart(chan, user, text, others) {
   others[user] = ""; // "others" now includes initiating user too
-  datastore["beebot.auctions." + chan + ".bids"] = others;
+  store.set("beebot.auctions." + chan + ".bids", others);
   let auction = {};
   auction.urtext = "/bid " + text.trim();
   auction.initiator = user;
-  datastore["beebot.auctions." + chan] = auction;
+  store.set("beebot.auctions." + chan, auction);
   return `Auction started! ${bidStatus(others)}`;
 }
 
 // Deletes all the bids
 function bidReset(chan) {
-  delete datastore["beebot.auctions." + chan];
-  delete datastore["beebot.auctions." + chan + ".bids"];
+  store.del("beebot.auctions." + chan);
+  store.del("beebot.auctions." + chan + ".bids");
 }
 
 // Just returns a string about whether to 10X the payments. Note that the /bid
@@ -101,8 +100,9 @@ function bidPay() {
 
 // Add text as user's bid, blurt the results if user is the last one to bid
 function bidProc(chan, user, text) {
-  const obj = datastore["beebot.auctions." + chan + ".bids"];
+  const obj = store.get("beebot.auctions." + chan + ".bids");
   obj[user] = text;
+  store.set("beebot.auctions." + chan + ".bids", obj);
 
   let response = {};
   if (bidMissing(obj)) {
@@ -207,8 +207,8 @@ function maybeProc(auction, channel, user, text) {
 function handleSlash(chan, user, text) {
   const urtext = "/bid " + text + "\n";
   const others = bidParse(text);
-  const auction = datastore["beebot.auctions." + chan];
-  const bids = datastore["beebot.auctions." + chan + ".bids"];
+  const auction = store.get("beebot.auctions." + chan);
+  const bids = store.get("beebot.auctions." + chan + ".bids");
 
   if (!isEmpty(others)) {
     return maybeStart(auction, chan, user, text, others);
@@ -271,7 +271,7 @@ module.exports = async (sendmesg, input) => {
     return sendmesg(message);
   }
 
-  let auction = datastore["beebot.auctions." + chan];
+  let auction = store.get("beebot.auctions." + chan);
   const response = handleSlash(chan, user, mesg || "");
 
   let commandReply = normalizeReply(input, {
@@ -309,7 +309,9 @@ module.exports = async (sendmesg, input) => {
     await sendmesg(message);
   }
 
-  if (!auction && datastore["beebot.auctions." + chan] && responseMsid) {
-    datastore["beebot.auctions." + chan].initialMsid = responseMsid;
+  if (!auction && store.get("beebot.auctions." + chan) && responseMsid) {
+    auction = store.get("beebot.auctions." + chan);
+    auction.initialMsid = responseMsid;
+    store.set("beebot.auctions." + chan, auction);
   }
 };
