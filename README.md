@@ -3,9 +3,38 @@
 ### Discord
 
 Use this oauth2 link to add omnibot to your Discord server:
-https://discord.com/api/oauth2/authorize?client_id=911686934206771212&permissions=0&scope=bot
+https://discord.com/api/oauth2/authorize?client_id=911686934206771212&permissions=2048&scope=bot%20applications.commands
+
+### Slack
+
+Use this oauth2 link to add omnibot to your Slack workspace:
+https://slack.com/oauth/v2/authorize?client_id=17414190871.1067129823393&scope=channels:history,channels:read,chat:write,commands,im:history,im:read,mpim:history,users:read,groups:history,groups:read,im:write,mpim:read&user_scope=
 
 ## Building and Running
+
+### Discord Setup
+
+1. Go to the Discord app portal and create a new application:
+   https://discord.com/developers/applications/
+2. In the bot user's settings, Enable the server members intent and
+   the message content intent.
+3. Add client id, client secret, and bot token to .env file
+4. Create an invite link with the following permissions:
+   - [ ] applications.commands
+   - [ ] bot
+   - [ ] Send Messages
+
+### Slack Setup
+
+1. Go to your Slack applications and create a new application:
+   https://api.slack.com/apps
+2. Use the manifest provided in this repo to create the application
+3. click Install to Workspace and click Allow
+4. Copy app id, client id, and client secret into .env file
+5. Generate an app token with the connections:write scope and copy it
+   to the .env file
+6. Go to Oauth menu and copy bot token to .env file
+7. Invite Omnibot to your #games channel
 
 ### Enable Socket Mode for Slack
 
@@ -55,21 +84,6 @@ npm run start
 2. Set **Build Command** to `npm install && npm run build`.
 3. Set **Start Command** to `npm run start`.
 
-## Discord Setup
-
-Discord app portal:
-https://discord.com/developers/applications/  
-No need to specify on the Discord side where the bot is hosted; the bot can log
-in to Discord as long as it has the right API keys.
-See the .env file for such secrets.
-
-Handy tool for managing Discord slash commands:
-https://autocode.com/tools/discord/command-builder/
-from https://autocode.com/guides/how-to-build-a-discord-bot/
-
-Another tutorial, for repl.it:
-https://www.freecodecamp.org/news/create-a-discord-bot-with-javascript-nodejs/
-
 ### Registering Bot Commands
 
 Whenever a new command is defined or an existing command is *redefined*, the 
@@ -80,24 +94,6 @@ Discord rate-limits command registrations.
 
 Note that you do *not* need to re-register commands if you've only changed the 
 contents of the command's execute function.
-
-## Slack Setup
-
-1. Add to Slack: https://api.slack.com/apps/A011Z3TQ7BK
-2. Copy the generated bot token
-[from Slack](https://api.slack.com/apps/A011Z3TQ7BK/oauth )
-into the `.env` file
-3. Invite Omnibot to your #games channel
-4. Maybe also specify the URL 
-`https://omnibot.yootl.es/slack/events` at 
-https://api.slack.com/apps/A011Z3TQ7BK/event-subscriptions?
-
-The `examples` folder has some templates from Slack that might be handy.
-
-See Slack's 
-[Getting Started Guide](https://api.slack.com/start/building/bolt) 
-for their Bolt framework and the 
-[Bolt documentation](https://slack.dev/bolt).
 
 ## Lexiguess Background
 
