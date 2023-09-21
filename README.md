@@ -3,7 +3,12 @@
 ### Discord
 
 Use this oauth2 link to add omnibot to your Discord server:
-https://discord.com/api/oauth2/authorize?client_id=911686934206771212&permissions=0&scope=bot
+https://discord.com/api/oauth2/authorize?client_id=911686934206771212&permissions=2048&scope=bot%20applications.commands
+
+### Slack
+
+Use this oauth2 link to add omnibot to your Slack workspace:
+https://slack.com/oauth/v2/authorize?client_id=17414190871.1067129823393&scope=channels:history,channels:read,chat:write,commands,im:history,im:read,mpim:history,users:read,groups:history,groups:read,im:write,mpim:read&user_scope=
 
 ## Building and Running
 
