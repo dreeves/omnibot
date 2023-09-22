@@ -179,6 +179,68 @@ const discordExpectations = [
             },
         ],
     },
+    {
+        desc: "prints status information",
+        input: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "status",
+                msid: "interaction:5678",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "vote on lunch with <@456>",
+                msid: "interaction:1234",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "status",
+                msid: "interaction:9000",
+            },
+        ],
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "No current auction",
+                phem: true,
+                mrid: "interaction:5678",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "Auction started! Got bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "interaction:1234",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: sinon.match.string,
+                phem: true,
+                mrid: "interaction:9000",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg:
+                    "Currently active auction initiated by <@123> via:\n" +
+                    "vote on lunch with <@456>\nGot bids from {}, waiting on {<@456>, <@123>}",
+            },
+        ],
+    },
 ];
 
 const slackExpectations = [
@@ -330,6 +392,70 @@ const slackExpectations = [
                 user: "<@123>",
                 phem: true,
                 mrid: "command:5678",
+            },
+        ],
+    },
+    {
+        desc: "prints status information",
+        input: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "status",
+                msid: "command:5678",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "vote on lunch with <@456>",
+                msid: "command:1234",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "status",
+                msid: "command:9000",
+            },
+        ],
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "No current auction",
+                user: "<@123>",
+                phem: true,
+                mrid: "command:5678",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "Auction started! Got bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "command:1234",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: sinon.match.string,
+                user: "<@123>",
+                phem: true,
+                mrid: "command:9000",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg:
+                    "Currently active auction initiated by <@123> via:\n" +
+                    "vote on lunch with <@456>\nGot bids from {}, waiting on {<@456>, <@123>}",
             },
         ],
     },
