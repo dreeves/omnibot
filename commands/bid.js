@@ -286,16 +286,6 @@ module.exports = async (sendmesg, input) => {
 
   let message = normalizeReply(input, { plat, mesg: response.output });
 
-  if (response.voxmode === "whisp") {
-    message = normalizeReply(input, {
-      plat,
-      phem: true,
-      mesg: response.output,
-      mrid: msid,
-    });
-    await sendmesg(message);
-  }
-
   let responseMsid;
   if (response.voxmode === "holla") {
     message.mrid = msid;
@@ -308,6 +298,14 @@ module.exports = async (sendmesg, input) => {
       message.mrid = msid;
     }
 
+    await sendmesg(message);
+  } else if (response.voxmode === "whisp") {
+    message = normalizeReply(input, {
+      plat,
+      phem: true,
+      mesg: response.output,
+      mrid: msid,
+    });
     await sendmesg(message);
   } else {
     responseMsid = await sendmesg(commandReply);

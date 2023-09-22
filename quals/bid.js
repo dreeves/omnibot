@@ -228,17 +228,10 @@ const discordExpectations = [
                 plat: "discord",
                 fief: "testserver",
                 chan: "botspam",
-                mesg: sinon.match.string,
-                phem: true,
-                mrid: "interaction:9000",
-            },
-            {
-                plat: "discord",
-                fief: "testserver",
-                chan: "botspam",
                 mesg:
                     "Currently active auction initiated by <@123> via:\n" +
-                    "vote on lunch with <@456>\nGot bids from {}, waiting on {<@456>, <@123>}",
+                    "/bid vote on lunch with <@456>\nGot bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "interaction:9000",
             },
         ],
     },
@@ -438,7 +431,7 @@ const slackExpectations = [
         desc: "prints status information",
         input: [
             {
-                plat: "discord",
+                plat: "slack",
                 fief: "testserver",
                 chan: "botspam",
                 user: "<@123>",
@@ -446,7 +439,7 @@ const slackExpectations = [
                 msid: "command:5678",
             },
             {
-                plat: "discord",
+                plat: "slack",
                 fief: "testserver",
                 chan: "botspam",
                 user: "<@123>",
@@ -454,7 +447,7 @@ const slackExpectations = [
                 msid: "command:1234",
             },
             {
-                plat: "discord",
+                plat: "slack",
                 fief: "testserver",
                 chan: "botspam",
                 user: "<@123>",
@@ -483,18 +476,10 @@ const slackExpectations = [
                 plat: "slack",
                 fief: "testserver",
                 chan: "botspam",
-                mesg: sinon.match.string,
-                user: "<@123>",
-                phem: true,
-                mrid: "command:9000",
-            },
-            {
-                plat: "slack",
-                fief: "testserver",
-                chan: "botspam",
                 mesg:
                     "Currently active auction initiated by <@123> via:\n" +
-                    "vote on lunch with <@456>\nGot bids from {}, waiting on {<@456>, <@123>}",
+                    "/bid vote on lunch with <@456>\nGot bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "command:9000",
             },
         ],
     },
