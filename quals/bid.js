@@ -8,6 +8,7 @@ const proxyquire = require("proxyquire");
 proxyquire.noPreserveCache();
 
 let bid = require("../commands/bid.js");
+const store = require("../store.js");
 const { sendmesg, registerPlatform } = require("../sendemitter.js");
 const discordSendmesg = require("../platforms/discord/sendmesg.js");
 const slackSendmesg = require("../platforms/slack/sendmesg.js");
@@ -127,6 +128,151 @@ const discordExpectations = [
             },
         ],
     },
+    {
+        desc: "warns of no current auction",
+        input: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "foo",
+                msid: "interaction:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "/bid foo\nNo current auction! Try `/bid help`",
+                phem: true,
+                mrid: "interaction:5678",
+            },
+        ],
+    },
+    {
+        desc: "prints help information",
+        input: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "help",
+                msid: "interaction:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg:
+                    "How to use /bid\n" +
+                    "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
+                    "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
+                    "`/bid status` — show how current auction was initiated and who has bid\n" +
+                    "`/bid abort` — abort the current auction, showing partial results\n" +
+                    "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
+                phem: true,
+                mrid: "interaction:5678",
+            },
+        ],
+    },
+    {
+        desc: "prints status information",
+        input: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "status",
+                msid: "interaction:5678",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "vote on lunch with <@456>",
+                msid: "interaction:1234",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "status",
+                msid: "interaction:9000",
+            },
+        ],
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "No current auction",
+                phem: true,
+                mrid: "interaction:5678",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "Auction started! Got bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "interaction:1234",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg:
+                    "Currently active auction initiated by <@123> via:\n" +
+                    "/bid vote on lunch with <@456>\nGot bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "interaction:9000",
+            },
+        ],
+    },
+    {
+        desc: "blocks mentions in bids",
+        input: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "vote on lunch with <@456>",
+                msid: "interaction:1234",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "foo <@1456>",
+                msid: "interaction:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "Auction started! Got bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "interaction:1234",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "No @-mentions allowed in bids! Try `/bid help`",
+                phem: true,
+                mrid: "interaction:5678",
+            },
+        ],
+    },
 ];
 
 const slackExpectations = [
@@ -227,6 +373,155 @@ const slackExpectations = [
             },
         ],
     },
+    {
+        desc: "warns of no current auction",
+        input: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "foo",
+                msid: "command:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "/bid foo\nNo current auction! Try `/bid help`",
+                user: "<@123>",
+                phem: true,
+                mrid: "command:5678",
+            },
+        ],
+    },
+    {
+        desc: "prints help information",
+        input: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "help",
+                msid: "command:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg:
+                    "How to use /bid\n" +
+                    "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
+                    "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
+                    "`/bid status` — show how current auction was initiated and who has bid\n" +
+                    "`/bid abort` — abort the current auction, showing partial results\n" +
+                    "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
+                user: "<@123>",
+                phem: true,
+                mrid: "command:5678",
+            },
+        ],
+    },
+    {
+        desc: "prints status information",
+        input: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "status",
+                msid: "command:5678",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "vote on lunch with <@456>",
+                msid: "command:1234",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "status",
+                msid: "command:9000",
+            },
+        ],
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "No current auction",
+                user: "<@123>",
+                phem: true,
+                mrid: "command:5678",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "Auction started! Got bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "command:1234",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg:
+                    "Currently active auction initiated by <@123> via:\n" +
+                    "/bid vote on lunch with <@456>\nGot bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "command:9000",
+            },
+        ],
+    },
+    {
+        desc: "blocks mentions in bids",
+        input: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "vote on lunch with <@456>",
+                msid: "command:1234",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "foo <@1456>",
+                msid: "command:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "Auction started! Got bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "command:1234",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "No @-mentions allowed in bids! Try `/bid help`",
+                user: "<@123>",
+                phem: true,
+                mrid: "command:5678",
+            },
+        ],
+    },
 ];
 
 describe("running /bid on Discord", function () {
@@ -244,6 +539,7 @@ describe("running /bid on Discord", function () {
 
     afterEach(async function () {
         sinon.restore();
+        store.clear();
     });
 
     discordExpectations.forEach((exp) => {
@@ -291,6 +587,7 @@ describe("running /bid on Slack", function () {
 
     afterEach(async function () {
         sinon.restore();
+        store.clear();
     });
 
     slackExpectations.forEach((exp) => {

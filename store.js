@@ -38,8 +38,14 @@ function del(key) {
     write();
 }
 
+function clear() {
+    store = {};
+    write();
+}
+
 module.exports = {
     set,
     get,
     del,
+    clear,
 };
