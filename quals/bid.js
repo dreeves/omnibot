@@ -8,6 +8,7 @@ const proxyquire = require("proxyquire");
 proxyquire.noPreserveCache();
 
 let bid = require("../commands/bid.js");
+const store = require("../store.js");
 const { sendmesg, registerPlatform } = require("../sendemitter.js");
 const discordSendmesg = require("../platforms/discord/sendmesg.js");
 const slackSendmesg = require("../platforms/slack/sendmesg.js");
@@ -553,6 +554,7 @@ describe("running /bid on Discord", function () {
 
     afterEach(async function () {
         sinon.restore();
+        store.clear();
     });
 
     discordExpectations.forEach((exp) => {
@@ -600,6 +602,7 @@ describe("running /bid on Slack", function () {
 
     afterEach(async function () {
         sinon.restore();
+        store.clear();
     });
 
     slackExpectations.forEach((exp) => {
