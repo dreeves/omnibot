@@ -127,6 +127,29 @@ const discordExpectations = [
             },
         ],
     },
+    {
+        desc: "warns of no current auction",
+        input: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "foo",
+                msid: "interaction:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "/bid foo\nNo current auction! Try `/bid help`",
+                phem: true,
+                mrid: "interaction:5678",
+            },
+        ],
+    },
 ];
 
 const slackExpectations = [
@@ -223,6 +246,30 @@ const slackExpectations = [
                 fief: "testserver",
                 chan: "botspam",
                 mesg: sinon.match.string,
+                mrid: "command:5678",
+            },
+        ],
+    },
+    {
+        desc: "warns of no current auction",
+        input: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "foo",
+                msid: "command:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "/bid foo\nNo current auction! Try `/bid help`",
+                user: "<@123>",
+                phem: true,
                 mrid: "command:5678",
             },
         ],
