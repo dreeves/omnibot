@@ -241,6 +241,44 @@ const discordExpectations = [
             },
         ],
     },
+    {
+        desc: "blocks mentions in bids",
+        input: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "vote on lunch with <@456>",
+                msid: "interaction:1234",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "foo <@1456>",
+                msid: "interaction:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "Auction started! Got bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "interaction:1234",
+            },
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "No @-mentions allowed in bids! Try `/bid help`",
+                phem: true,
+                mrid: "interaction:5678",
+            },
+        ],
+    },
 ];
 
 const slackExpectations = [
@@ -456,6 +494,45 @@ const slackExpectations = [
                 mesg:
                     "Currently active auction initiated by <@123> via:\n" +
                     "vote on lunch with <@456>\nGot bids from {}, waiting on {<@456>, <@123>}",
+            },
+        ],
+    },
+    {
+        desc: "blocks mentions in bids",
+        input: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "vote on lunch with <@456>",
+                msid: "command:1234",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "foo <@1456>",
+                msid: "command:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "Auction started! Got bids from {}, waiting on {<@456>, <@123>}",
+                mrid: "command:1234",
+            },
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg: "No @-mentions allowed in bids! Try `/bid help`",
+                user: "<@123>",
+                phem: true,
+                mrid: "command:5678",
             },
         ],
     },
