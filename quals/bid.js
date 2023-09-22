@@ -150,6 +150,35 @@ const discordExpectations = [
             },
         ],
     },
+    {
+        desc: "prints help information",
+        input: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "help",
+                msid: "interaction:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "discord",
+                fief: "testserver",
+                chan: "botspam",
+                mesg:
+                    "How to use /bid\n" +
+                    "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
+                    "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
+                    "`/bid status` — show how current auction was initiated and who has bid\n" +
+                    "`/bid abort` — abort the current auction, showing partial results\n" +
+                    "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
+                phem: true,
+                mrid: "interaction:5678",
+            },
+        ],
+    },
 ];
 
 const slackExpectations = [
@@ -268,6 +297,36 @@ const slackExpectations = [
                 fief: "testserver",
                 chan: "botspam",
                 mesg: "/bid foo\nNo current auction! Try `/bid help`",
+                user: "<@123>",
+                phem: true,
+                mrid: "command:5678",
+            },
+        ],
+    },
+    {
+        desc: "prints help information",
+        input: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                user: "<@123>",
+                mesg: "help",
+                msid: "command:5678",
+            },
+        ],
+        output: [
+            {
+                plat: "slack",
+                fief: "testserver",
+                chan: "botspam",
+                mesg:
+                    "How to use /bid\n" +
+                    "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
+                    "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
+                    "`/bid status` — show how current auction was initiated and who has bid\n" +
+                    "`/bid abort` — abort the current auction, showing partial results\n" +
+                    "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
                 user: "<@123>",
                 phem: true,
                 mrid: "command:5678",
