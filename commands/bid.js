@@ -138,14 +138,17 @@ function help() {
 
 function status(auction, bids) {
   let output;
+  let voxmode;
   if (auction) {
     output =
       `Currently active auction initiated by ${auction.initiator} via:\n` +
       `${auction.urtext}\n${bidStatus(bids)}`;
+    voxmode = "holla";
   } else {
     output = "No current auction";
+    voxmode = "whisp";
   }
-  return { output, voxmode: "holla" };
+  return { output, voxmode };
 }
 
 function abort(auction, channel, bids) {
@@ -286,9 +289,11 @@ module.exports = async (sendmesg, input) => {
   if (response.voxmode === "whisp") {
     message = normalizeReply(input, {
       plat,
-      priv: true,
+      phem: true,
       mesg: response.output,
+      mrid: msid,
     });
+    await sendmesg(message);
   }
 
   let responseMsid;
