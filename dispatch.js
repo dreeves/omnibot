@@ -17,7 +17,7 @@ const { lexup } = require("./lexiguess.js");
  */
 
 const LEXIGUESS_REGEX = /^[a-z]+$/i;
-const LEXIGUESS_CHANNEL_REGEX = /^(?:botspam|games|lexi.*|spellingbee)$/;
+const LEXIGUESS_CHANNEL_REGEX = /^(?:botspam|games|lexi.*|spellingbee|gambol)$/;
 const SLASH_COMMAND_REGEX = /^\/([a-z]+) /i;
 
 /**

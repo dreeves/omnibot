@@ -26,6 +26,9 @@ discord.on("interactionCreate", (interaction) =>
 
 discord.on("messageCreate", messageCreate);
 
+discord.on("debug", console.log)
+    .on("warn", console.log)
+
 process.on("exit", () => {
     discord.destroy();
 });

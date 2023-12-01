@@ -25,6 +25,9 @@ if (slack.receiver.router) {
   webApp.use("/", slack.receiver.router);
 }
 
+
+  
+
 (async () => {
   if (process.env.IS_PULL_REQUEST !== "true") {
     try {
@@ -37,6 +40,7 @@ if (slack.receiver.router) {
     }
   }
 
+  console.log("starting slack")
   await slack.start();
   let server = webApp.listen(process.env.PORT || 3000);
 
