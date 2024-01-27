@@ -26,6 +26,7 @@ const SLASH_COMMAND_REGEX = /^\/([a-z]+) /i;
  */
 async function dispatch(sendmesg, chum) {
   const { plat, fief, chan, user, mesg, msid, priv } = chum;
+  console.log(chum);
   const botIDs = [process.env.DISCORD_BOT_ID, process.env.SLACK_BOT_ID];
 
   // Whether Omnibot is @-mentioned in this chum.

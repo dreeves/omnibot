@@ -1,12 +1,11 @@
 {
     "beebot.auctions.yootopia.bids": {
-        "<@716400322297331712>": "5.33",
         "<@892518507001040906>": "",
-        "<@298617884664528896>": ""
+        "<@298617884664528896>": "test"
     },
     "beebot.auctions.yootopia": {
-        "urtext": "/bid <@716400322297331712> <@892518507001040906>  for coming home directly from puffs",
+        "urtext": "/bid test with <@892518507001040906>",
         "initiator": "<@298617884664528896>",
-        "initialMsid": "1179997962789736459"
+        "initialMsid": "1186831062811287703"
     }
 }
