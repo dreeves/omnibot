@@ -148,9 +148,10 @@ beeotch, beeot, collocutio, locutio, yootlebot, tweedlebot, waddlebot, botbot, u
 14. the coordination game aka the schelling game, which we can already play with just the /bid command
 15. boggle (but how to keep the board visible the whole time?)
 16. ankified word-of-the-day bot
-17. buddha nature where the bot makes up a purely lexical rule, describable with a regex? 
+17. buddha nature where the bot makes up a purely lexical rule, describable with a regex? PS: I was scooped! https://regexle.ithea.de (well, I guess I implemented it first but only for myself, in Mathematica. See buddhabot.nb)
 18. the word game Contact. having the bot think of the word may not work (humans can ask about words in obscure ways that the bot would have no hope of understanding) but the bot could guess words. like if the letters so far are "ca" it could guess "is it a small domesticated carnivorous mammal with soft fur, a short snout, and retractable claws?"
 19. add an anki card when you learn a new thing #TIL
+20. molecall.com
 
 ## Chat Platforms
 

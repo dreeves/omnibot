@@ -25,9 +25,6 @@ if (slack.receiver.router) {
   webApp.use("/", slack.receiver.router);
 }
 
-
-  
-
 (async () => {
   if (process.env.IS_PULL_REQUEST !== "true") {
     try {
@@ -35,7 +32,7 @@ if (slack.receiver.router) {
     } catch (error) {
       console.log(error);
       console.log(
-        `ERROR! Your login token was ${process.env.DISCORD_BOT_TOKEN}`,
+        `ERROR1440! Your login token was ${process.env.DISCORD_BOT_TOKEN}`,
       );
     }
   }

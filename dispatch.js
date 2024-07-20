@@ -16,8 +16,9 @@ const { lexup } = require("./lexiguess.js");
  * @property {string} priv - whether the message was sent privately
  */
 
-const LEXIGUESS_REGEX = /^[a-z]+$/i;
-const LEXIGUESS_CHANNEL_REGEX = /^(?:botspam|games|lexi.*|spellingbee|gambol)$/;
+const LEXIGUESS_REGEX = /^[a-z]+$/i; // Lexiguess responds to single words
+const LEXIGUESS_CHANNEL_REGEX =      // All channels Lexiguess responds in
+  /^(?:botspam|games|lexi.*|spellingbee|gambol.*)$/;
 const SLASH_COMMAND_REGEX = /^\/([a-z]+) /i;
 
 /**

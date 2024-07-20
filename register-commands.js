@@ -97,7 +97,7 @@ slashmeta.forEach((meta) => {
   } catch (error) {
     // And of course, make sure you catch and log any errors!
     console.error(error);
-    console.log(`ERROR! Your login token was ${token}`);
+    console.log(`ERROR1439! Your login token was ${token}`);
   }
 
   discord.destroy();

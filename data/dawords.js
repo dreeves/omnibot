@@ -249,6 +249,7 @@ exports.posswords = [
 'sybaritic',
 'languor',
 'lassitude',
+'intemperate',
 // more below in the beeminder-adjacent section to move here
 
 // words google defines wrong
