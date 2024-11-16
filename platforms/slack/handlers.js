@@ -54,7 +54,8 @@ async function homeHandler(client, event, context) {
                             text: {
                                 type: "mrkdwn",
                                 text: `\
-Instructions for Lexiguess (the main thing Omnibot does so far): \
+OMNIBOT! \
+Instructions for Lexiguess: \
 The bot totally ignores anything that isn't a single word \
 (at least 2 letters, no punctuation). \
 That's really all you need to know. \

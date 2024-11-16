@@ -78,3 +78,7 @@ start = "typescript-language-server --stdio"
 
 [deployment]
 run = ["sh", "-c", "npm run start"]
+
+[[ports]]
+localPort = 3000
+externalPort = 3000

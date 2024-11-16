@@ -1,6 +1,6 @@
 {
   "name": "omnibot",
-  "version": "2024.07.19-a",
+  "version": "2024.11.16-a",
   "description": "A Discord & Slack bot that plays games and mediates auctions",
   "main": "app.js",
   "scripts": {
@@ -10,15 +10,15 @@
     "test": "mocha --require mocha-suppress-logs quals"
   },
   "dependencies": {
-    "@discordjs/rest": "^2.3.0",
-    "@slack/bolt": "^3.19.0",
-    "axios": "^1.7.2",
-    "body-parser": "^1.20.2",
+    "@discordjs/rest": "^2.4.0",
+    "@slack/bolt": "^4.1.0",
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
     "chai-as-promised": "^8.0.0",
-    "discord-api-types": "^0.37.92",
-    "discord.js": "^14.15.3",
+    "discord-api-types": "^0.37.105",
+    "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "node-emoji": "^2.1.3",
     "random-word-slugs": "^0.1.7",
     "remarkable": "^2.0.1",
@@ -36,14 +36,14 @@
     "chat bots"
   ],
   "devDependencies": {
-    "chai": "^5.1.1",
-    "chromedriver": "^126.0.5",
-    "mocha": "^10.6.0",
+    "chai": "^5.1.2",
+    "chromedriver": "^131.0.0",
+    "mocha": "^10.8.2",
     "mocha-suppress-logs": "^0.5.1",
     "proxyquire": "^2.1.3",
-    "puppeteer": "^22.13.1",
-    "selenium-webdriver": "^4.23.0",
-    "sinon": "^18.0.0",
-    "snowpack": "^3.7.1"
+    "puppeteer": "^23.8.0",
+    "selenium-webdriver": "^4.26.0",
+    "sinon": "^19.0.2",
+    "snowpack": "^3.8.8"
   }
 }

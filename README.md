@@ -98,6 +98,7 @@ contents of the command's execute function.
 ## Lexiguess Background
 
 Lexiguess was inspired by https://hryanjones.com/guess-my-word/
+There are many other implementations out there as well, like Betweenle.
 
 ## CHANGELOG
 
