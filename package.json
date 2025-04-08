@@ -1,6 +1,6 @@
 {
   "name": "omnibot",
-  "version": "2025.02.22-a",
+  "version": "2025.04.08-b",
   "description": "A Discord & Slack bot that plays games and mediates auctions",
   "main": "app.js",
   "scripts": {
