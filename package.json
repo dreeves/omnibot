@@ -1,6 +1,6 @@
 {
   "name": "omnibot",
-  "version": "2025.12.28-c",
+  "version": "2025.12.28-d",
   "description": "A Discord & Slack bot that plays games and mediates auctions",
   "main": "app.js",
   "scripts": {
@@ -15,8 +15,8 @@
     "axios": "^1.13.2",
     "body-parser": "^2.2.1",
     "chai-as-promised": "^8.0.0",
-    "discord-api-types": "^0.37.105",
-    "discord.js": "^14.18.0",
+    "discord-api-types": "^0.38.37",
+    "discord.js": "^14.25.1",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "node-emoji": "^2.1.3",

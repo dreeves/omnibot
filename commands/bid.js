@@ -257,7 +257,7 @@ async function bid(sendmesg, chum) {
   const response = handleSlash(plat, fief, chan, user, usid, args);
 
   // Start reply with echo of invocation:
-  let text = `${usid}: \`${mesg}\`\n\nRoger that bid.`;
+  let text = `${usid}: \`${mesg}\``;
 
   let commandReply = normalizeReply(chum, {
     plat,
