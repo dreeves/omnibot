@@ -1,5 +1,6 @@
 module.exports = [
-    { name: "bid", description: "Collect and later reveal sealed bids." },
-    { name: "omninom", description: "Test command" },
-    { name: "roll", description: "Return a random integer from 1 to n." },
+  { name: "omninom", description: "Slash command reference implementation" },
+  { name: "omnecho", description: "Just for debugging" },
+  { name: "roll",    description: "Dice roller" },
+  { name: "bid",     description: "Sealed bidding and wisdom-of-crowds-ing" },
 ];

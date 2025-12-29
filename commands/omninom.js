@@ -1,103 +1,120 @@
-// -----------------------------------------------------------------------------
 const NOM = "omninom"; // name of this slash command
-
-const packageData = require("../package.json"); // to see the version number
+const CLOG = console.log;
+const { version } = require("../package.json");
+const { ordain } = require('../util.js');
+const botid = process.env.DISCORD_CLIENT_ID; // for @-mentioning omnibot
+// -----------------------------------------------------------------------------
 
 // Remember previous chum IDs so we can try out replying to earlier messages
 let count = 0;
 let chash = {};
 
-function ordain(n) {
-  const s = ["th", "st", "nd", "rd"], v = n % 100;
-  return n + (s[(v-20)%10] || s[v] || s[0]);
-}
+async function omninom(sendmesg, chum) {
+  const { plat, fief, chan, user, usid, mesg, msid, priv } = chum;
 
-module.exports = async (sendmesg, { plat, fief, chan, user, mesg, msid, priv }) => {
-  count++; // This is the count-th chum the /omninom command has received
-  chash[count] = msid; 
-  // hmm, but the incoming chum, at least on Discord, is not a public message in the
-  // channel that can be replied to later. i think we need to remember the message ID
-  // of our own response to this chum. if we want to later refer this invocation of
-  // /omninom, it's the message ID of omnibot's reply we need to remember.
+  count++; // This is the count-th chum this slash command has received
+  //chash[count] = msid; 
+  // Problem: The incoming chum, at least on Discord when invoking a slash
+  // command, is not a public message in the channel and thus cannot be replied
+  // to later. We need to remember the message ID of the bot's response (what 
+  // we're generating here) to this chum.
   
-  // TODO: We want mesg to always be exactly what the user typed.
-  // (Danny will finish refactoring this later.)
-  mesg = `/${NOM} ${mesg}`;  // (just reconstructing it for now)
-  let args = mesg.split(' ').slice(1).join(' ');
-  if (args.length < 1) { args = "DEBUG-EMPTY" } // hmm, formatting breaks when ""
+  let args = mesg.split(' ').slice(1).join(' '); // what user typed after cmd
+  CLOG(`DEBUG/ASSERT: "/${NOM} ${args}" === "${mesg}"`); // actual assert?
 
-  const displat = (plat === "discord" ? "Discord" :
-                   plat === "slack"   ? "Slack"   : plat);
+  const displatform = (plat === "discord" ? `Discord` :
+                       plat === "slack"   ? `Slack`   : plat);
+  const dispmedium = (
+    !chan && !fief && usid &&  priv ? `private DM` :
+     chan &&  fief && usid && !priv ? 
+    `channel #${chan} on the ${fief} ${displatform}` :
+    `[ERROR: Unexpected combo:\
+ chan=${chan} fief=${fief} usid=${usid} priv=${priv}]`);
   
   let outmesg = `\
-This is Omnibot v${packageData.version} \
-called by ${user} \
-in channel #${chan} on ${displat}.\n\
-You called /${NOM} with args = "\`${args}\`".\n\
-This is your ${ordain(count)} call to /${NOM}.\n\
-For testing, you can make args be one of the following to change how Omnibot \
-replies:\n\
-* whisp: Reply by DM, no one else sees that you invoked /${NOM}\n\
-* holla: Echo your invocation of /${NOM}, reply publicly\n\
-* blurt: No echo, reply publicly, out of the blue from others' perspective\n\
-* phem: Similar to whisp but reply ephemerally in the channel\n` +
-(mesg !== mesg.trim() ? `WARNING! A thing happened we thought never happens: \
-\`${mesg}\` was not trimmed.` : '');
+This is Omnibot version ${version}.
+User ${user} (${usid}) called /${NOM}${priv ? " " : " publicly "}in \
+${dispmedium} with ${args.length < 1 ? "no args" : "args = \`" + args + "\`"}.
+This is the ${ordain(count)} call to /${NOM} since Omnibot last rebooted.
+[IDs for debugging: msid=${msid}, usid=\`${usid}\`.]
+For testing, call /${NOM} with one of the following to change how Omnibot \
+replies:
+* \`whisp\`: Reply by DM, no one else sees that you invoked /${NOM}
+* \`ephem\`: Similar to whisp but reply ephemerally/privately in the channel
+* \`holla\`: Echo your invocation of /${NOM}, reply publicly (holler back)
+* \`blurt\`: No echo, reply publicly, out of the blue from others' perspective
+(The default response mode if you don't specify any of those is \`ephem\`.)
+`;
 
-  if(priv) {
-    const message = {plat, user, priv, mrid: msid, mesg: outmesg}
+  if (args === "whisp" && priv) {
+    outmesg += `
+(Note: You invoked /${NOM} in a DM to Omnibot so only \`whisp\` mode actually \
+makes sense.)`;
+    const message = {plat, user, usid, priv, mrid: msid, mesg: outmesg};
     chash[count] = await sendmesg(message);
-    console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
-    return chash[count]
-  }
-
-if (args === "whisp") {
-    console.log("whispering")
+  } else if (args === "whisp") {
+    //CLOG("whispering");
     // Why doesn't it work to let fief be whatever was passed in?
     //if (plat === "slack") { reply.fief = "noop" }
-    const ack = "Got it. DMing you now.";
+    const ack = `${usid}: ${mesg}\n<@${botid}> DM'd you :white_check_mark:`;
     const message = {plat, fief, chan, mesg: ack, mrid: msid, phem: true}
-    if (plat === "slack") {
-      message.user = user;
-    }
-    await sendmesg(message);
-    chash[count] = await sendmesg({plat, user, mesg: outmesg, priv: true});
-    console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
-    return chash[count];
-  }
+    // shouldn't the following line be in convert-command.js or something?
+    if (plat === "slack") { message.user = usid }
+    await sendmesg(message); // ephemeral ack, then full reply as DM
+    chash[count] = await sendmesg({plat, user, usid, mesg:outmesg, priv:true});
+    //CLOG(`replied to /${NOM} command ${count} with message ${chash[count]}`);
+  } else if (args === "holla" && priv) {
+    outmesg = `\
+${usid}: ${mesg}
 
-  if (args === "holla") {
+${outmesg}
+(Note: You invoked /${NOM} in a DM to Omnibot so \`holla\` mode \
+doesn't quite make sense.)`;
+    const message = {plat, user, usid, priv, mrid: msid, mesg: outmesg};
+    chash[count] = await sendmesg(message);
+  } else if (args === "holla") {
     // Note that we need to also echo the invocation of the slash command.
     // In Slack there's a way to just have the user's invocation of the slash
     // command appear for everyone to see, but I'm not sure that's possible on
-    // Discord. We're focusing on Discord for now...
-    // This is analogous to when someone starts an auction with /bid which
-    // should be publicly visible.
-    outmesg = `${user}: ${mesg}\n\n${outmesg}`;
-    const message = {plat, fief, chan, mesg: outmesg, mrid: msid}
+    // Discord. We're focusing on Discord for now.
+    // This is like when someone starts an auction with /bid where it should be
+    // publicly visible in the channel exactly what they typed to invoke it.
+    outmesg = `${usid}: ${mesg}\n\n${outmesg}`;
+    const message = {plat, fief, chan, mesg: outmesg, mrid: msid};
     chash[count] = await sendmesg(message);
-    console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
-    return chash[count];
-  }
-
-  if (args === "blurt") {
-    const ack = "Got it. Only you see this ack but now also replying publicly.";
+    //CLOG(`replied to /${NOM} command ${count} with message ${chash[count]}`);
+  } else if (args === "blurt" && priv) {
+    outmesg += `
+(Note: You invoked /${NOM} in a DM to Omnibot so \`blurt\` mode doesn't \
+quite make sense.)`;
+    // unDRY warning with the normal blurt case below
+    // First ack the slash command invocation, which on Discord we have to do
+    // else we get an ugly "The application did not respond" in the channel.
+    const ack = `${usid}: ${mesg}`;
+    let message  = {plat, user, usid, priv, mrid:msid, mesg:ack, phem:true};
+    if (plat === "slack") { message.user = usid }
+    await sendmesg(message);
+    message = { plat, user, usid, priv, mrid: msid, mesg: outmesg };
+    chash[count] = await sendmesg(message);
+  } else if (args === "blurt") {
+    // First ack the slash command invocation, which on Discord we have to do
+    // else we get an ugly "The application did not respond" in the channel.
+    const ack = `${usid}: ${mesg}`;
     const message  = {plat, fief, chan, mesg: ack, mrid: msid, phem: true};
-    if (plat === "slack") {
-      message.user = user;
-    }
+    if (plat === "slack") { message.user = usid }
     await sendmesg(message);
     chash[count] = await sendmesg({plat, fief, chan, mesg: outmesg});
-    console.log(`replied to /omninom command ${count} with message ${chash[count]}`);
-    return chash[count];
+    //CLOG(`replied to /${NOM} command ${count} with message ${chash[count]}`);
+  } else if (priv) {
+    const message = {plat, user, usid, priv, mrid:msid, mesg:outmesg, phem:true}
+    if (plat === "slack") { message.user = usid }
+    chash[count] = await sendmesg(message);
+  } else {
+    const message = {plat, fief, chan, mesg:outmesg, mrid:msid, phem:true};
+    if (plat === "slack") { message.user = usid }
+    chash[count] = await sendmesg(message);
   }
+  return chash[count]
+}
 
-  if (args === "phem" || true) {
-    console.log(`replying ephemerally to /omninom command ${count}`)
-    const message = {plat, fief, chan, mesg:outmesg, mrid:msid, phem:true}
-    if (plat === "slack") {
-      message.user = user;
-    }
-    return await sendmesg(message);
-  }
-};
+module.exports = omninom; // elsewhere do const omninom = require('./omninom')

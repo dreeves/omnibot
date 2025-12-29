@@ -1,10 +1,10 @@
 {
   "name": "omnibot",
-  "version": "2025.04.08-b",
+  "version": "2025.12.28-b",
   "description": "A Discord & Slack bot that plays games and mediates auctions",
   "main": "app.js",
   "scripts": {
-    "build": "cd ./public && npx snowpack build && npm run register",
+    "build": "npm run register",
     "start": "npm run build && node app.js",
     "register": "node register-commands.js",
     "test": "mocha --require mocha-suppress-logs quals"
@@ -22,10 +22,17 @@
     "node-emoji": "^2.1.3",
     "random-word-slugs": "^0.1.7",
     "remarkable": "^2.0.1",
-    "ws": "^8.18.0"
+    "ws": "^8.18.1"
   },
   "engines": {
-    "node": "18"
+    "node": ">=22.15.0"
+  },
+  "overrides": {
+    "follow-redirects": "^1.15.6",
+    "semver": "^7.6.0",
+    "ip": "^2.0.1",
+    "json5": "^2.2.3",
+    "word-wrap": "^1.2.5"
   },
   "repository": {
     "url": "https://github.com/dreeves/omnibot"
@@ -36,14 +43,13 @@
     "chat bots"
   ],
   "devDependencies": {
-    "chai": "^5.1.2",
-    "chromedriver": "^131.0.0",
-    "mocha": "^10.8.2",
+    "chai": "^5.2.0",
+    "chromedriver": "^136.0.0",
+    "mocha": "^11.2.2",
     "mocha-suppress-logs": "^0.5.1",
     "proxyquire": "^2.1.3",
-    "puppeteer": "^23.8.0",
-    "selenium-webdriver": "^4.26.0",
-    "sinon": "^19.0.2",
-    "snowpack": "^3.8.8"
+    "puppeteer": "^24.8.2",
+    "selenium-webdriver": "^4.31.0",
+    "sinon": "^20.0.0"
   }
 }

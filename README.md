@@ -100,36 +100,147 @@ contents of the command's execute function.
 Lexiguess was inspired by https://hryanjones.com/guess-my-word/
 There are many other implementations out there as well, like Betweenle.
 
+## Core Data Structure
+
+The core data struction for Omnibot is called a chum -- CHannel-User-Message.
+An incoming chum has the following fields:
+
+* plat -- The platform, like Discord or Slack or Web.
+* fief -- What Discord calls a server and Slack calls a workspace.
+* chan -- Channel.
+* user -- Username of the person who sent this message. [deprecated]
+* usid -- The user's ID. [look up the username with this as needed]
+* mesg -- The contents of the message.
+* msid -- The message ID or interaction ID.
+* priv -- Whether it's a DM.
+
+For outgoing chums we need:
+
+* plat
+* fief/chan XOR usid/priv
+* mesg
+* mrid -- The ID of the message this message is replying to.
+
+Wait, this is dumb, there's no "outgoing chum", we just want two versions of 
+sendmesg:
+
+sendDM(plat, fief, usid, mesg, mrid)
+sendCH(plat, fief, chan, mesg, mrid)
+
+Also I don't think we want a boolean for whether a chum is a DM.
+Rather, we want a magic string for the channel (I think maybe Discord already
+uses something like "@me" for the channel when it's a DM?).
+And then fief can just be ignored for Discord.
+For Slack, DMs are specific to the workspace you're in, so fief matters for DMs
+on Slack.
+
+Now I'm having second thoughts about two versions of sendmesg. Consider:
+
+sendmesg(plat, fief, chan, usid, mesg, mrid)
+
+If that's a channel message: usid is ignored, or must be null.
+If that's a DM: chan will be "@me" or whatever magic string, fief will be
+ignored in the case of Discord (but maybe needed for Slack), and mrid can be
+omitted if what you're sending isn't a reply to any message.
+
+
+In any case, I don't like shoehorning chums for the parameters to sendmesg.
+Incoming and outgoing chums conceptually have the following in common:
+  plat, fief, chan, mesg
+Incoming chums additionally have usid.
+Outgoing chums only have usid if chan is DM (or overload chan as usid?).
+
+Could chan be overloaded so it's just the user ID itself if the channel is a DM?
+I guess channel IDs and user IDs would have to be structurally distinct, if we
+want to avoid a separate this-is-a-DM field.
+
+
+Randomly, I'm fond of the fro/yon fields we use internally for Beeminder's 
+honey money credit entries.
+Probably that doesn't make sense here though.
+We're either processing an incoming chum from a user which is necessarily to
+Omnibot, or we're calling sendmesg which is necessarily from Omnibot.
+
+## Platform-specific notes
+
+### Discord
+
+- Received commands must be replied to within 3 seconds, or the user will see an
+error message.
+The time limit could be extended to 15 minutes if we used deferred replies.
+- Replies _after_ the initial reply may be sent within a 15-minute window after
+the initial reply. 
+This cannot be extended.
+- Ephemeral messages can only be created as a reply to a command. 
+When using `phem`, `mrid` must be the ID of a command (prefixed with 
+"interaction:"). 
+Specifying `user` is meaningless and therefore prohibited.
+- `sendmesg` returns the ID of the sent message.
+
+### Slack
+
+- Same as Discord, received commands must be replied to within 3 seconds, or the
+user will see an error message.
+- `fief` does nothing on Slack, as using it requires an enterprise account. 
+It's still required by sendmesg in order to maintain consistency with other 
+platforms and reduce the amount of platform-specific code in sendmesg.
+- `sendmesg` does not return the ID of the sent message.
+
 ## CHANGELOG
 
 ```
-2020-04-12: Initial version
-2020-04-13: Ignore anything with punctuation or less than 2 letters
+2025-12-28: Fix regression with /bid
+2025-10-30: Much better /roll command
+2025-10-29: More robust /omninom command, lots of refactoring
+2025-10-18: More fussing and improvements I lost track of
+2025-05-11: Lots of refactoring and polishing
+2025-04-08: Attempted fixes for the /roll command
+2023-05-12: Oops we haven't updated the changelog in ages
+2022-09-27: Bumping the discord.js version fixed the duplicate replies bug
+2022-03-10: Added template.env, greater portability
+2021-12-19: Works in Slack and Discord and can serve web pages
+2021-12-05: A bunch of words contributed by Madge Castle
+2021-12-04: Over 500 words in the list the bot chooses from
+2021-12-01: Refactor to use a state object/hash
+2021-04-20: Update the README
+2020-04-19: Various tweaks and fixes the last few days
 2020-04-14: Bugfix with when to complain about out-of-range words
 2020-04-14: Bugfix with dups
-2020-04-19: Various tweaks and fixes the last few days
-2021-04-20: Update the README
-2021-12-01: Refactor to use a state object/hash
-2021-12-04: Over 500 words in the list the bot chooses from
-2021-12-05: A bunch of words contributed by Madge Castle
-2021-12-19: Works in Slack and Discord and can serve web pages
-2022-03-10: Added template.env, greater portability
-2022-09-27: Bumping the discord.js version fixed the duplicate replies bug
-2023-05-12: Oops we haven't updated the changelog in ages
+2020-04-13: Ignore anything with punctuation or less than 2 letters
+2020-04-12: Initial version
 ```
 
-## Generalizing to an omnibot
+## Namestorming
 
-Top contenders for the name include botler, botley, beelz, shabot, urbot, omnibot, ...
+Omnibot stuck for a while and it's a fine name but a little grandiose-sounding and technically taken by a 1980s toy.
+I've grabbed two candidate domain names -- beelzebot.com and motleybot.com.
+
+1. Beelzebot, or beelz for short. 
+beelzebot.com
+(Beelzebub, pronounced bee-EL-zuh-bub, is an ancient name for the devil. 
+See also the amazing 
+[Stephen Lynch song](https://www.youtube.com/watch?v=5BeYXjBfrdg "My real name is Beelzebub but you can call me Beelz. I like to watch Fox News and then go club some baby seals").)
+
+2. Motleybot, or botley for short. 
+motleybot.com 
+(Motley means made up of incongruous elements.)
+
+Runners up: 
+* botany (the any-bot) I still love, especially because it can also be read as a Bethany portmanteau. The closest domain, botanybot.com, costs $1.2k.
+* Botshalom or shabbot or shabot or shabbotshalom -- hilarious but maybe too unclear which of those variants to go with.
 
 Goal: totally general bot where we separate the business logic from the slack/sms/whatever connectivity, let it also have a web interface so anyone can try it out instantly at a certain URL and it just does all the things...
 
+Domain names:
+beelzebot.com
+motleybot.com
+
 Namestorming: http://allourideas.org/bot
 
-beebot, botbrain, beebotty, diabot, diabotical, unibot, beezlebot, cosmobot, ubiquibot, globot, panbot, infinibot, pluribot, communibot, cobot, loquella, shabotshalom, botshalom, beelzebot, nobotty, spottybot, motleybot, botley, cybot, jreeves, botchy, botulism, botany, bottum, bottabing, decepticon, lexibot, biddybot, skynet,
+omnibot, beebot, botbrain, beebotty, diabot, diabotical, unibot, beezlebot, cosmobot, ubiquibot, globot, panbot, infinibot, pluribot, communibot, cobot, loquella, shabotshalom, botshalom, beelzebot, nobotty, spottybot, motleybot, botley, cybot, jreeves, botchy, botulism, botany, bottum, bottabing, decepticon, lexibot, biddybot, botler the butler bot, urbot
 
 rejects:  
-beeotch, beeot, collocutio, locutio, yootlebot, tweedlebot, waddlebot, botbot, ubeequibot, poobot, transbot, brobot, probot, cybeeriad, cybernetica, lobotomy, lobot, gobot, autobot, botsoule, botsel, botch,
+beeotch, beeot, collocutio, locutio, yootlebot, tweedlebot, waddlebot, botbot, ubeequibot, poobot, transbot, brobot, probot, cybeeriad, cybernetica, lobotomy, lobot, gobot, autobot, botsoule, botsel, botch, skynet
 
 ## Other Bot Ideas
 
@@ -153,6 +264,15 @@ beeotch, beeot, collocutio, locutio, yootlebot, tweedlebot, waddlebot, botbot, u
 18. the word game Contact. having the bot think of the word may not work (humans can ask about words in obscure ways that the bot would have no hope of understanding) but the bot could guess words. like if the letters so far are "ca" it could guess "is it a small domesticated carnivorous mammal with soft fur, a short snout, and retractable claws?"
 19. add an anki card when you learn a new thing #TIL
 20. molecall.com
+
+// Ideas for future slash commands...
+// Predictionbook bot:
+// /bet such-and-such happens p=.3 #foo
+// Karmabot (needs to be opt-in):
+// /karma on
+// TagTime (start with just announcing pings on the universal schedule)
+// /tagtime on
+
 
 ## Chat Platforms
 

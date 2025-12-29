@@ -1,4 +1,6 @@
-const fs = require("node:fs");
+//const CLOG = console.log;
+//CLOG("DEBUG1: Loading platforms/index.js");
+const fs   = require("node:fs");
 const path = require("node:path");
 
 const convertCommands = require("../convert-commands.js");
@@ -7,19 +9,15 @@ const slack = require("./slack");
 const web = require("./web.js");
 
 const commandsPath = path.join(__dirname, "../commands");
-const commandFiles = fs
-    .readdirSync(commandsPath)
-    .filter((file) => file.endsWith(".js"));
-const botCommands = commandFiles.map((file) =>
-    require(path.join(commandsPath, file))
+//CLOG(`DEBUG2: commandsPath = ${commandsPath}`);
+const commandFiles = fs.readdirSync(commandsPath)
+                       .filter((file) => file.endsWith(".js"));
+const botCommands = commandFiles.map((file) => 
+  require(path.join(commandsPath, file))
 );
 
 botCommands.forEach((botCommand) => {
-    const slackCommand = convertCommands.toSlack(botCommand);
+  const slackCommand = convertCommands.toSlack(botCommand);
 });
 
-module.exports = {
-    discord,
-    slack,
-    web,
-};
+module.exports = { discord, slack, web };

@@ -1,5 +1,8 @@
 const { SlashCommandBuilder } = require("discord.js");
 
+// Probably we want to pick Discord as canonical and translate for Slack to what
+// Slack needs.
+
 const STRIKETHROUGH_REGEX = /~(?<text>[^\s\n]|[^\s\n]([^\n]*?)[^\s\n])~/gi;
 const ITALIC_REGEX =
   /(?<!\w)_(?<text>[^\s\n]|[^\s\n.]([^\n]*?)[^\s\n])_(?!\w)/gi;
@@ -22,9 +25,12 @@ const platformFormatting = {
 function platformat(platform, output) {
   return output
     .replace(STRIKETHROUGH_REGEX, platformFormatting[platform].strikethrough)
-    .replace(ITALIC_REGEX, platformFormatting[platform].italic)
-    .replace(BOLD_REGEX, platformFormatting[platform].bold);
+    .replace(ITALIC_REGEX,        platformFormatting[platform].italic)
+    .replace(BOLD_REGEX,          platformFormatting[platform].bold);
 }
+
+// Probably refactor the following to define functions normally and then do a
+// module.exports at the end...
 
 module.exports = {
   toDiscord: (botCommand) => {
@@ -58,14 +64,18 @@ module.exports = {
       const formattedOutput = platformat("discord", output);
       switch (voxmode) {
         case "whisp":
-          interaction.reply({ content: formattedOutput, ephemeral: true });
+          interaction.reply({ content: formattedOutput, 
+                              flags: Discord.MessageFlags.Ephemeral });
+            // ephemeral: true }); #SCHDEL
           break;
         case "holla":
           interaction.reply(`/${botCommand.name} ${options.input}`);
           channel.send(formattedOutput);
           break;
         case "blurt":
-          interaction.reply({ content: options.input, ephemeral: true });
+          interaction.reply({ content: options.input, 
+                              flags: Discord.MessageFlags.Ephemeral });
+            // ephemeral: true }); #SCHDEL
           channel.send(formattedOutput);
           break;
         default:

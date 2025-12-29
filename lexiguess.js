@@ -2,11 +2,11 @@ const rand  = Math.random;
 const floor = Math.floor;
 const CLOG = console.log;
 
-const { version } = require('./package.json');
+// const { version } = require('./package.json'); // not used currently
 
 const crypto = require('crypto');
-let nonce = crypto.randomBytes(16).toString('base64');
-CLOG(`DEBUG nonce: ${nonce}`);
+//let nonce = crypto.randomBytes(16).toString('base64');
+//CLOG(`DEBUG nonce: ${nonce}`);
 
 // Maps platform/fief/channel names to game states
 let gamestates = {}
@@ -62,14 +62,9 @@ for (const w of wordlist) {
 // ----------------------------- Lexiguess Blurbs ------------------------------
 
 const introblurb = `\
-Hi! I'm the Lexiguess bot. \
-I just woke up and remember exactly nothing about anything we may have talked \
-about in the past. :blush:  \
-But I've thought of a (new) word if you want to try guessing it. \
-It'll be so fun! \
-I picked it from a bunch of words @dreev gave me. \
-I'm assuming you typed "*#{tug}*" as your guess, so, here we go! \
-Wheeee! :checkered_flag: \n\n`
+Let Lexiguess commence! \
+I'm presuming you typed "#{tug}" as your first guess of the secret word. \
+So here we go! Wheeee! :checkered_flag: \n\n`
 
 const againblurb = `\
 Hello, McFly, you already guessed "#{tug}". \
@@ -299,7 +294,7 @@ function lexup(cid, x) {
   return lexout(gamestates[cid])
 }
 
-module.exports = { lexup }
+module.exports = lexup;
 
 // -----------------------------------------------------------------------------
 // ------------------------------- Scratch area --------------------------------

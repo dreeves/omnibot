@@ -16,9 +16,7 @@ describe("when the page loads", function () {
     await page.goto("http://localhost:3000");
   });
 
-  after(async function () {
-    await browser.close();
-  });
+  after(async function () { await browser.close() });
 
   it("focuses the name input", async function () {
     await page.waitForSelector("#name-input");

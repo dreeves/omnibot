@@ -1,121 +1,74 @@
 const { ChumError } = require("../../sendemitter.js");
+const { MessageFlags } = require("discord.js");
 
 function mentionToID(mention) {
-    const match = mention.match(/^<@(.*)>$/);
-    if (match) {
-        return match[1];
-    } else {
-        throw new ChumError(`Invalid mention: {mention}`);
-    }
+  const match = mention.match(/^<@(.*)>$/);
+  if (match) {
+    return match[1];
+  } else {
+    throw new ChumError(`Invalid mention: {mention}`);
+  }
 }
 
+// Not sure we should need to specify priv. Specifying a user implies it's a DM.
 async function sendmesg(client, interactionCache, message) {
-    const {
-        plat,
-        chan,
-        fief,
-        mesg,
-        mrid,
-        phem,
-        priv,
-        user: userMention,
-    } = message;
+  const { plat, fief, chan, usid, mesg, mrid, phem, priv } = message;
 
-    if (plat !== "discord") {
-        throw new ChumError(`Discord got erroneous platform ${plat}`);
-    }
+  if (plat !== "discord")
+    throw new ChumError(`Um, sir, this is a Discord (not a ${plat})`);
+  if (!mesg) { throw new ChumError("Missing message!") }
+  if (!(!fief && !chan && usid && priv) && !(fief && chan && !usid && !priv))
+    throw new ChumError(`Must specify fief&chan XOR user&priv. Called with: \
+fief=${fief}, chan=${chan}, usid=${usid}, priv=${priv}`);
 
-    if (!mesg) {
-        throw new ChumError("Missing message!");
-    }
+  let target;
+  let funcName;
+  let payload = { content: mesg };
 
-    let channelMessage = fief && chan;
-    let directMessage = userMention && priv;
-    if (channelMessage && directMessage) {
-        throw new ChumError("Unclear whether to send a private message!");
-    }
+  if (mrid && mrid.startsWith("interaction:")) {
+    const interaction = interactionCache[mrid];
+    if (phem) { payload.flags = MessageFlags.Ephemeral }
+                //payload.ephemeral = true // #SCHDEL
+    target = interaction;
 
-    if (fief && !chan) {
-        throw new ChumError("Missing chan!");
-    }
+    if (interaction.replied) { funcName = "followUp" } 
+    else                     { funcName = "reply" }
+  } else if (usid && priv) {
+    const userId = mentionToID(usid);
+    const userObj = await client.users.fetch(userId);
 
-    if (!fief && chan) {
-        throw new ChumError("Missing fief!");
-    }
-
-    if (userMention && !priv) {
-        throw new ChumError("Missing priv!");
-    }
-
-    if (!userMention && priv) {
-        throw new ChumError("Missing user!");
-    }
-
-    if (!directMessage && !channelMessage) {
-        throw new ChumError(
-            "Messages require either fief and chan or user and priv!",
-        );
-    }
-
-    let target;
-    let funcName;
-    let payload = {
-        content: mesg,
-    };
-
-    if (mrid && mrid.startsWith("interaction:")) {
-        const interaction = interactionCache[mrid];
-        if (phem) {
-            payload.ephemeral = true;
-        }
-        target = interaction;
-
-        if (interaction.replied) {
-            funcName = "followUp";
-        } else {
-            funcName = "reply";
-        }
-    } else if (directMessage) {
-        const userId = mentionToID(userMention);
-        const user = await client.users.fetch(userId);
-
-        if (mrid) {
-            const channel = user.dmChannel;
-            const message = await channel.messages.fetch(mrid);
-            target = message;
-            funcName = "reply";
-        } else {
-            target = user;
-            funcName = "send";
-        }
-    } else if (channelMessage) {
-        const guilds = await client.guilds.fetch();
-        let guild = guilds.find((g) => g.name === fief);
-        guild = await guild.fetch();
-
-        const channels = await guild.channels.fetch();
-        const channel = channels.find((c) => c.name === chan);
-
-        if (mrid) {
-            const message = await channel.messages.fetch(mrid);
-            target = message;
-            funcName = "reply";
-        } else {
-            target = channel;
-            funcName = "send";
-        }
-    }
-
-    if (target && funcName) {
-        let sent = await target[funcName](payload);
-
-        if (target.fetchReply) {
-            sent = await target.fetchReply();
-        }
-        return sent.id;
+    if (mrid) {
+      const channel = userObj.dmChannel;
+      const message = await channel.messages.fetch(mrid);
+      target = message;
+      funcName = "reply";
     } else {
-        throw new ChumError("Ambiguous message!");
+      target = userObj;
+      funcName = "send";
     }
+  } else if (fief && chan) {
+    const guilds = await client.guilds.fetch();
+    let guild = guilds.find((g) => g.name === fief);
+    guild = await guild.fetch();
+
+    const channels = await guild.channels.fetch();
+    const channel = channels.find((c) => c.name === chan);
+
+    if (mrid) {
+      const message = await channel.messages.fetch(mrid);
+      target = message;
+      funcName = "reply";
+    } else {
+      target = channel;
+      funcName = "send";
+    }
+  }
+
+  if (target && funcName) {
+    let sent = await target[funcName](payload);
+    if (target.fetchReply) { sent = await target.fetchReply() }
+    return sent.id;
+  } else { throw new ChumError("Ambiguous message!") }
 }
 
 module.exports = sendmesg;

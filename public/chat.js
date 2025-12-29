@@ -1,6 +1,7 @@
 //import emoji from "node-emoji";
 //import default from 'node-emoji';
 import * as emoji from 'node-emoji';
+// import { emojify } from 'node-emoji';
 import { Remarkable } from "remarkable";
 const md = new Remarkable();
 

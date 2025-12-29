@@ -1,11 +1,1 @@
-{
-    "beebot.auctions.yootopia.bids": {
-        "<@892518507001040906>": "",
-        "<@298617884664528896>": "test"
-    },
-    "beebot.auctions.yootopia": {
-        "urtext": "/bid test with <@892518507001040906>",
-        "initiator": "<@298617884664528896>",
-        "initialMsid": "1186831062811287703"
-    }
-}
+{}
