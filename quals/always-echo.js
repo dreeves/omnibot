@@ -4,6 +4,7 @@ var chai = require("chai");
 chai.should();
 
 describe("when the user submits text in chat", function () {
+  this.timeout(10000);
   let browser;
   let page;
 
@@ -27,6 +28,11 @@ describe("when the user submits text in chat", function () {
   it("echos in the chat log", async function () {
     await page.type("#chat-input", "Hello, world!");
     await page.keyboard.press("Enter");
+
+    await page.waitForFunction(
+      () => document.querySelector("#chat-history")?.textContent?.includes("testcase: Hello, world!"),
+      { timeout: 5000 },
+    );
 
     const text = await page.evaluate(
       () => document.querySelector("#chat-history").textContent

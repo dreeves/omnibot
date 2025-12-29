@@ -1,1 +1,0 @@
-#SCHDEL -- moved to README
