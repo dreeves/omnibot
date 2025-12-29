@@ -1,4 +1,5 @@
 const lexup = require("../lexiguess.js");
+const dispatch = require("../dispatch.js");
 const ws = require("ws");
 
 const clientNames = {};
@@ -14,7 +15,7 @@ wsServer.on("connection", (socket, req) => {
   send(socket, "chat", "Omnibot!");
   send(socket, "name", !!clientNames[ip]);
 
-  socket.on("message", (data) => {
+  socket.on("message", async (data) => {
     const message = data.toString();
     if (!clientNames[ip]) {
       const used = Object.values(clientNames).includes(message);
@@ -40,18 +41,33 @@ wsServer.on("connection", (socket, req) => {
       // Oops we crash if we reach the next line: botCommands is not defined.
       // I think the right solution here is to follow the pattern of discord and
       // slack and use the dispatcher?
-      const botCmd = botCommands.find((cmd) => cmd.name === cmdName);
+      // const botCmd = botCommands.find((cmd) => cmd.name === cmdName);
+      //
+      // if (botCmd) {
+      //   let localReply = botCmd.execute({
+      //     cid: "web",
+      //     sender: name,
+      //     input: cmdInput.trim(),
+      //   });
+      //   send(socket, "chat", `LEX: ${localReply.output}`);
+      // } else {
+      //   send(socket, "chat", `No command named ${cmdName}`);
+      // }
 
-      if (botCmd) {
-        let localReply = botCmd.execute({
-          cid: "web",
-          sender: name,
-          input: cmdInput.trim(),
-        });
-        send(socket, "chat", `LEX: ${localReply.output}`);
-      } else {
-        send(socket, "chat", `No command named ${cmdName}`);
-      }
+      const sendmesg = async ({ mesg }) => {
+        send(socket, "chat", `LEX: ${mesg}`);
+      };
+
+      await dispatch(sendmesg, {
+        plat: "web",
+        fief: "web",
+        chan: "web",
+        user: name,
+        usid: `web[${ip}]`,
+        mesg: `/${cmdName}${cmdInput}`,
+        msid: `web:${ip}:${Date.now()}`,
+        priv: true,
+      });
     } else if (/^[a-z]{2,}$/i.test(message)) {
       wsServer.clients.forEach((s) => {
         if (s !== socket) {
@@ -73,7 +89,7 @@ wsServer.on("connection", (socket, req) => {
   });
 });
 
-process.on("exit", () => { web.clients.forEach((s) => send(
+process.on("exit", () => { wsServer.clients.forEach((s) => send(
   s,
   "chat",
   "Server is shutting down! This is most likely a deliberate act by the admin.",
