@@ -3,22 +3,32 @@
 import * as emoji from 'node-emoji';
 // import { emojify } from 'node-emoji';
 import { Remarkable } from "remarkable";
-const md = new Remarkable();
+const md = new Remarkable({ html: false });
 
 let named = null;
+let myName = null;
 
 window.addEventListener("load", () => {
-  let history = [];
   const body = document.body;
   const chatHistory = document.getElementById("chat-history");
   const chatInput = document.getElementById("chat-input");
   const nameInput = document.getElementById("name-input");
 
   function pushChat(message) {
-    history.push(message);
-    chatHistory.innerHTML = history
-      .map((line) => `<li>${md.render(line)}</li>`)
-      .join("\n");
+    const li = document.createElement("li");
+    li.classList.add("msg");
+
+    if (typeof message === "string" && myName && message.startsWith(`${myName}:`)) {
+      li.classList.add("msg--me");
+    } else if (typeof message === "string" && message.startsWith("LEX:")) {
+      li.classList.add("msg--bot");
+    } else {
+      li.classList.add("msg--system");
+    }
+
+    li.innerHTML = md.render(message);
+    chatHistory.appendChild(li);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
   }
 
   const protocol = window.location.protocol === "https:" ? "wss" : "ws";
@@ -63,6 +73,7 @@ window.addEventListener("load", () => {
 
   nameInput.addEventListener("keypress", (event) => {
     if (event.key === "Enter") {
+      myName = nameInput.value;
       socket.send(nameInput.value);
       chatInput.value = "";
     }
