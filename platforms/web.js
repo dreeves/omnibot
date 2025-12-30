@@ -9,6 +9,10 @@ const send = (socket, event, data) => { return socket.send(
   JSON.stringify({event, data})
 )};
 
+const broadcast = (event, data) => {
+  wsServer.clients.forEach((s) => send(s, event, data));
+};
+
 wsServer.on("connection", (socket, req) => {
   const ip = req.socket.remoteAddress;
 
@@ -23,7 +27,7 @@ wsServer.on("connection", (socket, req) => {
         clientNames[ip] = message;
         send(socket, "name", true);
         wsServer.clients.forEach((s) =>
-          send(s, "chat", `${clientNames[ip]} has joined the game.`)
+          send(s, "chat", `${clientNames[ip]} has joined the chat.`)
         );
       } else {
         send(socket, "name", false);
@@ -32,7 +36,8 @@ wsServer.on("connection", (socket, req) => {
     }
 
     const name = clientNames[ip];
-    send(socket, "chat", `${name}: ${message}`);
+    // send(socket, "chat", `${name}: ${message}`);
+    broadcast("chat", `${name}: ${message}`);
 
     const match = message.match(/^\/([a-z]+)( (.*))?/i);
     if (match) {
@@ -55,7 +60,8 @@ wsServer.on("connection", (socket, req) => {
       // }
 
       const sendmesg = async ({ mesg }) => {
-        send(socket, "chat", `LEX: ${mesg}`);
+        // send(socket, "chat", `LEX: ${mesg}`);
+        broadcast("chat", `OMNIBOT: ${mesg}`);
       };
 
       await dispatch(sendmesg, {
@@ -69,21 +75,22 @@ wsServer.on("connection", (socket, req) => {
         priv: true,
       });
     } else if (/^[a-z]{2,}$/i.test(message)) {
-      wsServer.clients.forEach((s) => {
-        if (s !== socket) {
-          send(s, "chat", `${name}: ${message}`);
-        }
-      });
+      // wsServer.clients.forEach((s) => {
+      //   if (s !== socket) {
+      //     send(s, "chat", `${name}: ${message}`);
+      //   }
+      // });
       let reply = lexup("webclient", message);
       if (reply)
-        wsServer.clients.forEach((s) => send(s, "chat", `LEX: ${reply}`));
+        // wsServer.clients.forEach((s) => send(s, "chat", `LEX: ${reply}`));
+        broadcast("chat", `OMNIBOT: ${reply}`);
     }
   });
 
   socket.on("close", () => {
     const name = clientNames[ip];
     wsServer.clients.forEach((s) =>
-      send(s, "chat", `${name} has left the game.`)
+      send(s, "chat", `${name} has left the left.`)
     );
     delete clientNames[ip];
   });
