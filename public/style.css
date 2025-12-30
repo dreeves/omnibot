@@ -28,6 +28,7 @@ to this section's matching END comment to see page-specific styles.
 }
 
 /* Import fonts */
+/*
 @font-face {
   font-family: HK Grotesk;
   src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Regular.otf?v=1603136326027")
@@ -39,6 +40,7 @@ to this section's matching END comment to see page-specific styles.
   src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Bold.otf?v=1603136323437")
     format("opentype");
 }
+*/
 
 
 /* Navigation grid */

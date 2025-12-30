@@ -5,9 +5,16 @@ const ws = require("ws");
 const clientNames = {};
 const wsServer = new ws.Server({ noServer: true });
 
-const send = (socket, event, data) => { return socket.send(
-  JSON.stringify({event, data})
-)};
+// Weirdly, ":coin:" isn't recognized as the coin emoji in web chat
+const translateWebChat = (data) => {
+  if (typeof data !== "string") return data;
+  return data.replace(/:coin:/g, "🪙")
+};
+
+const send = (socket, event, data) => {
+  const translated = event === "chat" ? translateWebChat(data) : data;
+  return socket.send(JSON.stringify({ event, data: translated }))
+};
 
 const broadcast = (event, data) => {
   wsServer.clients.forEach((s) => send(s, event, data));
