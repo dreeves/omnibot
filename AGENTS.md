@@ -6,7 +6,7 @@
 3. Don't ever delete human-written code. Instead you can comment it out and add your own comment about why it's safe to delete.
 4. Never say "you're absolutely right" or any other form of sycophancy or even mild praise. Really zero personality of any kind. 
 5. Follow Beeminder's [Pareto Dominance Principle (PDP)](https://blog.beeminder.com/pdp). Get explicit approval if any change would not be a Pareto improvement.
-6. Follow Beeminder's [Anti-Magic Principle](https://blog.beeminder.com/magic). Don't fix problems by adding if-statements. If you're sure an if-statement is needed, make the case to me, the human.
+6. Follow Beeminder's [Anti-Magic Principle](https://blog.beeminder.com/magic). Don't fix problems by adding if-statements. Even if you're fixing a bug like "when X happens the app does Y instead of Z", resist the urge to add "if X then Z". If you're sure an if-statement is needed, make the case to me, the human.
 7. Follow Beeminder's [Anti-Robustness Principle](https://blog.beeminder.com/postel) aka Anti-Postel. Fail loudly and immediately. Never silently fix inputs. See also the branch of defensive programming known as offensive programming.
 8. We [call them quals](https://blog.beeminder.com/quals), not tests.
 

@@ -3,7 +3,7 @@
 import * as emoji from 'node-emoji';
 // import { emojify } from 'node-emoji';
 import { Remarkable } from "remarkable";
-const md = new Remarkable({ html: false });
+const md = new Remarkable({ html: false, breaks: true });
 
 let named = null;
 let myName = null;
