@@ -37,27 +37,30 @@ ${P}help\`\t`       +`Show this help message :mirror: :question:`;
 function emojify(n) {
   const N = [':zero:', ':one:', ':two:', ':three:', ':four:', ':five:', ':six:',
              ':seven:', ':eight:', ':nine:', ':keycap_ten:'];
-  return N[n] ?? n
+  // return N[n] ?? n
+  return N[n] !== undefined ? `${N[n]} (${n})` : `\`${n}\``;
   // return n >= 0 && n <= 10 ? `${N[n]}` : n #SCHDEL
 }
 
 // Generate the output for rolling an n-sided die
 function rollout(n) {
-  const roll = randint(n);
-  return `Rolling a D${n}... it came up ${emojify(roll)}  :tada:`;
+  //const roll = randint(n); #SCHDEL
+  return `\
+:game_die: Rolling a D${n}... it came up ${emojify(randint(n))}  :tada:`;
 }
 
 // Generate the output for flipping a biased coin with probability p
 function flipout(p) {
-  const flip = bern(p);
-  return `Bernoulli trial with probability ${p}... \
-it came out ${flip ? "YES :white_check_mark:" : "NO :x:"}.`;
+  //const flip = bern(p); #SCHDEL
+  return `\
+:coin: Bernoulli trial with probability ${p}... \
+it came up ${bern(p) ? "YES :white_check_mark:" : "NO :x:"}.`;
 }
 
 // Generate the output for trying to roll or flip with a a number like 1.5 that
 // doesn't make sense as either a probability or number of sides of a die.
 function poopout(x) { return `\
-Rolling a ${x}-sided die... ${bern(0.1) ? ':poop:' : ':boom:'} \
+:game_die: Rolling a ${x}-sided die... ${bern(0.1) ? ':poop:' : ':boom:'} \
 (we need a positive integer number of sides or a valid probability)`
 }
 
@@ -68,14 +71,15 @@ function errout(x) {
 }
 
 // Special output for /roll 1 (or /roll e^tau*i or anything eval'ing to 1)
-function oneout() { return `Rolling a D1... it came up 1. Duh. \
-Or if you were specifying a probability of 1, it came up YES. Also duh.  \
-:one: :white_check_mark: :tada:`
+function oneout() { return `\
+:game_die: Rolling a D1... it came up 1. Duh.
+:coin: Or if you were specifying a probability of 1, it came up \
+YES :white_check_mark:. Also duh. :one: :white_check_mark: :tada:`
 }
 
 // Special output for /roll 0 (or any expression that evals to 0)
-function zerout() { return `Bernoulli trial with probability 0... \
-it came out NO, obviously. :x:`
+function zerout() { return `\
+:coin: Bernoulli trial with probability 0... it came up NO, obviously. :x:`
 }
 
 async function roll(sendmesg, chum) {
