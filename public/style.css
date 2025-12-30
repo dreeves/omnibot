@@ -211,7 +211,7 @@ p {
   list-style: none;
   margin: 0;
   padding: 20px;
-  white-space: pre-wrap;
+  white-space: normal;
   overflow-y: auto;
 }
 
@@ -308,3 +308,116 @@ html, body, #terminal {
 }
 
 */
+
+/* --------------------------------------------------------------------------
+   Web chat: ChatGPT layout, hackertyper aesthetic
+   (Overrides appended at end to avoid disturbing Glitch defaults above.)
+   -------------------------------------------------------------------------- */
+
+:root {
+  --color-bg: #000000;
+  --color-text-main: #c7ffd8;
+  --color-primary: #3cff8f;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text-main);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+#chat-interface {
+  width: 100%;
+  max-width: 1100px;
+  height: 100vh;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-left: env(safe-area-inset-left);
+}
+
+#chat-history {
+  padding: 18px;
+  background: transparent;
+}
+
+#chat-history > li.msg {
+  background: rgba(60, 255, 143, 0.06);
+  border: 1px solid rgba(60, 255, 143, 0.18);
+  color: var(--color-text-main);
+}
+
+#chat-history > li.msg--me {
+  color: #eafff2;
+  background: rgba(60, 255, 143, 0.12);
+  border-color: rgba(60, 255, 143, 0.65);
+}
+
+#chat-history > li.msg:not(.msg--me) {
+  opacity: 0.78;
+}
+
+#chat-history > li.msg--system {
+  background: transparent;
+  border-color: rgba(60, 255, 143, 0.14);
+}
+
+#chat-input {
+  border-color: rgba(60, 255, 143, 0.18);
+  background: rgba(60, 255, 143, 0.06);
+  color: #eafff2;
+  font-size: 16px;
+  padding: 14px 14px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+}
+
+#chat-input:focus {
+  border-color: rgba(60, 255, 143, 0.65);
+}
+
+.modal {
+  max-width: min(92vw, 680px);
+  padding: 14px 16px;
+  border: 1px solid rgba(60, 255, 143, 0.22);
+  background: rgba(0, 0, 0, 0.92);
+  color: var(--color-text-main);
+  z-index: 10;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.modal input {
+  display: block;
+  width: 100%;
+}
+
+#name-input {
+  background: rgba(60, 255, 143, 0.06);
+  border-color: rgba(60, 255, 143, 0.22);
+  color: #eafff2;
+  font-size: 16px;
+  caret-color: rgba(60, 255, 143, 0.9);
+}
+
+#name-input:focus {
+  border-color: rgba(60, 255, 143, 0.65);
+}
+
+@media (max-width: 600px) {
+  #chat-history {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  #chat-history > li.msg {
+    max-width: 86%;
+  }
+}
