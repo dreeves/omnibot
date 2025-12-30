@@ -12,7 +12,7 @@ function mentionToID(mention) {
 
 // Not sure we should need to specify priv. Specifying a user implies it's a DM.
 async function sendmesg(client, interactionCache, message) {
-  const { plat, fief, chan, usid, mesg, mrid, phem, priv } = message;
+  const { plat, fief, chan, chid, usid, mesg, mrid, phem, priv } = message;
 
   if (plat !== "discord")
     throw new ChumError(`Um, sir, this is a Discord (not a ${plat})`);
@@ -28,11 +28,21 @@ fief=${fief}, chan=${chan}, usid=${usid}, priv=${priv}`);
   if (mrid && mrid.startsWith("interaction:")) {
     const interaction = interactionCache[mrid];
     if (phem) { payload.flags = MessageFlags.Ephemeral }
-                //payload.ephemeral = true // #SCHDEL
     target = interaction;
 
     if (interaction.replied) { funcName = "followUp" } 
     else                     { funcName = "reply" }
+  // seeming spaghetti-throwing from GPT-5.2:
+  } else if (chid) {
+    const channel = await client.channels.fetch(chid);
+    if (mrid) {
+      const message = await channel.messages.fetch(mrid);
+      target = message;
+      funcName = "reply";
+    } else {
+      target = channel;
+      funcName = "send";
+    }
   } else if (usid && priv) {
     const userId = mentionToID(usid);
     const userObj = await client.users.fetch(userId);
@@ -53,6 +63,12 @@ fief=${fief}, chan=${chan}, usid=${usid}, priv=${priv}`);
 
     const channels = await guild.channels.fetch();
     const channel = channels.find((c) => c.name === chan);
+    if (!channel) {
+      throw new ChumError(`No channel "${chan}" in guild "${fief}"`);
+      // sus stuff from GPT-5.2:
+      //const activeThreads = await guild.channels.fetchActiveThreads();
+      //channel = activeThreads.threads.find((t) => t.name === chan);
+    }
 
     if (mrid) {
       const message = await channel.messages.fetch(mrid);

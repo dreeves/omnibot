@@ -11,6 +11,7 @@ const CLOG = console.log;
  * @property {string} plat - the originating platform (like slack or discord)
  * @property {string} fief - server/workspace the message was sent in
  * @property {string} chan - channel the message was sent in
+ * @property {string} chid - channel ID (or thread ID) the message was sent in
  * @property {string} user - username of the message author
  * @property {string} usid - user ID of the message author
  * @property {string} mesg - the exact string the user typed
@@ -28,7 +29,7 @@ const SLASH_COMMAND_REGEX = /^\/([a-z]+) ?/i;
  * @param {Chum} the incoming channel/user/message
  */
 async function dispatch(sendmesg, chum) {
-  let { plat, fief, chan, user, usid, mesg, msid, priv } = chum;
+  let { plat, fief, chan, chid, user, usid, mesg, msid, priv } = chum;
   const botIDs = [process.env.DISCORD_CLIENT_ID, 
                   process.env.SLACK_CLIENT_ID];
 
@@ -42,7 +43,7 @@ async function dispatch(sendmesg, chum) {
   if (botIDs.some(rx => new RegExp(`<@${rx}(|.*)?>`).test(mesg))) {
     //CLOG(`Omnibot was @-mentioned in ${plat} ${fief} ${chan} by ${user}`);
     let ack = `Acknowledging your @-mentioning of Omnibot`;
-    await sendmesg({plat, fief, chan, mesg: ack, mrid: msid}); // holla-style
+    await sendmesg({plat,fief, chan,chid, mesg:ack, mrid:msid}); // holla-style
     ack = `\
 Acknowledging your @-mentioning of Omnibot just now in ${fief} #${chan}. \
 This is for debugging purposes for now.`;
@@ -52,8 +53,8 @@ This is for debugging purposes for now.`;
 
   // Whether this is a word Lexiguess can respond to:
   if (LEXIGUESS_CHANNEL_REGEX.test(chan) && LEXIGUESS_REGEX.test(mesg)) {
-    const reply = lexup(chan, mesg);
-    if (reply) await sendmesg({ plat, fief, chan, mesg: reply })
+    const reply = lexup(chid, mesg);
+    if (reply) await sendmesg({ plat, fief, chan, chid, mesg: reply })
   }
   const match = mesg.match(SLASH_COMMAND_REGEX);
   if (!match) { return }     // if we make it past here, chum is a slash command
@@ -73,9 +74,13 @@ This is for debugging purposes for now.`;
   else { // probably this can't actually happen
     const err = `ERROR: no command /${cmd} found`;
     CLOG(err);
-    await sendmesg({plat, fief, chan, mesg: err, mrid: msid}); // channel reply
+    await sendmesg({plat,fief, chan,chid, mesg:err, mrid:msid}) // channel reply
     await sendmesg({plat, user, usid, mesg: err, priv: true}); // DM reply
   }
 }
+
+// TODO: refactor so this is all handled here, not in sendmesg.js
+dispatch.LEXIGUESS_REGEX = LEXIGUESS_REGEX;
+dispatch.LEXIGUESS_CHANNEL_REGEX = LEXIGUESS_CHANNEL_REGEX;
 
 module.exports = dispatch;

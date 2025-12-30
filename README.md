@@ -107,7 +107,8 @@ An incoming chum has the following fields:
 
 * plat -- The platform, like Discord or Slack or Web.
 * fief -- What Discord calls a server and Slack calls a workspace.
-* chan -- Channel.
+* chan -- Channel. [deprecated?]
+* chid -- Channel ID or thread ID.
 * user -- Username of the person who sent this message. [deprecated]
 * usid -- The user's ID. [look up the username with this as needed]
 * mesg -- The contents of the message.

@@ -33,6 +33,7 @@ guild = {
 client = {
   guilds: collection(guild),
   users: collection(user),
+  channels: collection(channel),
 };
 
 module.exports = {
