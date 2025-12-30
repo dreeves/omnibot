@@ -28,7 +28,7 @@ to this section's matching END comment to see page-specific styles.
 }
 
 /* Import fonts */
-/*
+/* #SCHDEL
 @font-face {
   font-family: HK Grotesk;
   src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Regular.otf?v=1603136326027")
@@ -373,6 +373,12 @@ body {
   font-size: 16px;
   padding: 14px 14px;
   padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  resize: none;
+  line-height: 1.35;
+  min-height: 52px;
+  max-height: 180px;
+  overflow-y: auto;
 }
 
 #chat-input:focus {

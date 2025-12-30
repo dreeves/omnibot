@@ -64,8 +64,9 @@ window.addEventListener("load", () => {
     }
   });
 
-  chatInput.addEventListener("keypress", (event) => {
-    if (event.key === "Enter") {
+  chatInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
       socket.send(chatInput.value);
       chatInput.value = "";
     }

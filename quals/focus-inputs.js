@@ -20,6 +20,7 @@ describe("when the page loads", function () {
 
   it("focuses the name input", async function () {
     await page.waitForSelector("#name-input");
+    await page.waitForFunction(() => document.body.classList.contains("naming"));
     const focusedId = await page.evaluate(() => document.activeElement.id);
     focusedId.should.equal("name-input");
   });
@@ -29,6 +30,7 @@ describe("when the page loads", function () {
       await page.type("#name-input", "testcase");
       await page.keyboard.press("Enter");
       await page.waitForSelector("#chat-input", { visible: true });
+      await page.waitForFunction(() => document.body.classList.contains("chatting"));
       const focusedId = await page.evaluate(() => document.activeElement.id);
       focusedId.should.equal("chat-input");
     });

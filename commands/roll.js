@@ -38,21 +38,17 @@ function emojify(n) {
   const N = [':zero:', ':one:', ':two:', ':three:', ':four:', ':five:', ':six:',
              ':seven:', ':eight:', ':nine:', ':keycap_ten:'];
   // return N[n] ?? n
-  return N[n] !== undefined ? `${N[n]} (${n})` : `\`${n}\``;
+  return N[n] !== undefined ? `${N[n]} (${n})` : `\`${n}\``
   // return n >= 0 && n <= 10 ? `${N[n]}` : n #SCHDEL
 }
 
 // Generate the output for rolling an n-sided die
-function rollout(n) {
-  //const roll = randint(n); #SCHDEL
-  return `\
+function rollout(n) { return `\
 :game_die: Rolling a D${n}... it came up ${emojify(randint(n))}  :tada:`;
 }
 
 // Generate the output for flipping a biased coin with probability p
-function flipout(p) {
-  //const flip = bern(p); #SCHDEL
-  return `\
+function flipout(p) { return `\
 :coin: Bernoulli trial with probability ${p}... \
 it came up ${bern(p) ? "YES :white_check_mark:" : "NO :x:"}.`;
 }
@@ -74,7 +70,8 @@ function errout(x) {
 function oneout() { return `\
 :game_die: Rolling a D1... it came up 1. Duh.
 :coin: Or if you were specifying a probability of 1, it came up \
-YES :white_check_mark:. Also duh. :one: :white_check_mark: :tada:`
+YES :white_check_mark:. Also duh.
+:one: :white_check_mark: :tada:`
 }
 
 // Special output for /roll 0 (or any expression that evals to 0)

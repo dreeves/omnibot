@@ -16,9 +16,11 @@ describe("when the user submits text in chat", function () {
     page = (await browser.pages())[0];
     await page.goto("http://localhost:3000");
     await page.waitForSelector("#name-input");
+    await page.waitForFunction(() => document.body.classList.contains("naming"));
     await page.type("#name-input", "testcase");
     await page.keyboard.press("Enter");
     await page.waitForSelector("#chat-input", { visible: true });
+    await page.waitForFunction(() => document.body.classList.contains("chatting"));
   });
 
   after(async function () {

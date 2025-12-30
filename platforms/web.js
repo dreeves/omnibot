@@ -97,7 +97,7 @@ wsServer.on("connection", (socket, req) => {
   socket.on("close", () => {
     const name = clientNames[ip];
     wsServer.clients.forEach((s) =>
-      send(s, "chat", `${name} has left the left.`)
+      send(s, "chat", `${name} has left the chat.`)
     );
     delete clientNames[ip];
   });
