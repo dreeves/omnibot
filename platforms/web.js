@@ -72,7 +72,7 @@ wsServer.on("connection", (socket, req) => {
         usid: `web[${ip}]`,
         mesg: `/${cmdName}${cmdInput}`,
         msid: `web:${ip}:${Date.now()}`,
-        priv: true,
+        priv: false,
       });
     } else if (/^[a-z]{2,}$/i.test(message)) {
       // wsServer.clients.forEach((s) => {
