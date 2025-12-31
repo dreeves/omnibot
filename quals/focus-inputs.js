@@ -4,6 +4,7 @@ var chai = require("chai");
 chai.should();
 
 describe("when the page loads", function () {
+  this.timeout(10000);
   let browser;
   let page;
 

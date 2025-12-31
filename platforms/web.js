@@ -3,12 +3,17 @@ const dispatch = require("../dispatch.js");
 const ws = require("ws");
 
 const clientNames = {};
+const clientIds = new WeakMap();
+let nextClientId = 1;
 const wsServer = new ws.Server({ noServer: true });
 
 // Weirdly, ":coin:" isn't recognized as the coin emoji in web chat
 const translateWebChat = (data) => {
-  if (typeof data !== "string") return data;
-  return data.replace(/:coin:/g, "🪙")
+  if (typeof data === "string") return data.replace(/:coin:/g, "🪙");
+  if (data && typeof data === "object" && typeof data.text === "string") {
+    return { ...data, text: data.text.replace(/:coin:/g, "🪙") };
+  }
+  return data;
 };
 
 const send = (socket, event, data) => {
@@ -22,19 +27,24 @@ const broadcast = (event, data) => {
 
 wsServer.on("connection", (socket, req) => {
   const ip = req.socket.remoteAddress;
+  const clientId = nextClientId++;
+  clientIds.set(socket, clientId);
 
-  send(socket, "chat", "Omnibot!");
-  send(socket, "name", !!clientNames[ip]);
+  //send(socket, "chat", { kind: "bot", from: "Omnibot", text: "Welcome" });
+  // send(socket, "name", !!clientNames[ip]);
+  send(socket, "name", false);
 
   socket.on("message", async (data) => {
     const message = data.toString();
-    if (!clientNames[ip]) {
+    // if (!clientNames[ip]) {
+    const name = clientNames[clientId];
+    if (!name) {
       const used = Object.values(clientNames).includes(message);
       if (/^[a-zA-Z0-9 ]+$/.test(message) && !used) {
-        clientNames[ip] = message;
+        clientNames[clientId] = message;
         send(socket, "name", true);
         wsServer.clients.forEach((s) =>
-          send(s, "chat", `${clientNames[ip]} has joined the chat.`)
+          send(s, "chat", { kind: "system", text: `${clientNames[clientId]} has joined the chat` })
         );
       } else {
         send(socket, "name", false);
@@ -42,9 +52,9 @@ wsServer.on("connection", (socket, req) => {
       return;
     }
 
-    const name = clientNames[ip];
+    // const name = clientNames[ip];
     // send(socket, "chat", `${name}: ${message}`);
-    broadcast("chat", `${name}: ${message}`);
+    broadcast("chat", { kind: "user", from: name, text: message });
 
     const match = message.match(/^\/([a-z]+)( (.*))?/i);
     if (match) {
@@ -68,7 +78,7 @@ wsServer.on("connection", (socket, req) => {
 
       const sendmesg = async ({ mesg }) => {
         // send(socket, "chat", `LEX: ${mesg}`);
-        broadcast("chat", `OMNIBOT: ${mesg}`);
+        broadcast("chat", { kind: "bot", from: "Omnibot", text: mesg });
       };
 
       await dispatch(sendmesg, {
@@ -90,23 +100,24 @@ wsServer.on("connection", (socket, req) => {
       let reply = lexup("webclient", message);
       if (reply)
         // wsServer.clients.forEach((s) => send(s, "chat", `LEX: ${reply}`));
-        broadcast("chat", `OMNIBOT: ${reply}`);
+        broadcast("chat", { kind: "bot", from: "Omnibot", text: reply });
     }
   });
 
   socket.on("close", () => {
-    const name = clientNames[ip];
-    wsServer.clients.forEach((s) =>
-      send(s, "chat", `${name} has left the chat.`)
-    );
-    delete clientNames[ip];
+    // const name = clientNames[ip];
+    const name = clientNames[clientId];
+    if (name) {
+      wsServer.clients.forEach((s) => send(s, "chat", { kind: "system", text: `${name} has left the chat.` }));
+    }
+    delete clientNames[clientId];
   });
 });
 
 process.on("exit", () => { wsServer.clients.forEach((s) => send(
   s,
   "chat",
-  "Server is shutting down! This is most likely a deliberate act by the admin.",
+  { kind: "system", text: "Server is shutting down! This is most likely a deliberate act by the admin." },
 ))});
 
 module.exports = wsServer;

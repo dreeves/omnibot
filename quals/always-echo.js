@@ -32,13 +32,13 @@ describe("when the user submits text in chat", function () {
     await page.keyboard.press("Enter");
 
     await page.waitForFunction(
-      () => document.querySelector("#chat-history")?.textContent?.includes("testcase: Hello, world!"),
+      () => document.querySelector("#chat-history")?.textContent?.includes("Hello, world!"),
       { timeout: 5000 },
     );
 
     const text = await page.evaluate(
       () => document.querySelector("#chat-history").textContent
     );
-    text.should.include("testcase: Hello, world!");
+    text.should.include("Hello, world!");
   });
 });

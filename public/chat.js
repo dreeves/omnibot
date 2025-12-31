@@ -18,15 +18,36 @@ window.addEventListener("load", () => {
     const li = document.createElement("li");
     li.classList.add("msg");
 
-    if (typeof message === "string" && myName && message.startsWith(`${myName}:`)) {
+    let kind = "system";
+    let from = null;
+    let text = message;
+
+    if (message && typeof message === "object") {
+      kind = message.kind || kind;
+      from = message.from || null;
+      text = message.text;
+    }
+
+    if (kind === "user" && myName && from === myName) {
       li.classList.add("msg--me");
-    } else if (typeof message === "string" && message.startsWith("LEX:")) {
+    } else if (kind === "bot") {
       li.classList.add("msg--bot");
     } else {
       li.classList.add("msg--system");
     }
 
-    li.innerHTML = md.render(message);
+    if ((kind === "user" || kind === "bot") && from && !(kind === "user" && myName && from === myName)) {
+      const meta = document.createElement("div");
+      meta.className = "msg__meta";
+      meta.textContent = from;
+      li.appendChild(meta);
+    }
+
+    const body = document.createElement("div");
+    body.className = "msg__body";
+    body.innerHTML = md.render(text);
+    li.appendChild(body);
+
     chatHistory.appendChild(li);
     chatHistory.scrollTop = chatHistory.scrollHeight;
   }
@@ -58,7 +79,16 @@ window.addEventListener("load", () => {
         chatInput.focus();
       }
     } else if (message.event === "chat") {
-      pushChat(emoji.emojify(message.data));
+      if (typeof message.data === "string") {
+        pushChat(emoji.emojify(message.data));
+      } else if (message.data && typeof message.data === "object") {
+        if (typeof message.data.text !== "string") {
+          throw new Error(`Expected chat payload text to be a string, got ${typeof message.data.text}`);
+        }
+        pushChat({ ...message.data, text: emoji.emojify(message.data.text) });
+      } else {
+        throw new Error(`Expected chat payload to be string or object, got ${typeof message.data}`);
+      }
     } else {
       console.log(`Unrecognized event ${message.event} from server.`);
     }

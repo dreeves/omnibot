@@ -207,7 +207,7 @@ p {
 }
 
 #chat-history > li.msg--system {
-  align-self: center;
+  align-self: flex-start;
   background: transparent;
   border: 1px solid #242424;
 }
@@ -334,8 +334,24 @@ body {
 }
 
 #chat-history > li.msg--system {
+  align-self: flex-start;
   background: transparent;
   border-color: rgba(60, 255, 143, 0.14);
+}
+
+#chat-history .msg__meta {
+  font-size: 12px;
+  line-height: 1.2;
+  opacity: 0.72;
+  margin-bottom: 6px;
+}
+
+#chat-history .msg__body > *:first-child {
+  margin-top: 0;
+}
+
+#chat-history .msg__body > *:last-child {
+  margin-bottom: 0;
 }
 
 #chat-history code {
