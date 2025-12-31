@@ -1,5 +1,5 @@
-// I'm pretty sure this would be cleaner to split into two commands:
-// /auction or /despoil to start an auction, check status, get help, abort, etc.
+// I propose that it would be cleaner to split /bid into two commands:
+// /auction to start an auction, check status, get help, abort, etc.
 // Then /bid would only be for submitting bids to an existing auction.
 // Namestorming: /auction /despoil /schelling /coord /seal 
 
@@ -9,21 +9,26 @@
 // immediately after creating the auction. The auction would then proceed as if
 // you had never been included.
 
-// What should happen if you @-mention omnibot?
+// What should happen if you @-mention omnibot? Currently it just includes it in
+// the auction like any other user, but it has no way to place a bid. We could
+// something easter-eggy and "bid" an excerpt of a poem or something.
 
-//const BID = "bid"; // name of this slash command
-
-const { randint } = require('../util.js');
-
-const store = require("../store.js");
 // VOXMODE: One of 4 ways to reply to a user's command:
-//  1. whisp: eat the command and reply so only the user sees it
+//  1. whisp: eat the command and reply so only the user sees it, aka ephem
 //  2. holla: echo the command publicly and reply (holla back) publicly
 //  3. blurt: eat the command but reply or say something publicly
 //  4. cease: eat the command but reply to the initiating msid
 //  (There's no voxmode for echoing the command publicly but replying privately
 //   but if we ever have a use case for that, maybe we'll call it "kibitz".)
 // Hmm, these voxmodes aren't matching what we came up with for /omninom
+
+
+//const BID = "bid"; // name of this slash command
+
+const { randint } = require('../util.js');
+
+const store = require("../store.js");
+
 
 // Not using this yet.
 const pumpkinThresh = {
