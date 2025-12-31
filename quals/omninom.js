@@ -22,7 +22,8 @@ const discordExpectations = [
       fief: "testserver",
       chan: "botspam",
       user: "<@1234>",
-      mesg: "whisp",
+      usid: "<@1234>",
+      mesg: "/omninom whisp",
       msid: "interaction:1234",
     },
     output: [
@@ -38,6 +39,7 @@ const discordExpectations = [
         plat: "discord",
         priv: true,
         user: "<@1234>",
+        usid: "<@1234>",
         mesg: sinon.match.string,
       },
     ],
@@ -48,7 +50,8 @@ const discordExpectations = [
       plat: "discord",
       priv: true,
       user: "<@1234>",
-      mesg: "whisp",
+      usid: "<@1234>",
+      mesg: "/omninom whisp",
       msid: "interaction:1234",
     },
     output: [
@@ -56,6 +59,7 @@ const discordExpectations = [
         plat: "discord",
         mesg: sinon.match.string,
         user: "<@1234>",
+        usid: "<@1234>",
         priv: true,
         mrid: "interaction:1234",
       },
@@ -67,7 +71,9 @@ const discordExpectations = [
       plat: "discord",
       fief: "testserver",
       chan: "botspam",
-      mesg: "holla",
+      user: "<@1234>",
+      usid: "<@1234>",
+      mesg: "/omninom holla",
       msid: "interaction:1234",
     },
     output: [
@@ -86,8 +92,9 @@ const discordExpectations = [
       plat: "discord",
       fief: "testserver",
       chan: "botspam",
-      mesg: "holla",
+      mesg: "/omninom holla",
       user: "<@1234>",
+      usid: "<@1234>",
       priv: true,
       msid: "interaction:1234",
     },
@@ -95,6 +102,7 @@ const discordExpectations = [
       {
         plat: "discord",
         user: "<@1234>",
+        usid: "<@1234>",
         priv: true,
         mesg: sinon.match.string,
         mrid: "interaction:1234",
@@ -107,7 +115,9 @@ const discordExpectations = [
       plat: "discord",
       fief: "testserver",
       chan: "botspam",
-      mesg: "blurt",
+      user: "<@1234>",
+      usid: "<@1234>",
+      mesg: "/omninom blurt",
       msid: "interaction:1234",
     },
     output: [
@@ -133,8 +143,9 @@ const discordExpectations = [
       plat: "discord",
       fief: "testserver",
       chan: "botspam",
-      mesg: "blurt",
+      mesg: "/omninom blurt",
       user: "<@1234>",
+      usid: "<@1234>",
       priv: true,
       msid: "interaction:1234",
     },
@@ -142,6 +153,16 @@ const discordExpectations = [
       {
         plat: "discord",
         user: "<@1234>",
+        usid: "<@1234>",
+        priv: true,
+        mesg: "<@1234>: /omninom blurt",
+        mrid: "interaction:1234",
+        phem: true,
+      },
+      {
+        plat: "discord",
+        user: "<@1234>",
+        usid: "<@1234>",
         priv: true,
         mesg: sinon.match.string,
         mrid: "interaction:1234",
@@ -154,7 +175,9 @@ const discordExpectations = [
       plat: "discord",
       fief: "testserver",
       chan: "botspam",
-      mesg: "phem",
+      user: "<@1234>",
+      usid: "<@1234>",
+      mesg: "/omninom phem",
       msid: "interaction:1234",
     },
     output: [
@@ -174,8 +197,9 @@ const discordExpectations = [
       plat: "discord",
       fief: "testserver",
       chan: "botspam",
-      mesg: "phem",
+      mesg: "/omninom phem",
       user: "<@1234>",
+      usid: "<@1234>",
       priv: true,
       msid: "interaction:1234",
     },
@@ -183,6 +207,7 @@ const discordExpectations = [
       {
         plat: "discord",
         user: "<@1234>",
+        usid: "<@1234>",
         priv: true,
         mesg: sinon.match.string,
         mrid: "interaction:1234",
@@ -199,7 +224,8 @@ const slackExpectations = [
       fief: "testserver",
       chan: "botspam",
       user: "<@U1234>",
-      mesg: "whisp",
+      usid: "<@U1234>",
+      mesg: "/omninom whisp",
       msid: "command:1234",
     },
     output: [
@@ -216,6 +242,7 @@ const slackExpectations = [
         plat: "slack",
         priv: true,
         user: "<@U1234>",
+        usid: "<@U1234>",
         mesg: sinon.match.string,
       },
     ],
@@ -226,7 +253,8 @@ const slackExpectations = [
       plat: "slack",
       priv: true,
       user: "<@U1234>",
-      mesg: "whisp",
+      usid: "<@U1234>",
+      mesg: "/omninom whisp",
       msid: "command:1234",
     },
     output: [
@@ -234,6 +262,7 @@ const slackExpectations = [
         plat: "slack",
         mesg: sinon.match.string,
         user: "<@U1234>",
+        usid: "<@U1234>",
         priv: true,
         mrid: "command:1234",
       },
@@ -245,7 +274,9 @@ const slackExpectations = [
       plat: "slack",
       fief: "testserver",
       chan: "botspam",
-      mesg: "holla",
+      user: "<@U1234>",
+      usid: "<@U1234>",
+      mesg: "/omninom holla",
       msid: "command:1234",
     },
     output: [
@@ -264,15 +295,17 @@ const slackExpectations = [
       plat: "slack",
       fief: "testserver",
       chan: "botspam",
-      mesg: "holla",
-      user: "<@1234>",
+      mesg: "/omninom holla",
+      user: "<@U1234>",
+      usid: "<@U1234>",
       priv: true,
       msid: "command:1234",
     },
     output: [
       {
         plat: "slack",
-        user: "<@1234>",
+        user: "<@U1234>",
+        usid: "<@U1234>",
         priv: true,
         mesg: sinon.match.string,
         mrid: "command:1234",
@@ -285,8 +318,9 @@ const slackExpectations = [
       plat: "slack",
       fief: "testserver",
       chan: "botspam",
-      mesg: "phem",
+      mesg: "/omninom phem",
       user: "<@U1234>",
+      usid: "<@U1234>",
       msid: "command:1234",
     },
     output: [
@@ -303,12 +337,14 @@ const slackExpectations = [
   },
   {
     desc: "replies to phem (DM message)",
+    expectError: true,
     input: {
       plat: "slack",
       fief: "testserver",
       chan: "botspam",
-      mesg: "phem",
+      mesg: "/omninom phem",
       user: "<@U1234>",
+      usid: "<@U1234>",
       priv: true,
       msid: "command:1234",
     },
@@ -316,6 +352,7 @@ const slackExpectations = [
       {
         plat: "slack",
         user: "<@U1234>",
+        usid: "<@U1234>",
         priv: true,
         mesg: sinon.match.string,
         mrid: "command:1234",
@@ -350,7 +387,16 @@ describe("running /omninom on Discord", function () {
       const sendmesg = sinon.fake.resolves();
       await omninom(sendmesg, exp.input);
 
-      exp.output.forEach((out) => sinon.assert.calledWith(sendmesg, out));
+      // The old assertion used `sinon.assert.calledWith(sendmesg, out)` which
+      // doesn't reliably do matcher-based comparisons. It should be safe to
+      // delete, but per agent rules we keep it.
+      // exp.output.forEach((out) => sinon.assert.calledWith(sendmesg, out));
+
+      sinon.assert.callCount(sendmesg, exp.output.length);
+      exp.output.forEach((out, idx) => {
+        const actual = sendmesg.getCall(idx).args[0];
+        sinon.assert.match(actual, out);
+      });
     });
 
     it(`${exp.desc} without error`, async function () {
@@ -378,10 +424,23 @@ describe("running /omninom on Slack", function () {
       const sendmesg = sinon.fake.resolves();
       await omninom(sendmesg, exp.input);
 
-      exp.output.forEach((out) => sinon.assert.calledWith(sendmesg, out));
+      // The old assertion used `sinon.assert.calledWith(sendmesg, out)` which
+      // doesn't reliably do matcher-based comparisons. It should be safe to
+      // delete, but per agent rules we keep it.
+      // exp.output.forEach((out) => sinon.assert.calledWith(sendmesg, out));
+
+      sinon.assert.callCount(sendmesg, exp.output.length);
+      exp.output.forEach((out, idx) => {
+        const actual = sendmesg.getCall(idx).args[0];
+        sinon.assert.match(actual, out);
+      });
     });
 
     it(`${exp.desc} without error`, async function () {
+      if (exp.expectError) {
+        const promise = omninom(sendmesg, exp.input);
+        return expect(promise).to.be.rejectedWith("Ambiguous message:");
+      }
       await omninom(sendmesg, exp.input);
     });
   });

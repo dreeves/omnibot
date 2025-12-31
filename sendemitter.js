@@ -15,6 +15,7 @@ function registerPlatform(plat, handler) { platforms[plat] = handler }
  * @param {string} message.plat - target platform
  * @param {string} message.fief - target server or workspace
  * @param {string} message.chan - target channel
+ * @param {string} message.chid - target channel ID or thread ID
  * @param {string} message.user - username of who should see the message
  * @param {string} message.usid - userID of who should see the message
  * @param {string} message.mesg - literal content of the message

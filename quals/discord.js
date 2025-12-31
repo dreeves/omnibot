@@ -6,7 +6,7 @@ chai.use(chaiAsPromised.default);
 
 const DiscordFake = require("./fakes/discord.js");
 
-const { ChannelType } = require("discord.js");
+const { ChannelType, MessageFlags } = require("discord.js");
 
 const sendmesg = require("../platforms/discord/sendmesg");
 const { interactionCreate } = require("../platforms/discord/handlers");
@@ -28,7 +28,7 @@ describe("sending a message to Discord", function () {
       };
       const result = sendmesg(DiscordFake.client, {}, message);
       return expect(result).to.be.rejectedWith(
-        `Discord got erroneous platform ${message.plat}`,
+        `Um, sir, this is a Discord (not a ${message.plat})`,
       );
     });
     it("rejects a missing message", async function () {
@@ -46,14 +46,14 @@ describe("sending a message to Discord", function () {
         plat: "discord",
         fief: "testserver",
         chan: "botspam",
-        user: "<@123>",
+        usid: "<@123>",
         priv: true,
         mesg: "Hello, world!",
       };
 
       const result = sendmesg(DiscordFake.client, {}, message);
       return expect(result).to.be.rejectedWith(
-        "Unclear whether to send a private message!",
+        "Must specify fief&chan XOR user&priv. Called with: fief=testserver, chan=botspam, usid=<@123>, priv=true",
       );
     });
     it("rejects message that is neither a channel message nor a private message", async function () {
@@ -64,7 +64,7 @@ describe("sending a message to Discord", function () {
 
       const result = sendmesg(DiscordFake.client, {}, message);
       return expect(result).to.be.rejectedWith(
-        "Messages require either fief and chan or user and priv!",
+        "Must specify fief&chan XOR user&priv. Called with: fief=undefined, chan=undefined, usid=undefined, priv=undefined",
       );
     });
     it("rejects fief with a missing chan", async function () {
@@ -75,7 +75,9 @@ describe("sending a message to Discord", function () {
       };
 
       const result = sendmesg(DiscordFake.client, {}, message);
-      return expect(result).to.be.rejectedWith("Missing chan!");
+      return expect(result).to.be.rejectedWith(
+        "Must specify fief&chan XOR user&priv. Called with: fief=testserver, chan=undefined, usid=undefined, priv=undefined",
+      );
     });
     it("rejects chan with a missing fief", async function () {
       const message = {
@@ -85,17 +87,21 @@ describe("sending a message to Discord", function () {
       };
 
       const result = sendmesg(DiscordFake.client, {}, message);
-      return expect(result).to.be.rejectedWith("Missing fief!");
+      return expect(result).to.be.rejectedWith(
+        "Must specify fief&chan XOR user&priv. Called with: fief=undefined, chan=botspam, usid=undefined, priv=undefined",
+      );
     });
     it("rejects user with a missing priv", async function () {
       const message = {
         plat: "discord",
-        user: "<@123>",
+        usid: "<@123>",
         mesg: "Hello, world!",
       };
 
       const result = sendmesg(DiscordFake.client, {}, message);
-      return expect(result).to.be.rejectedWith("Missing priv!");
+      return expect(result).to.be.rejectedWith(
+        "Must specify fief&chan XOR user&priv. Called with: fief=undefined, chan=undefined, usid=<@123>, priv=undefined",
+      );
     });
     it("rejects priv with a missing user", async function () {
       const message = {
@@ -105,7 +111,9 @@ describe("sending a message to Discord", function () {
       };
 
       const result = sendmesg(DiscordFake.client, {}, message);
-      return expect(result).to.be.rejectedWith("Missing user!");
+      return expect(result).to.be.rejectedWith(
+        "Must specify fief&chan XOR user&priv. Called with: fief=undefined, chan=undefined, usid=undefined, priv=true",
+      );
     });
   });
 
@@ -146,7 +154,7 @@ describe("sending a message to Discord", function () {
     it("sends a private message if user and priv are present", async function () {
       const message = {
         plat: "discord",
-        user: "<@123>",
+        usid: "<@123>",
         priv: true,
         mesg: "Hello, world!",
       };
@@ -161,7 +169,7 @@ describe("sending a message to Discord", function () {
     it("replies to a private message if user, priv, and mrid are present", async function () {
       const message = {
         plat: "discord",
-        user: "<@123>",
+        usid: "<@123>",
         priv: true,
         mrid: "123",
         mesg: "Hello, world!",
@@ -224,7 +232,7 @@ describe("sending a message to Discord", function () {
       await expect(result).to.eventually.equal("123");
       sinon.assert.calledWith(interaction.reply, {
         content: message.mesg,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     });
   });

@@ -15,8 +15,8 @@ describe("announce()", function () {
     sinon.assert.alwaysCalledWith(
       sendmesg,
       sinon.match
-        .has("user", "<@298617884664528896>")
-        .or(sinon.match.has("user", "<@376112731478163466>"))
+        .has("usid", "<@298617884664528896>")
+        .or(sinon.match.has("usid", "<@376112731478163466>"))
     );
   });
 });

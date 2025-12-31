@@ -7,7 +7,8 @@ const clientIds = new WeakMap();
 let nextClientId = 1;
 const wsServer = new ws.Server({ noServer: true });
 
-// Weirdly, ":coin:" isn't recognized as the coin emoji in web chat
+// Weirdly, ":coin:" isn't recognized as the coin emoji in web chat.
+// Also shouldn't this be in convert-commands.js?
 const translateWebChat = (data) => {
   if (typeof data === "string") return data.replace(/:coin:/g, "🪙");
   if (data && typeof data === "object" && typeof data.text === "string") {

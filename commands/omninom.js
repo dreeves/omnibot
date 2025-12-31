@@ -23,11 +23,13 @@ async function omninom(sendmesg, chum) {
   CLOG(`DEBUG/ASSERT: "/${NOM} ${args}" === "${mesg}"`); // actual assert?
 
   const displatform = (plat === "discord" ? `Discord` :
-                       plat === "slack"   ? `Slack`   : plat);
+                       plat === "slack"   ? `Slack`   : 
+                       plat === "web"     ? `Web`     : plat);
   const dispmedium = (
-    !chan && !fief && usid &&  priv ? `private DM` :
-     chan &&  fief && usid && !priv ? 
-    `channel #${chan} on the ${fief} ${displatform}` :
+    !chan && !fief && usid &&  priv                    ? `private DM` :
+    plat === 'web' && chan === 'web' && fief === 'web' ? `the web UI` :
+    chan &&  fief && usid && !priv                     ? `channel #${chan} on `
+      + `the ${fief} ${displatform}` : // eg "the Beeminder Discord"
     `[ERROR: Unexpected combo:\
  chan=${chan} fief=${fief} usid=${usid} priv=${priv}]`);
   

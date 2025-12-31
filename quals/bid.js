@@ -24,7 +24,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "vote on lunch with <@456>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@456>",
         msid: "interaction:1234",
       },
       {
@@ -32,7 +33,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "foo",
+        usid: "<@123>",
+        mesg: "/bid foo",
         msid: "interaction:5678",
       },
       {
@@ -40,7 +42,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@456>",
-        mesg: "bar",
+        usid: "<@456>",
+        mesg: "/bid bar",
         msid: "interaction:9000",
       },
     ],
@@ -91,7 +94,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "vote on lunch with <@456>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@456>",
         msid: "interaction:1234",
       },
       {
@@ -99,7 +103,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "abort",
+        usid: "<@123>",
+        mesg: "/bid abort",
         msid: "interaction:5678",
       },
     ],
@@ -136,7 +141,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "foo",
+        usid: "<@123>",
+        mesg: "/bid foo",
         msid: "interaction:5678",
       },
     ],
@@ -159,7 +165,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "help",
+        usid: "<@123>",
+        mesg: "/bid help",
         msid: "interaction:5678",
       },
     ],
@@ -169,12 +176,12 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         mesg:
-          "How to use /bid\n" +
-          "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
-          "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
-          "`/bid status` — show how current auction was initiated and who has bid\n" +
-          "`/bid abort` — abort the current auction, showing partial results\n" +
-          "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
+          "How to use /bid:\n" +
+          "* `/bid stuff with @-mentions`\tStart new auction with the mentioned people\n" +
+          "* `/bid stuff`\tSubmit your bid (fine to resubmit till last person bids)\n" +
+          "* `/bid status`\tShow how current auction was initiated and who has bid\n" +
+          "* `/bid abort`\tAbort the current auction, showing partial results\n" +
+          "* `/bid help`\tShow this help (see doc.bmndr.co/sealedbids for gory details)",
         phem: true,
         mrid: "interaction:5678",
       },
@@ -188,7 +195,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "status",
+        usid: "<@123>",
+        mesg: "/bid status",
         msid: "interaction:5678",
       },
       {
@@ -196,7 +204,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "vote on lunch with <@456>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@456>",
         msid: "interaction:1234",
       },
       {
@@ -204,7 +213,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "status",
+        usid: "<@123>",
+        mesg: "/bid status",
         msid: "interaction:9000",
       },
     ],
@@ -243,7 +253,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "vote on lunch with <@456>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@456>",
         msid: "interaction:1234",
       },
       {
@@ -251,7 +262,8 @@ const discordExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "foo <@1456>",
+        usid: "<@123>",
+        mesg: "/bid foo <@1456>",
         msid: "interaction:5678",
       },
     ],
@@ -284,7 +296,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "vote on lunch with <@456>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@456>",
         msid: "command:1234",
       },
       {
@@ -292,7 +305,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "foo",
+        usid: "<@123>",
+        mesg: "/bid foo",
         msid: "command:5678",
       },
       {
@@ -300,7 +314,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@456>",
-        mesg: "bar",
+        usid: "<@456>",
+        mesg: "/bid bar",
         msid: "command:9000",
       },
     ],
@@ -314,7 +329,7 @@ const slackExpectations = [
       },
       {
         plat: "slack",
-        mesg: "Roger that",
+        mesg: "<@123>: `/bid foo`",
         user: "<@123>",
         phem: true,
         mrid: "command:5678",
@@ -344,7 +359,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "vote on lunch with <@456>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@456>",
         msid: "command:1234",
       },
       {
@@ -352,7 +368,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "abort",
+        usid: "<@123>",
+        mesg: "/bid abort",
         msid: "command:5678",
       },
     ],
@@ -381,7 +398,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "foo",
+        usid: "<@123>",
+        mesg: "/bid foo",
         msid: "command:5678",
       },
     ],
@@ -405,7 +423,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "help",
+        usid: "<@123>",
+        mesg: "/bid help",
         msid: "command:5678",
       },
     ],
@@ -415,12 +434,12 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         mesg:
-          "How to use /bid\n" +
-          "`/bid stuff with @-mentions` — start new auction with the mentioned people\n" +
-          "`/bid stuff` — submit your bid (fine to resubmit till last person bids)\n" +
-          "`/bid status` — show how current auction was initiated and who has bid\n" +
-          "`/bid abort` — abort the current auction, showing partial results\n" +
-          "`/bid help` — show this (see http://doc.bmndr.co/sealedbids for gory details)",
+          "How to use /bid:\n" +
+          "* `/bid stuff with @-mentions`\tStart new auction with the mentioned people\n" +
+          "* `/bid stuff`\tSubmit your bid (fine to resubmit till last person bids)\n" +
+          "* `/bid status`\tShow how current auction was initiated and who has bid\n" +
+          "* `/bid abort`\tAbort the current auction, showing partial results\n" +
+          "* `/bid help`\tShow this help (see doc.bmndr.co/sealedbids for gory details)",
         user: "<@123>",
         phem: true,
         mrid: "command:5678",
@@ -435,7 +454,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "status",
+        usid: "<@123>",
+        mesg: "/bid status",
         msid: "command:5678",
       },
       {
@@ -443,7 +463,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "vote on lunch with <@456>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@456>",
         msid: "command:1234",
       },
       {
@@ -451,7 +472,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "status",
+        usid: "<@123>",
+        mesg: "/bid status",
         msid: "command:9000",
       },
     ],
@@ -491,7 +513,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "vote on lunch with <@456>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@456>",
         msid: "command:1234",
       },
       {
@@ -499,7 +522,8 @@ const slackExpectations = [
         fief: "testserver",
         chan: "botspam",
         user: "<@123>",
-        mesg: "foo <@1456>",
+        usid: "<@123>",
+        mesg: "/bid foo <@1456>",
         msid: "command:5678",
       },
     ],
@@ -561,9 +585,18 @@ describe("running /bid on Discord", function () {
         await bid(sendmesg, inpt);
       }
 
-      exp.output.forEach((out, idx) =>
-        sinon.assert.calledWith(sendmesg.getCall(idx), out),
-      );
+      // The old assertion used `sinon.assert.calledWith(sendmesg.getCall(idx), ...)`.
+      // That passes a call object where Sinon expects a spy, producing misleading
+      // failures. It should be safe to delete, but per agent rules we keep it.
+      // exp.output.forEach((out, idx) =>
+      //   sinon.assert.calledWith(sendmesg.getCall(idx), out),
+      // );
+
+      sinon.assert.callCount(sendmesg, exp.output.length);
+      exp.output.forEach((out, idx) => {
+        const actual = sendmesg.getCall(idx).args[0];
+        sinon.assert.match(actual, out);
+      });
     });
 
     it(`${exp.desc} without error`, async function () {
@@ -602,9 +635,18 @@ describe("running /bid on Slack", function () {
         await bid(sendmesg, inpt);
       }
 
-      exp.output.forEach((out, idx) =>
-        sinon.assert.calledWith(sendmesg.getCall(idx), out),
-      );
+      // The old assertion used `sinon.assert.calledWith(sendmesg.getCall(idx), ...)`.
+      // That passes a call object where Sinon expects a spy, producing misleading
+      // failures. It should be safe to delete, but per agent rules we keep it.
+      // exp.output.forEach((out, idx) =>
+      //   sinon.assert.calledWith(sendmesg.getCall(idx), out),
+      // );
+
+      sinon.assert.callCount(sendmesg, exp.output.length);
+      exp.output.forEach((out, idx) => {
+        const actual = sendmesg.getCall(idx).args[0];
+        sinon.assert.match(actual, out);
+      });
     });
 
     it(`${exp.desc} without error`, async function () {

@@ -1,3 +1,6 @@
+// Should this be part of the code for each platform instead of centralized 
+// here?
+
 const { SlashCommandBuilder } = require("discord.js");
 
 // Probably we want to pick Discord as canonical and translate for Slack to what
