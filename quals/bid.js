@@ -17,6 +17,32 @@ const SlackFake = require("./fakes/slack.js");
 
 const discordExpectations = [
   {
+    desc: "fails loudly on invalid mention syntax",
+    input: [
+      {
+        plat: "discord",
+        fief: "testserver",
+        chan: "botspam",
+        user: "<@123>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@!456>",
+        msid: "interaction:1234",
+      },
+    ],
+    output: [
+      {
+        plat: "discord",
+        fief: "testserver",
+        chan: "botspam",
+        mesg:
+          "/bid vote on lunch with <@!456>\n" +
+          "Invalid @-mention <@!456>. Expected <@ID> exactly.",
+        phem: true,
+        mrid: "interaction:1234",
+      },
+    ],
+  },
+  {
     desc: "runs an auction",
     input: [
       {
@@ -288,6 +314,33 @@ const discordExpectations = [
 ];
 
 const slackExpectations = [
+  {
+    desc: "fails loudly on invalid mention syntax",
+    input: [
+      {
+        plat: "slack",
+        fief: "testserver",
+        chan: "botspam",
+        user: "<@123>",
+        usid: "<@123>",
+        mesg: "/bid vote on lunch with <@!456>",
+        msid: "command:1234",
+      },
+    ],
+    output: [
+      {
+        plat: "slack",
+        fief: "testserver",
+        chan: "botspam",
+        mesg:
+          "/bid vote on lunch with <@!456>\n" +
+          "Invalid @-mention <@!456>. Expected <@ID> exactly.",
+        user: "<@123>",
+        phem: true,
+        mrid: "command:1234",
+      },
+    ],
+  },
   {
     desc: "runs an auction",
     input: [

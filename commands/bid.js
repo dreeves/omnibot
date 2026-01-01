@@ -39,7 +39,36 @@ const pumpkinThresh = {
 
 function isEmpty(obj) { return Object.keys(obj).length === 0 }
 
-// Return a hash of usernames (without the @'s) who are @-mentioned in txt
+// Take the text of the /bid command for initiating an auction and return a hash
+// of user IDs (raw IDs, no @'s) as the keys and empty strings as the values, to
+// be replaced by the actual bids when they come in.
+// Slack format for later: <@U123|label> or <@U123>
+function bidParse(txt) {
+  const users = {};
+  const anyMention = /<@[^>]*>/g;
+  const exactUserMention = /^<@([A-Za-z0-9]+)>$/;
+
+  const tokens = txt.match(anyMention) || [];
+  for (const token of tokens) {
+    const m = token.match(exactUserMention);
+    if (!m) throw new Error(
+      `Invalid @-mention ${token}. Expected <@ID> exactly.`);
+    const id = m[1];
+    users[`<@${id}>`] = "";
+  }
+
+  // For now fail loudly on any bare @ (eg, "@bob") or malformed mention attempt
+  const txtSansMentions = txt.replace(anyMention, "");
+  if (txtSansMentions.includes("@")) {
+    throw new Error(
+      `Invalid @-mentions; only supporting Discord <@ID> syntax at the moment`)
+  }
+
+  return users
+}
+
+// Previous working version
+/*
 function bidParse(txt) {
   const pattern = /<@[a-z0-9_-|.]+>/gi; // regex for @-mentions HT StackOverflow
   let users = {};
@@ -49,16 +78,17 @@ function bidParse(txt) {
   }
   return users
 }
-// likely better version to try later:
-/*
-// Return a hash of user IDs mentioned in txt (Slack format: <@U123|label>)
-function bidParse(txt) {
-  const users = {};
-  const re = /<@([A-Z0-9]+)(?:\|[^>]+)?>/g;
-  for (const [, id] of txt.matchAll(re)) users[id] = null;
-  return users;
-}
 */
+
+/* Old Slack version for reference:
+function bidParse(txt) {
+  var pattern = /\B@[a-z0-9_-]+/gi // regex for @-mentions, HT StackOverflow
+  var users = {}
+  if(txt.match(pattern)) { // RegExp.exec() might avoid doing match in 2 places
+    txt.match(pattern).forEach(function(u) { users[u.replace("@", "")] = "" })
+  }
+  return users
+} */
 
 // Return a string representation of the hash (user->bid) of everyone's bids
 function bidSummary(bids) {
@@ -220,7 +250,15 @@ function maybeProc(auction, channel, usid, text) {
 
 function handleSlash(plat, fief, chan, user, usid, text) {
   const urtext = "/bid " + text + "\n"; // do we need that newline?
-  const others = bidParse(text);
+  let others;
+  try {
+    others = bidParse(text);
+  } catch (e) {
+    return {
+      output: `${urtext}ERROR: ${e.message}`,
+      voxmode: "whisp",
+    }
+  }
   //const auction = store.get(`${plat}.${fief}.${chan}.auction`);
   //const bids    = store.get(`${plat}.${fief}.${chan}.bids`);
   const auction = store.get("beebot.auctions." + chan);
