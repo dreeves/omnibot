@@ -21,7 +21,7 @@ const CLOG = console.log;
 
 const LEXIGUESS_REGEX = /^[a-z]+$/i; // Lexiguess responds to single words...
 const LEXIGUESS_CHANNEL_REGEX =      // ...in certain channels.
-  /^(?:botspam|games|lexi.*|spellingbee|gambol.*)$/;
+  /^(?:botspam|games|lexi.*|spellingbee|gambol.*|.*saloon)$/;
 const SLASH_COMMAND_REGEX = /^\/([a-z]+) ?/i;
 
 /**

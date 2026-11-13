@@ -13,6 +13,10 @@
 // the auction like any other user, but it has no way to place a bid. We could
 // something easter-eggy and "bid" an excerpt of a poem or something.
 
+// In Slack it used to work to have auctions in a 2-way DM between 2 humans. In
+// Discord I don't think that's possible, but it should at least work in a group
+// DM that includes Omnibot.
+
 // VOXMODE: One of 4 ways to reply to a user's command:
 //  1. whisp: eat the command and reply so only the user sees it, aka ephem
 //  2. holla: echo the command publicly and reply (holla back) publicly
@@ -29,7 +33,6 @@ const { randint } = require('../util.js');
 
 const store = require("../store.js");
 
-
 // Not using this yet.
 const pumpkinThresh = {
   dreev: 100,
@@ -43,43 +46,18 @@ function isEmpty(obj) { return Object.keys(obj).length === 0 }
 // of user IDs (raw IDs, no @'s) as the keys and empty strings as the values, to
 // be replaced by the actual bids when they come in.
 // Slack format for later: <@U123|label> or <@U123>
+// Regex for both Discord and Slack, maybe: /<@[a-z0-9_-|.]+>/gi
 function bidParse(txt) {
   const users = {};
-  const anyMention = /<@[^>]*>/g;
-  const exactUserMention = /^<@([A-Za-z0-9]+)>$/;
-
-  const tokens = txt.match(anyMention) || [];
-  for (const token of tokens) {
-    const m = token.match(exactUserMention);
-    if (!m) throw new Error(
-      `Invalid @-mention ${token}. Expected <@ID> exactly.`);
-    const id = m[1];
-    users[`<@${id}>`] = "";
-  }
-
-  // For now fail loudly on any bare @ (eg, "@bob") or malformed mention attempt
-  const txtSansMentions = txt.replace(anyMention, "");
+  const re = /<@(\d+)>/g; // regex for Discord-style @-mentions (no roles)
+  for (const [, id] of txt.matchAll(re)) users[`<@${id}>`] = ''; // null better?
+  const txtSansMentions = txt.replace(re, '');
   if (txtSansMentions.includes("@")) {
     throw new Error(
       `Invalid @-mentions; only supporting Discord <@ID> syntax at the moment`)
   }
-
   return users
 }
-
-// Previous working version
-/*
-function bidParse(txt) {
-  const pattern = /<@[a-z0-9_-|.]+>/gi; // regex for @-mentions HT StackOverflow
-  let users = {};
-  if (txt.match(pattern)) {
-    // RegExp.exec() might avoid doing match in 2 places
-    txt.match(pattern).forEach(u => { users[u] = "" }); // should be null
-  }
-  return users
-}
-*/
-
 /* Old Slack version for reference:
 function bidParse(txt) {
   var pattern = /\B@[a-z0-9_-]+/gi // regex for @-mentions, HT StackOverflow
@@ -287,6 +265,7 @@ function normalizeReply(orig, reply) {
   return normalized
 }
 
+// Entry point for the /bid command
 async function bid(sendmesg, chum) {
   const { plat, fief, chan, user, usid, mesg, msid, priv } = chum;
   if (priv) {
@@ -343,5 +322,55 @@ async function bid(sendmesg, chum) {
     store.set("beebot.auctions." + chan, auction);
   }
 };
+
+/* Entry point for the old Slack version for comparison:
+function handleSlash(req, res) {
+  if(req.body.token != process.env.SLACK_TOKEN) {
+    whisp(res, "This request didn't come from Slack!")
+    return
+  }
+  var rurl = req.body.response_url // for delayed responses to slash commands
+  var chan = req.body.channel_id
+  var user = req.body.user_name
+  var text = req.body.text
+  var urtext = "* /bid " + text + " *\n"
+  var others = bidParse(text)
+  redis.hgetall("beebot.auctions." + chan, function(err, obj) {
+    if(obj) { //--------------------------------- active auction in this channel
+      if(!isEmpty(others)) {
+        whisp(res, urtext + "No @-mentions allowed in bids! Try `/bid help`")
+      } else if(text === "") { // no args
+        bidAsyncShout(res, chan, "$STATUS")
+      } else if(text === "status") {
+        bidAsyncShout(res, chan, "Currently active auction initiated by @"
+          + obj.initiator + " via:\n`" + obj.urtext + "`\n$STATUS")
+      } else if(text === "abort") {
+        bidAsyncShout(res, chan,
+          "*Aborted.* :panda_face: Partial results:\n$SUMMARY"
+          + "\n\n_" + bidPay() + "_")
+        bidReset(chan)
+      } else if(text === "help") {
+        help(res)
+      } else if(text === "debug")  {
+        whisp(res, urtext + "whispered reply. obj = " + JSON.stringify(obj))
+        shoutDelayed(rurl, "We can also reply publicly w/out echoing the cmd!")
+      } else {  // if the text is anything else then it's a normal bid
+        // could check if user has an old bid so we can say "Updated your bid"
+        bidProc(res, chan, user, text, rurl)
+      }
+    } else { //------------------------------- no active auction in this channel
+      if(!isEmpty(others))       { bidStart(res, chan, user, text, others) }
+      else if(text === "")       { whisp(res, urtext + "No current auction") }
+      else if(text === "status") { shout(res, "No current auction") }
+      else if(text === "abort")  { whisp(res, urtext + "No current auction") }
+      else if(text === "help")   { help(res) }
+      else if(text === "debug")  { whisp(res, urtext + "No current auction") }
+      else { // if the text is anything else then it would be a normal bid
+        whisp(res, "/bid " + text + "\nNo current auction! Try `/bid help`")
+      }
+    }
+  })
+}
+*/
 
 module.exports = bid;

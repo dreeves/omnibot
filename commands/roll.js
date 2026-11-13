@@ -79,6 +79,7 @@ function zerout() { return `\
 :coin: Bernoulli trial with probability 0... it came up NO, obviously. :x:`
 }
 
+// Entry point for the /roll command
 async function roll(sendmesg, chum) {
   const { plat, fief, chan, user, usid, mesg, msid, priv } = chum;
   let args = mesg.split(' ').slice(1).join(' '); // what user typed after cmd

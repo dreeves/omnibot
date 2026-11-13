@@ -36,7 +36,7 @@ const discordExpectations = [
         chan: "botspam",
         mesg:
           "/bid vote on lunch with <@!456>\n" +
-          "Invalid @-mention <@!456>. Expected <@ID> exactly.",
+          "Invalid @-mentions; only supporting Discord <@ID> syntax at the moment",
         phem: true,
         mrid: "interaction:1234",
       },
@@ -334,7 +334,7 @@ const slackExpectations = [
         chan: "botspam",
         mesg:
           "/bid vote on lunch with <@!456>\n" +
-          "Invalid @-mention <@!456>. Expected <@ID> exactly.",
+          "Invalid @-mentions; only supporting Discord <@ID> syntax at the moment",
         user: "<@123>",
         phem: true,
         mrid: "command:1234",
