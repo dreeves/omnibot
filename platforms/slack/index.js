@@ -1,5 +1,5 @@
 const { App, ExpressReceiver } = require("@slack/bolt");
-const { commandHandler, messageHandler } = require("./handlers.js");
+const { commandHandler, messageHandler, homeHandler } = require("./handlers.js");
 const { registerPlatform } = require("../../sendemitter.js");
 const sendmesg = require("./sendmesg.js");
 

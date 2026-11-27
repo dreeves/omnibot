@@ -19,8 +19,8 @@ const CLOG = console.log;
  * @property {string} priv - whether the message was sent privately
  */
 
-const LEXIGUESS_REGEX = /^[a-z]+$/i; // Lexiguess responds to single words...
-const LEXIGUESS_CHANNEL_REGEX =      // ...in certain channels.
+const LEXIGUESS_REGEX = /^[a-z]{2,}$/i; // Lexiguess responds to single words...
+const LEXIGUESS_CHANNEL_REGEX =         // ...in certain channels.
   /^(?:botspam|games|lexi.*|spellingbee|gambol.*|.*saloon)$/;
 const SLASH_COMMAND_REGEX = /^\/([a-z]+) ?/i;
 

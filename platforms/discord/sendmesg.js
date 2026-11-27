@@ -6,7 +6,7 @@ function mentionToID(mention) {
   if (match) {
     return match[1];
   } else {
-    throw new ChumError(`Invalid mention: {mention}`);
+    throw new ChumError(`Invalid mention: ${mention}`);
   }
 }
 
@@ -82,7 +82,7 @@ fief=${fief}, chan=${chan}, usid=${usid}, priv=${priv}`);
 
   if (target && funcName) {
     let sent = await target[funcName](payload);
-    if (target.fetchReply) { sent = await target.fetchReply() }
+    if (funcName === "reply" && target.fetchReply) { sent = await target.fetchReply() }
     return sent.id;
   } else { throw new ChumError("Ambiguous message!") }
 }

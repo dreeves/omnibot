@@ -194,7 +194,7 @@ function abort(auction, channel, bids) {
 
 function debug(auction, urtext) { return {
   output: auction
-    ? `urtext = ${urtext} / datastore = ${JSON.stringify(datastore)}`
+    ? `urtext = ${urtext} / datastore = ${JSON.stringify(auction)}`
     : "No current auction",
   voxmode: "whisp" }
 }

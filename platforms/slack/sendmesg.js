@@ -25,6 +25,15 @@ async function sendmesg(client, commandCache, message) {
         throw new ChumError("Missing target user!");
     }
 
+    if (mrid && mrid.startsWith("command:")) {
+        const ack = commandCache[mrid];
+        await ack({
+            response_type: phem ? "ephemeral" : "in_channel",
+            text: mesg,
+        });
+        return;
+    }
+
     // FIXME the current channel might need to be a separate function.
     const { channels } = await client.conversations.list({
         types: "public_channel,private_channel,mpim",
@@ -44,33 +53,25 @@ async function sendmesg(client, commandCache, message) {
         channel: channelId,
     };
 
-    if (mrid && mrid.startsWith("command:")) {
-        const ack = commandCache[mrid];
-        await ack({
-            response_type: phem ? "ephemeral" : "in_channel",
-            text: mesg,
-        });
-    } else {
-        if (mrid) {
-            throw new ChumError("Replies are not supported on Slack");
-        }
-
-        if (user) {
-            const match = message.user.match(/([UW][A-Z0-9]{2,})/);
-            const userId = match[1];
-            payload.user = userId;
-        }
-
-        if (user && priv) {
-            payload.channel = payload.user;
-        }
-
-        if (user && phem) {
-            return client.chat.postEphemeral(payload);
-        }
-
-        return client.chat.postMessage(payload);
+    if (mrid) {
+        throw new ChumError("Replies are not supported on Slack");
     }
+
+    if (user) {
+        const match = message.user.match(/([UW][A-Z0-9]{2,})/);
+        const userId = match[1];
+        payload.user = userId;
+    }
+
+    if (user && priv) {
+        payload.channel = payload.user;
+    }
+
+    if (user && phem) {
+        return client.chat.postEphemeral(payload);
+    }
+
+    return client.chat.postMessage(payload);
 }
 
 module.exports = sendmesg;

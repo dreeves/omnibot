@@ -5,7 +5,7 @@ class ChumError extends Error {
   }
 }
 
-const platforms = {};
+const platforms = Object.create(null);
 function registerPlatform(plat, handler) { platforms[plat] = handler }
 
 /**

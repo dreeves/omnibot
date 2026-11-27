@@ -10,6 +10,7 @@ async function commandHandler(commandCache, command, ack) {
         fief: command.team_id,
         chan: command.channel_name,
         user: `<@${command.user_id}|${command.user_name}>`,
+        usid: `<@${command.user_id}>`,
         mesg: `${command.command} ${command.text}`,
         msid: commandID,
         priv: dm,
@@ -22,7 +23,9 @@ async function messageHandler(channels, message) {
         plat: "slack",
         fief: "noop",
         chan: channel,
+        chid: message.channel,
         user: `<@${message.user}>`,
+        usid: `<@${message.user}>`,
         mesg: message.text,
         msid: message.ts,
     });

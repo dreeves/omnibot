@@ -18,7 +18,7 @@ registerPlatform("discord", (message) =>
   sendmesg(discord, interactionCache, message)
 );
 
-discord.once("ready", () => ready(discord.user.tag));
+discord.once("clientReady", () => ready(discord.user.tag));
 
 discord.on("interactionCreate", (interaction) =>
   interactionCreate(interactionCache, interaction)

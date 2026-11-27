@@ -201,7 +201,7 @@ function lexin(s, x) {
  
   const unk = !(s.tug in dict)                       // unknown word
   const oor = s.tug <= s.loword || s.tug >= s.hiword // out of range
-  const rep = s.ghash[s.tug]                         // repeated guess
+  const rep = Object.hasOwn(s.ghash, s.tug)          // repeated guess
   s.ghash[s.tug] = true                        // remember that user guessed tug
 
   if (!unk && !oor && !rep) {                  // fully valid guess

@@ -1,6 +1,6 @@
 {
   "name": "omnibot",
-  "version": "2026.11.13-a",
+  "version": "2026.11.13-b",
   "description": "A Discord & Slack bot that plays games and mediates auctions",
   "main": "app.js",
   "scripts": {
@@ -10,29 +10,26 @@
     "test": "mocha --require mocha-suppress-logs quals"
   },
   "dependencies": {
-    "@discordjs/rest": "^2.4.3",
+    "@discordjs/rest": "^2.6.3",
     "@slack/bolt": "^4.1.0",
-    "axios": "^1.13.2",
-    "body-parser": "^2.2.1",
+    "axios": "^1.21.1",
+    "body-parser": "^2.4.0",
     "chai-as-promised": "^8.0.0",
-    "discord-api-types": "^0.38.37",
-    "discord.js": "^14.25.1",
-    "dotenv": "^17.2.3",
-    "express": "^5.2.1",
+    "discord-api-types": "^0.38.59",
+    "discord.js": "^14.28.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.3.0",
     "node-emoji": "^2.1.3",
     "random-word-slugs": "^0.1.7",
     "remarkable": "^2.0.1",
-    "ws": "^8.19.0"
+    "ws": "^8.23.0"
   },
   "engines": {
     "node": ">=22.15.0"
   },
   "overrides": {
     "follow-redirects": "^1.15.6",
-    "semver": "^7.6.0",
-    "ip": "^2.0.1",
-    "json5": "^2.2.3",
-    "word-wrap": "^1.2.5"
+    "semver": "^7.6.0"
   },
   "repository": {
     "url": "https://github.com/dreeves/omnibot"
@@ -43,13 +40,11 @@
     "chat bots"
   ],
   "devDependencies": {
-    "chai": "^6.2.2",
-    "chromedriver": "^143.0.3",
-    "mocha": "^11.7.5",
+    "chai": "^6.3.0",
+    "mocha": "^12.0.3",
     "mocha-suppress-logs": "^0.6.0",
     "proxyquire": "^2.1.3",
-    "puppeteer": "^24.34.0",
-    "selenium-webdriver": "^4.39.0",
-    "sinon": "^21.0.1"
+    "puppeteer": "^24.43.1",
+    "sinon": "^21.1.2"
   }
 }

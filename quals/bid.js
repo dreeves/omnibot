@@ -36,7 +36,7 @@ const discordExpectations = [
         chan: "botspam",
         mesg:
           "/bid vote on lunch with <@!456>\n" +
-          "Invalid @-mentions; only supporting Discord <@ID> syntax at the moment",
+          "ERROR: Invalid @-mentions; only supporting Discord <@ID> syntax at the moment",
         phem: true,
         mrid: "interaction:1234",
       },
@@ -334,7 +334,7 @@ const slackExpectations = [
         chan: "botspam",
         mesg:
           "/bid vote on lunch with <@!456>\n" +
-          "Invalid @-mentions; only supporting Discord <@ID> syntax at the moment",
+          "ERROR: Invalid @-mentions; only supporting Discord <@ID> syntax at the moment",
         user: "<@123>",
         phem: true,
         mrid: "command:1234",
@@ -704,6 +704,91 @@ describe("running /bid on Slack", function () {
 
     it(`${exp.desc} without error`, async function () {
       await Promise.all(exp.input.map((inpt) => bid(sendmesg, inpt)));
+    });
+  });
+});
+
+// Replicata: Start an auction with "/bid vote on lunch with @alice", then type
+// "/bid debug".
+// Expectata: Omnibot whispers the auction's details to whoever asked, without
+// revealing anyone's sealed bid. (Like the original Slack version, which
+// whispered the auction's hash.)
+// Resultata: debug() refers to a `datastore` variable that hasn't existed
+// since 2023, so it throws "ReferenceError: datastore is not defined". Nothing
+// catches that, so the whole bot process exits.
+describe("running /bid debug", function () {
+  const bidCommand = require("../commands/bid.js");
+  const dispatch = require("../dispatch.js");
+  const chan = "qual-bid-debug";
+  const chum = (usid, mesg, msid) => ({
+    plat: "discord",
+    fief: "testserver",
+    chan,
+    user: usid,
+    usid,
+    mesg,
+    msid,
+  });
+
+  afterEach(function () {
+    store.del("beebot.auctions." + chan);
+    store.del("beebot.auctions." + chan + ".bids");
+  });
+
+  it("whispers the auction's details to whoever asked", async function () {
+    const sendmesg = sinon.fake.resolves("123");
+    await bidCommand(sendmesg,
+      chum("<@123>", "/bid vote on lunch with <@456>", "interaction:1"));
+    await bidCommand(sendmesg, chum("<@456>", "/bid debug", "interaction:2"));
+
+    const reply = sendmesg.lastCall.args[0];
+    sinon.assert.match(reply, { phem: true, mrid: "interaction:2" });
+    expect(reply.mesg).to.include("urtext = /bid debug\n / datastore = ");
+    expect(reply.mesg).to.include('"urtext":"/bid vote on lunch with <@456>"');
+    expect(reply.mesg).to.include('"initiator":"<@123>"');
+  });
+
+  it("doesn't reveal anyone's sealed bid", async function () {
+    const sendmesg = sinon.fake.resolves("123");
+    await bidCommand(sendmesg,
+      chum("<@123>", "/bid vote on lunch with <@456>", "interaction:1"));
+    await bidCommand(sendmesg, chum("<@456>", "/bid sekrit-42", "interaction:2"));
+    await bidCommand(sendmesg, chum("<@123>", "/bid debug", "interaction:3"));
+
+    const reply = sendmesg.lastCall.args[0];
+    expect(reply.mesg).to.include("datastore = ");
+    expect(reply.mesg).not.to.include("sekrit-42");
+  });
+
+  it("leaves the auction running", async function () {
+    const sendmesg = sinon.fake.resolves("123");
+    await bidCommand(sendmesg,
+      chum("<@123>", "/bid vote on lunch with <@456>", "interaction:1"));
+    await bidCommand(sendmesg, chum("<@123>", "/bid debug", "interaction:2"));
+    await bidCommand(sendmesg, chum("<@123>", "/bid status", "interaction:3"));
+
+    expect(sendmesg.lastCall.args[0].mesg).to.include(
+      "Currently active auction initiated by <@123>");
+  });
+
+  it("works through dispatch(), the path every platform uses", async function () {
+    const sendmesg = sinon.fake.resolves("123");
+    await dispatch(sendmesg,
+      chum("<@123>", "/bid vote on lunch with <@456>", "interaction:1"));
+    await dispatch(sendmesg, chum("<@123>", "/bid debug", "interaction:2"));
+
+    expect(sendmesg.lastCall.args[0].mesg).to.include("datastore = ");
+  });
+
+  it("still whispers 'No current auction' when there's no auction", async function () {
+    const sendmesg = sinon.fake.resolves("123");
+    await bidCommand(sendmesg, chum("<@123>", "/bid debug", "interaction:1"));
+
+    sinon.assert.calledOnce(sendmesg);
+    sinon.assert.match(sendmesg.firstCall.args[0], {
+      mesg: "No current auction",
+      phem: true,
+      mrid: "interaction:1",
     });
   });
 });
